@@ -96,11 +96,8 @@ def main():
     mpnn_save = args.mpnn_save
 
     model_name = 'v_48_010'
-    try:
-        os.system(f'mkdir {folder_name}')
-    except:
-        pass
-        
+    os.makedirs(folder_name, exist_ok=True)
+
     if vhh:
         # VHH path: binder cmap comes from the fixed VHH framework, the binder
         # length is the 127-residue VHH scaffold, and the CDR (binder) hotspots
@@ -213,9 +210,9 @@ def main():
     cmap_loss = []
 
     # Create folders to save outputs
-    os.system(f'mkdir {folder_name}/traj/')
-    os.system(f'mkdir {folder_name}/mpnn/')
-    os.system(f'mkdir {folder_name}/designs/')
+    os.makedirs(f'{folder_name}/traj/', exist_ok=True)
+    os.makedirs(f'{folder_name}/mpnn/', exist_ok=True)
+    os.makedirs(f'{folder_name}/designs/', exist_ok=True)
 
     # Generate N number of trajectories
     if sample == False:
