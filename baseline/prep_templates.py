@@ -38,8 +38,8 @@ FOLDS = {
 }
 
 # Target (PD-L1) used for all 6 folds. target_hotspots are Supp. Table 2's
-# PD-L1 values applied to the shipped framework/test/pd_l1.pdb (1..112).
-TARGET = "framework/test/pd_l1.pdb"
+# PD-L1 values applied to the vendored baseline/templates/pd_l1.pdb (1..112).
+TARGET = "baseline/templates/pd_l1.pdb"
 TARGET_HOTSPOTS = "34-39,43-49,11-17"
 
 

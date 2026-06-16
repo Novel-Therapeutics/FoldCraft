@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .eggs/
+.ipynb_checkpoints/
 
 # Virtual environments
 .venv/
@@ -16,17 +17,23 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 
-# Design pipeline outputs (trajectories, mpnn samples, results)
-# These are large and run-specific; keep them out of version control.
+# AlphaFold2 weights (downloaded by install_foldcraft.sh)
+params/
+
+# Design pipeline outputs (trajectories, mpnn samples, designs, relaxed)
+examples/outputs/
 **/traj/
 **/mpnn/
 **/designs/
 **/relaxed/
 *.pickle
 results*.csv
-fold_cond_cmap*.npy
+fold_cond_cmap.npy
+fold_cond_cmap_mask.npy
+fold_cond_cmap.png
 # ...but DO keep the committed baseline benchmark metrics (the reference numbers).
 !baseline/runs/**/results.csv
 
-# OS noise
+# OS / editor
 .DS_Store
+*.swp

@@ -46,7 +46,7 @@
   <h2>Method</h2>
   <ul>
     <li>Per fold: <code>design_stages 100,100,20</code>, 10 backbones × 10 ProteinMPNN sequences = 100 designs.</li>
-    <li>Target: PD-L1 (<code>framework/test/pd_l1.pdb</code>), <code>target_hotspots = 34-39,43-49,11-17</code>.</li>
+    <li>Target: PD-L1 (<code>baseline/templates/pd_l1.pdb</code>), <code>target_hotspots = 34-39,43-49,11-17</code>.</li>
     <li>Evaluation: AF2-ptm (models 1 &amp; 2, 3 recycles). Metrics pLDDT, ipTM, iPAE (normalized 0–1) from the design pipeline; RMSD = designed binder (chain B) Cα vs the fold template, superposed.</li>
     <li>Interface confidence also reported as <b>ipSAE</b> (Dunbrack 2025) — a PAE-derived score that corrects ipTM's chain-size bias — computed offline from each design's saved PAE matrix (no re-prediction; validated bit-for-bit against the reference implementation). Counted at the ipSAE&nbsp;&gt;&nbsp;0.3 cutoff.</li>
     <li>Success = pLDDT&nbsp;&gt;&nbsp;0.8 ∧ ipTM&nbsp;&gt;&nbsp;0.5 ∧ iPAE&nbsp;&lt;&nbsp;0.35 ∧ RMSD&nbsp;&lt;&nbsp;3.5&nbsp;Å. CIs are Wilson 95%.</li>

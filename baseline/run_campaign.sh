@@ -9,7 +9,7 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO" || exit 1
 export XLA_PYTHON_CLIENT_PREALLOCATE=false PYTHONUNBUFFERED=1
 STAGES=${1:-100,100,20}; NDES=${2:-10}; NSAMP=${3:-10}; OUT=${4:-baseline/runs}
-TARGET=framework/test/pd_l1.pdb; THOT="34-39,43-49,11-17"
+TARGET=baseline/templates/pd_l1.pdb; THOT="34-39,43-49,11-17"
 tail -n +2 baseline/config.tsv | while IFS=$'\t' read fold tmpl bhot blen; do
   [ -z "$fold" ] && continue
   echo "===== FOLD $fold (len=$blen hotspots=$bhot) $(date +%H:%M:%S) ====="

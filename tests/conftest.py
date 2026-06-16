@@ -25,21 +25,18 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-TEST_PDB_DIR = os.path.join(REPO_ROOT, "framework", "test")
-
-
 @pytest.fixture(scope="session")
 def pdb_1qys():
-    """Path to the shipped single-chain Top7 (1QYS) example structure."""
-    path = os.path.join(TEST_PDB_DIR, "1qys.pdb")
+    """Path to a real single-chain protein structure (Top7 / 1QYS template)."""
+    path = os.path.join(REPO_ROOT, "examples", "templates", "1qys1.pdb")
     assert os.path.exists(path), f"missing test fixture: {path}"
     return path
 
 
 @pytest.fixture(scope="session")
 def pdb_pdl1():
-    """Path to the shipped single-chain PD-L1 example structure."""
-    path = os.path.join(TEST_PDB_DIR, "pd_l1.pdb")
+    """Path to a real single-chain protein structure (PD-L1 target)."""
+    path = os.path.join(REPO_ROOT, "examples", "targets", "pd-l1-1.pdb")
     assert os.path.exists(path), f"missing test fixture: {path}"
     return path
 
