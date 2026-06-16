@@ -32,12 +32,14 @@ Covered today (all CPU-only, run on a laptop in seconds):
 
 ## What is NOT covered yet
 
-The two design drivers (`FoldCraft.py`, `FoldCraft_binder.py`) are monolithic
-`main()` functions requiring a GPU, AlphaFold2 weights, `colabdesign`, and the
-side-loaded `BindCraft` package (`from BindCraft.functions import *`, which is
-neither vendored nor declared). They have no importable seams. Covering them
-requires the planned refactor into testable units; that work is tracked
-separately.
+The two design drivers (`FoldCraft.py`, `FoldCraft_binder.py`) still need a GPU,
+AlphaFold2 weights, and `colabdesign` to run end-to-end, so their `main()` flow
+isn't exercised here. Their pure pieces have been extracted and are covered: the
+fold-conditioned cmap assembly (`cmap_utils.py`) and the helper functions
+(`biopython_utils.py`). `FoldCraft_binder.py`'s BindCraft dependency is now
+declared and located via `bindcraft_deps.py` (installed by `install_foldcraft.sh`),
+not a side-loaded `from BindCraft.functions import *`. Further extraction of the
+design loop is tracked separately.
 
 ## Running
 

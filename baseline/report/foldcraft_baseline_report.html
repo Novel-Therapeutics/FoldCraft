@@ -40,7 +40,7 @@
 
   <div class="caveat">
     <b>This is a frozen, self-consistent config — not a bit-faithful reproduction of the paper.</b>
-    FoldCraft.py consumes <code>binder/target_hotspots</code> as 1-based <i>chain positions</i>, but Supp. Tables 1–2 give what look like PDB <i>residue numbers</i> (e.g. Ig-like/3SD2 "91-99" exceeds the 77-residue trimmed binder). We therefore trimmed each template to its chain-A range, renumbered to 1..N, and mapped the Supp.-table hotspots to positions; PD-L1 target hotspots are the Supp. Table 2 values applied to the shipped <code>pd_l1.pdb</code>. Absolute numbers are not claimed to match the paper — but they land squarely in the Fig. 3C regime (~0–27%), which validates the harness. We'd like to reconcile against your exact configs.
+    FoldCraft.py consumes <code>binder/target_hotspots</code> as 1-based <i>chain positions</i>, but Supp. Tables 1–2 give what look like PDB <i>residue numbers</i> (e.g. Ig-like/3SD2 "91-99" exceeds the 77-residue trimmed binder). We therefore trimmed each template to its chain-A range, renumbered to 1..N, and mapped the Supp.-table hotspots to positions; PD-L1 target hotspots are the Supp. Table 2 values applied to the shipped <code>pd_l1.pdb</code>. Absolute numbers are not claimed to match the paper: our per-fold success spans 1–40% — broadly comparable to Fig. 3C, but our easy folds run higher (top7 40%, barrel 34%) than the paper's per-fold AF2 success (up to ~27%). That gap, with the hotspot-frame ambiguity, is what we'd like to reconcile against your exact configs.
   </div>
 
   <h2>Method</h2>

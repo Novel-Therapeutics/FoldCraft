@@ -8,8 +8,10 @@ designed against PD-L1, scored by AF2 confidence + fold fidelity. This is the
 > paper.** The paper's exact template numbering and hotspot frame aren't
 > recoverable from the repo (Supp.-table hotspots are PDB residue numbers, but
 > `FoldCraft.py` consumes chain *positions*). We map them consistently and freeze
-> the result. Numbers land in the paper's Fig. 3C regime (~0–27%), which
-> validates the harness, but absolute values are not claimed to match the paper.
+> the result. Our per-fold success spans 1–40% — a plausible regime for this task
+> and broadly comparable to the paper's Fig. 3C, though our easy folds run higher
+> (top7 40%, barrel 34%) than the paper's per-fold AF2 success (up to ~27%). That
+> gap, with the hotspot-frame ambiguity above, is what we'd like to reconcile.
 
 ## Layout
 - `prep_templates.py` — fetch-free template prep: trims each source PDB to its
