@@ -19,19 +19,24 @@ designed against PD-L1, scored by AF2 confidence + fold fidelity. This is the
 - `config.tsv` — per-fold `template`, `binder_hotspots`, `binder_len`.
 - `run_campaign.sh STAGES NDES NSAMP OUTROOT` — runs `FoldCraft.py` for all 6
   folds against PD-L1 (`target_hotspots=34-39,43-49,11-17`).
+- `add_rmsd.py [runs_dir]` — computes RMSD-to-template (binder chain B vs
+  `templates/<fold>.pdb`) for each design and writes it back into `results.csv`
+  as an `rmsd` column. This is the only step that needs the raw design PDBs;
+  run it where the designs live. Fails loudly if a referenced PDB is missing.
 - `score.py [runs_dir]` — per-criterion + combined success rate with Wilson 95%
-  CIs. Computes RMSD-to-template itself (binder chain B vs `templates/<fold>.pdb`)
-  since `results.csv` doesn't include it.
-- `runs/<fold>/results.csv` — committed per-fold metrics (the reference numbers).
-  Raw designs (PDBs/pickles, ~GB) are **not** committed; they live on the GPU box
-  and are backed up separately.
+  CIs. Reads the metrics **and the `rmsd` column** from `results.csv`, so it
+  works from the committed CSVs alone, from any working directory.
+- `runs/<fold>/results.csv` — committed per-fold metrics including `rmsd` (the
+  reference numbers; scorable as-is). Raw designs (PDBs/pickles, ~GB) are **not**
+  committed; they live on the GPU box and are backed up separately.
 
 ## Run
 ```bash
 # from repo root, in the FoldCraft env
-python baseline/prep_templates.py                          # (re)build templates + config
-bash   baseline/run_campaign.sh 100,100,20 10 10 baseline/runs   # 6 folds x 100 designs
-python baseline/score.py baseline/runs
+python baseline/prep_templates.py                                # (re)build templates + config
+bash   baseline/run_campaign.sh 100,100,20 10 10 baseline/runs   # 6 folds x 100 designs (GPU)
+python baseline/add_rmsd.py baseline/runs                        # rmsd-to-template -> results.csv (needs raw designs)
+python baseline/score.py  baseline/runs                          # success rates (works from committed CSVs)
 ```
 
 ## Frozen baseline results (100 designs/fold; success = pLDDT>0.8, ipTM>0.5, iPAE<0.35, RMSD-to-template<3.5)

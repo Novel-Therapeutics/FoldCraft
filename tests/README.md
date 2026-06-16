@@ -18,17 +18,17 @@ Covered today (all CPU-only, run on a laptop in seconds):
 - `biopython_utils.hotspot_residues` — interface detection (synthetic complex)
 - `biopython_utils.target_pdb_rmsd` — CA RMSD after superposition
 
-## Known issues the tests pin (not yet fixed)
+## Fixed behaviors the tests now lock
 
-Some tests document behavior that is arguably a **latent bug**. They are named
-and commented with `BUG:` so the behavior is locked but flagged:
-
-- **`set_range` upper bound is exclusive.** `"39-45"` expands to `39..44`,
-  dropping residue 45; `"80-81"` yields only `[80]`; `"80-80"` yields `[]`.
-  This silently narrows every hotspot/mask window by one residue at the top and
-  is accuracy-relevant (it decides which residues the cmap loss conditions on).
-  Fixing it will change design inputs, so it must be done deliberately, with the
-  test updated in the same commit and a baseline re-run to confirm the effect.
+- **`set_range` is inclusive of both endpoints.** `"39-45"` -> `39..45`,
+  `"80-81"` -> `[80, 81]`, `"80-80"` -> `[80]`. (Previously the upper bound was
+  exclusive, silently narrowing every hotspot/mask window by one residue; that
+  was accuracy-relevant since it decides which residues the cmap loss conditions
+  on. The fix's effect on design success is measured via a baseline re-run.)
+- **`binder_mask` indexing is consistent with hotspots** (residue R -> position
+  R-1, with out-of-range residues raising `ValueError`). Adversarial tests cover
+  terminal ranges (which used to crash after the inclusive fix) and out-of-range
+  residues.
 
 ## What is NOT covered yet
 

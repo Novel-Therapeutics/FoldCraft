@@ -1,14 +1,13 @@
-"""Tests for the fold-conditioned cmap extraction (cmap_utils.py).
+"""Tests for the fold-conditioned cmap assembly (cmap_utils.py).
 
-The centerpiece is a *differential* test: ``_reference_cmap`` reproduces the
-original inline logic from FoldCraft.py verbatim, and we assert the extracted
+The centerpiece is a *differential* test: ``_reference_cmap`` is an independent
+re-implementation of the assembly, and we assert that
 ``assemble_fold_conditioned_cmap`` produces bit-identical output across a range
-of inputs (standard, default-hotspot, masked, and VHH-like cases). This is the
-evidence that the extraction is behavior-preserving.
+of inputs (standard, default-hotspot, masked, and VHH-like cases).
 
-There are also explicit small-case value tests, so a future change to the index
-semantics (e.g. fixing set_range's exclusive bound) trips a concrete assertion,
-not just the differential check.
+There are also explicit small-case value tests covering the index conventions
+(inclusive set_range, residue R -> array index R-1) and adversarial binder_mask
+inputs (terminal and out-of-range residues).
 """
 import numpy as np
 import pytest
@@ -18,17 +17,17 @@ from biopython_utils import set_range
 
 
 # ---------------------------------------------------------------------------
-# Verbatim reference: the original inline assembly from FoldCraft.py main().
-# (The standard/non-VHH path, which subsumes the VHH path as a special case.)
+# Independent re-implementation of the cmap assembly, used as a differential
+# cross-check against assemble_fold_conditioned_cmap (standard/non-VHH path,
+# which subsumes the VHH path as a special case).
 # ---------------------------------------------------------------------------
 def _reference_cmap(load_np, target_len, binder_len, target_hotspots,
                     binder_hotspots, binder_mask):
     load_np = np.array(load_np, copy=True)  # avoid cross-test mutation
     if binder_mask != '':
-        binder_mask = set_range(binder_mask)
-        for i in binder_mask:
-            load_np[i, :] = 0.
-            load_np[:, i] = 0.
+        for r in set_range(binder_mask):  # 1-based residue -> index R-1
+            load_np[r - 1, :] = 0.
+            load_np[:, r - 1] = 0.
 
     target_hotspots_np = np.array(set_range(target_hotspots))
 
@@ -115,15 +114,30 @@ class TestStructure:
 
 
 class TestApplyBinderMask:
-    def test_masks_rows_and_cols_without_mutating_input(self):
+    def test_masks_correct_residues_one_based(self):
+        # binder_mask is 1-based residue numbers -> 0-based positions (R -> R-1).
         bc = np.ones((5, 5))
-        masked = cu.apply_binder_mask(bc, "1-2")  # set_range -> [1, 2] (inclusive)
-        for i in (1, 2):
-            assert np.all(masked[i, :] == 0) and np.all(masked[:, i] == 0)
-        # unmasked indices (0, 3, 4) untouched at their intersections
-        assert masked[0, 3] == 1 and masked[3, 0] == 1 and masked[4, 4] == 1
+        masked = cu.apply_binder_mask(bc, "1-2")  # residues 1,2 -> indices 0,1
+        for idx in (0, 1):
+            assert np.all(masked[idx, :] == 0) and np.all(masked[:, idx] == 0)
+        # unmasked indices (2, 3, 4) untouched at their intersections
+        assert masked[2, 2] == 1 and masked[3, 4] == 1 and masked[4, 4] == 1
         # input not mutated
         assert np.all(bc == 1)
+
+    def test_terminal_range_does_not_crash(self):
+        # Regression: inclusive set_range makes "1-3" -> [1,2,3]; the old code
+        # used those as 0-based indices and raised IndexError on a 3-residue cmap.
+        bc = np.ones((3, 3))
+        masked = cu.apply_binder_mask(bc, "1-3")  # residues 1,2,3 -> indices 0,1,2
+        assert np.all(masked == 0)
+
+    def test_out_of_range_residue_raises(self):
+        bc = np.ones((3, 3))
+        with pytest.raises(ValueError):
+            cu.apply_binder_mask(bc, "1-4")  # residue 4 > 3-residue binder
+        with pytest.raises(ValueError):
+            cu.apply_binder_mask(bc, "0-2")  # residue 0 invalid (1-based)
 
     def test_empty_mask_is_identity_copy(self):
         bc = np.arange(9).reshape(3, 3).astype(float)

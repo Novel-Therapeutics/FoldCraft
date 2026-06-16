@@ -6,19 +6,17 @@ module extracts its assembly out of ``FoldCraft.py``'s ``main()`` so it can be
 unit-tested and shared by both the standard and VHH paths (which previously
 duplicated the same logic inline).
 
-IMPORTANT: this is a *behavior-preserving* extraction, not a cleanup. The index
-arithmetic is reproduced exactly as in the original inline code, including:
+Index conventions: hotspot/mask range strings are parsed by ``set_range`` into
+1-based residue numbers (inclusive of both endpoints), which map to 0-based
+array positions as ``residue R -> index R-1``. When no binder hotspots are
+given the default ``np.array([range(0, binder_len)])`` -- a 2-D
+``(1, binder_len)`` array -- drives NumPy fancy-indexing in the contact loop,
+selecting every binder position.
 
-  - ``set_range``'s exclusive upper bound (``"39-45"`` -> 39..44);
-  - the residue-number -> array-index ``-1`` offsets;
-  - the quirky default branch ``np.array([range(0, binder_len)])`` (a 2-D
-    ``(1, binder_len)`` array that drives NumPy fancy-indexing in the contact
-    loop) used when no binder hotspots are given.
-
-Any change to these semantics alters design inputs and must be made
-deliberately and measured against the design baseline -- not folded into this
-extraction. See tests/test_cmap_utils.py, which pins the behavior with a
-verbatim reference implementation.
+These semantics decide which residues the design loss conditions on, so changes
+here are accuracy-relevant and should be measured against the design baseline.
+See tests/test_cmap_utils.py for the differential cross-check against an
+independent re-implementation of the assembly.
 """
 import numpy as np
 
@@ -28,17 +26,24 @@ from biopython_utils import set_range
 def apply_binder_mask(binder_cmap, binder_mask):
     """Zero out masked binder rows/columns in the binder's intra-chain cmap.
 
-    Mirrors the original inline behavior, including using ``set_range``'s
-    1-based residue numbers directly as 0-based indices into ``binder_cmap``.
-    Operates on a copy; the input array is not mutated (the original mutated
-    ``af_binder.aux['cmap']`` in place, but nothing downstream reads it again,
-    so this is value-equivalent for the pipeline).
+    ``binder_mask`` is a residue-range string (e.g. ``"14-30"``); ``set_range``
+    yields 1-based residue numbers, which map to 0-based positions as
+    ``residue R -> index R-1`` -- the same convention the hotspots use in
+    ``assemble_fold_conditioned_cmap``. A residue outside ``1..binder_len``
+    raises ``ValueError`` (rather than silently wrapping a negative index or
+    raising a bare IndexError). Operates on a copy; the input is not mutated.
     """
     binder_cmap = np.array(binder_cmap, copy=True)
     if binder_mask != '':
-        for i in set_range(binder_mask):
-            binder_cmap[i, :] = 0.
-            binder_cmap[:, i] = 0.
+        n = binder_cmap.shape[0]
+        for r in set_range(binder_mask):
+            if not 1 <= r <= n:
+                raise ValueError(
+                    f"binder_mask residue {r} is out of range for a "
+                    f"{n}-residue binder (expected 1..{n})."
+                )
+            binder_cmap[r - 1, :] = 0.
+            binder_cmap[:, r - 1] = 0.
     return binder_cmap
 
 

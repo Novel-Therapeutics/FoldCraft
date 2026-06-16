@@ -1,10 +1,8 @@
-"""Characterization tests for biopython_utils.py.
+"""Tests for the GPU-free helpers in biopython_utils.py.
 
-Goal: lock the CURRENT behavior of the GPU-free helpers before we refactor or
-tune the design pipeline. Several tests document behavior that is arguably a
-bug (notably the exclusive upper bound in ``set_range``); they are marked with
-a `BUG:` note. When we deliberately fix one, the corresponding test should be
-updated in the same commit so the change is explicit and reviewed.
+Covers hotspot/mask range parsing (``set_range``, inclusive of both endpoints),
+secondary-structure fraction arithmetic, sequence-composition notes, clash
+counting, interface detection, and CA-RMSD superposition.
 """
 import pytest
 

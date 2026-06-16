@@ -1,0 +1,5 @@
+# PDB is a fixed-column format with significant trailing spaces — don't let the
+# whitespace gate flag (or "fix") deposited structure files.
+*.pdb -whitespace
+# NumPy arrays are binary.
+*.npy binary

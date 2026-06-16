@@ -112,7 +112,7 @@ def main():
     model_name = 'v_48_010'
 
     if start_with==0:
-    	os.makedirs(folder_name, exist_ok=True)
+        os.makedirs(folder_name, exist_ok=True)
     
     # Start to design
 
@@ -133,10 +133,10 @@ def main():
 
     # Create folders to save outputs
     if start_with == 0:
-    	os.makedirs(f'{folder_name}/traj/', exist_ok=True)
-    	os.makedirs(f'{folder_name}/mpnn/', exist_ok=True)
-    	os.makedirs(f'{folder_name}/designs/', exist_ok=True)
-    	os.makedirs(f'{folder_name}/relaxed/', exist_ok=True)
+        os.makedirs(f'{folder_name}/traj/', exist_ok=True)
+        os.makedirs(f'{folder_name}/mpnn/', exist_ok=True)
+        os.makedirs(f'{folder_name}/designs/', exist_ok=True)
+        os.makedirs(f'{folder_name}/relaxed/', exist_ok=True)
 
     # Generate N number of trajectories
     
