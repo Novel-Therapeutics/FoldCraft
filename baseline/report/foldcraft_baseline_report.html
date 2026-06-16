@@ -48,6 +48,7 @@
     <li>Per fold: <code>design_stages 100,100,20</code>, 10 backbones × 10 ProteinMPNN sequences = 100 designs.</li>
     <li>Target: PD-L1 (<code>framework/test/pd_l1.pdb</code>), <code>target_hotspots = 34-39,43-49,11-17</code>.</li>
     <li>Evaluation: AF2-ptm (models 1 &amp; 2, 3 recycles). Metrics pLDDT, ipTM, iPAE (normalized 0–1) from the design pipeline; RMSD = designed binder (chain B) Cα vs the fold template, superposed.</li>
+    <li>Interface confidence also reported as <b>ipSAE</b> (Dunbrack 2025) — a PAE-derived score that corrects ipTM's chain-size bias — computed offline from each design's saved PAE matrix (no re-prediction; validated bit-for-bit against the reference implementation). Counted at the ipSAE&nbsp;&gt;&nbsp;0.3 cutoff.</li>
     <li>Success = pLDDT&nbsp;&gt;&nbsp;0.8 ∧ ipTM&nbsp;&gt;&nbsp;0.5 ∧ iPAE&nbsp;&lt;&nbsp;0.35 ∧ RMSD&nbsp;&lt;&nbsp;3.5&nbsp;Å. CIs are Wilson 95%.</li>
   </ul>
 
@@ -55,37 +56,57 @@
   <p class="mut" style="font-size:13px;margin:0 0 4px">Per-criterion pass counts (out of 100) and combined success rate per fold.</p>
   <table>
     <thead>
-      <tr><th>fold</th><th>template</th><th>len</th><th>pLDDT&gt;.8</th><th>ipTM&gt;.5</th><th>iPAE&lt;.35</th><th>RMSD&lt;3.5</th><th class="all">success</th><th>95% CI</th></tr>
+      <tr><th>fold</th><th>template</th><th>len</th><th>pLDDT&gt;.8</th><th>ipTM&gt;.5</th><th>iPAE&lt;.35</th><th>ipSAE&gt;.3</th><th>RMSD&lt;3.5</th><th class="all">success</th><th>95% CI</th></tr>
     </thead>
     <tbody>
-      <tr><td>top7</td><td>1QYS</td><td>91</td><td>79</td><td>52</td><td>41</td><td>86</td><td class="all">40%</td><td>30.9–49.8</td></tr>
-      <tr><td>barrel</td><td>6D0T</td><td>111</td><td>49</td><td>61</td><td>40</td><td>92</td><td class="all">34%</td><td>25.5–43.7</td></tr>
-      <tr><td>solenoid</td><td>3JX8</td><td>97</td><td>46</td><td>28</td><td>18</td><td>53</td><td class="all">17%</td><td>10.9–25.5</td></tr>
-      <tr><td>iglike</td><td>3SD2</td><td>75</td><td>20</td><td>32</td><td>20</td><td>83</td><td class="all">14%</td><td>8.5–22.1</td></tr>
-      <tr><td>ankyrin</td><td>5AAO</td><td>125</td><td>17</td><td>32</td><td>18</td><td>13</td><td class="all">2%</td><td>0.6–7.0</td></tr>
-      <tr><td>tim</td><td>5BVL</td><td>180</td><td>41</td><td>6</td><td>1</td><td>52</td><td class="all">1%</td><td>0.2–5.4</td></tr>
+      <tr><td>top7</td><td>1QYS</td><td>91</td><td>79</td><td>52</td><td>41</td><td>38</td><td>86</td><td class="all">40%</td><td>30.9–49.8</td></tr>
+      <tr><td>barrel</td><td>6D0T</td><td>111</td><td>49</td><td>61</td><td>40</td><td>39</td><td>92</td><td class="all">34%</td><td>25.5–43.7</td></tr>
+      <tr><td>solenoid</td><td>3JX8</td><td>97</td><td>46</td><td>28</td><td>18</td><td>14</td><td>53</td><td class="all">17%</td><td>10.9–25.5</td></tr>
+      <tr><td>iglike</td><td>3SD2</td><td>75</td><td>20</td><td>32</td><td>20</td><td>12</td><td>83</td><td class="all">14%</td><td>8.5–22.1</td></tr>
+      <tr><td>ankyrin</td><td>5AAO</td><td>125</td><td>17</td><td>32</td><td>18</td><td>20</td><td>13</td><td class="all">2%</td><td>0.6–7.0</td></tr>
+      <tr><td>tim</td><td>5BVL</td><td>180</td><td>41</td><td>6</td><td>1</td><td>1</td><td>52</td><td class="all">1%</td><td>0.2–5.4</td></tr>
     </tbody>
   </table>
 
-  <h2>Success rate by fold</h2>
-  <table style="font-size:13px">
-    <tbody>
-      <tr><td style="width:80px">top7</td><td><span class="barwrap"><span class="bar" style="width:160px"></span>40%</span></td></tr>
-      <tr><td>barrel</td><td><span class="barwrap"><span class="bar" style="width:136px"></span>34%</span></td></tr>
-      <tr><td>solenoid</td><td><span class="barwrap"><span class="bar" style="width:68px"></span>17%</span></td></tr>
-      <tr><td>iglike</td><td><span class="barwrap"><span class="bar" style="width:56px"></span>14%</span></td></tr>
-      <tr><td>ankyrin</td><td><span class="barwrap"><span class="bar" style="width:8px"></span>2%</span></td></tr>
-      <tr><td>tim</td><td><span class="barwrap"><span class="bar" style="width:4px"></span>1%</span></td></tr>
-    </tbody>
-  </table>
+  <h2>Fold fidelity vs success</h2>
+  <svg viewBox="0 0 600 282" width="100%" role="img" aria-label="Per-fold fold fidelity (percent of designs with RMSD under 3.5 Angstrom) versus overall success rate. Fidelity is high across folds while success is much lower." style="font-family:inherit">
+    <rect x="72" y="6" width="11" height="11" rx="2" fill="#1D9E75"/>
+    <text x="89" y="15" font-size="12" fill="#444">fold fidelity (RMSD&lt;3.5Å)</text>
+    <rect x="268" y="6" width="11" height="11" rx="2" fill="#534AB7"/>
+    <text x="285" y="15" font-size="12" fill="#444">success (all 4 criteria)</text>
+
+    <text x="66" y="58" font-size="12" fill="#444" text-anchor="end">top7</text>
+    <rect x="72" y="40" width="412.8" height="13" rx="2" fill="#1D9E75"/><text x="489.8" y="50" font-size="11" fill="#5f5e5a">86%</text>
+    <rect x="72" y="55" width="192" height="13" rx="2" fill="#534AB7"/><text x="269" y="65" font-size="11" fill="#5f5e5a">40%</text>
+
+    <text x="66" y="98" font-size="12" fill="#444" text-anchor="end">barrel</text>
+    <rect x="72" y="80" width="441.6" height="13" rx="2" fill="#1D9E75"/><text x="518.6" y="90" font-size="11" fill="#5f5e5a">92%</text>
+    <rect x="72" y="95" width="163.2" height="13" rx="2" fill="#534AB7"/><text x="240.2" y="105" font-size="11" fill="#5f5e5a">34%</text>
+
+    <text x="66" y="138" font-size="12" fill="#444" text-anchor="end">solenoid</text>
+    <rect x="72" y="120" width="254.4" height="13" rx="2" fill="#1D9E75"/><text x="331.4" y="130" font-size="11" fill="#5f5e5a">53%</text>
+    <rect x="72" y="135" width="81.6" height="13" rx="2" fill="#534AB7"/><text x="158.6" y="145" font-size="11" fill="#5f5e5a">17%</text>
+
+    <text x="66" y="178" font-size="12" fill="#444" text-anchor="end">iglike</text>
+    <rect x="72" y="160" width="398.4" height="13" rx="2" fill="#1D9E75"/><text x="475.4" y="170" font-size="11" fill="#5f5e5a">83%</text>
+    <rect x="72" y="175" width="67.2" height="13" rx="2" fill="#534AB7"/><text x="144.2" y="185" font-size="11" fill="#5f5e5a">14%</text>
+
+    <text x="66" y="218" font-size="12" fill="#444" text-anchor="end">ankyrin</text>
+    <rect x="72" y="200" width="62.4" height="13" rx="2" fill="#1D9E75"/><text x="139.4" y="210" font-size="11" fill="#5f5e5a">13%</text>
+    <rect x="72" y="215" width="9.6" height="13" rx="2" fill="#534AB7"/><text x="86.6" y="225" font-size="11" fill="#5f5e5a">2%</text>
+
+    <text x="66" y="258" font-size="12" fill="#444" text-anchor="end">tim</text>
+    <rect x="72" y="240" width="249.6" height="13" rx="2" fill="#1D9E75"/><text x="326.6" y="250" font-size="11" fill="#5f5e5a">52%</text>
+    <rect x="72" y="255" width="4.8" height="13" rx="2" fill="#534AB7"/><text x="81.8" y="265" font-size="11" fill="#5f5e5a">1%</text>
+  </svg>
 
   <div class="callout">
-    <b>Key finding:</b> fold fidelity is <i>not</i> the bottleneck — the interface is. Most folds reach RMSD&lt;3.5&nbsp;Å at high rates (barrel 92%, top7 86%, iglike 83%), so fold-conditioning is working; combined success is gated almost everywhere by interface confidence (iPAE is the tightest criterion). The large binders fare worst at the interface (tim 180&nbsp;aa: iPAE&lt;.35 only 1/100; ankyrin is the exception — weak on both fold and interface).
+    <b>Key finding:</b> fold fidelity is <i>not</i> the bottleneck — the interface is. Most folds reach RMSD&lt;3.5&nbsp;Å at high rates (barrel 92%, top7 86%, iglike 83%), so fold-conditioning is working; combined success is gated by interface confidence. <b>ipSAE agrees and sharpens it:</b> tim's interface is genuinely hopeless (median ipSAE 0.00, 1/100 above 0.3) — not a size-bias artifact of ipTM — while <b>ankyrin is the reverse</b>: ~20/100 designs have a confident interface by ipSAE, so its failure is fold fidelity (RMSD&lt;3.5 only 13/100), not binding.
   </div>
 
   <p class="foot">
-    Generated from <code>baseline/runs/&lt;fold&gt;/results.csv</code> (committed) via <code>baseline/score.py</code>. Raw designs available on request.
-    Harness: trimmed templates + per-fold configs + runner + scorer, all version-controlled. Questions / config reconciliation welcome.
+    Generated from <code>baseline/runs/&lt;fold&gt;/results.csv</code> (committed) via <code>baseline/score.py</code> + <code>add_ipsae.py</code>. Raw designs available on request.
+    Harness: trimmed templates + per-fold configs + runner + scorers, all version-controlled. Questions / config reconciliation welcome.
   </p>
 
 </div>
