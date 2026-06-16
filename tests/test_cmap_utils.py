@@ -102,27 +102,26 @@ class TestStructure:
         np.testing.assert_array_equal(out, out.T)
 
     def test_known_contact_entries(self):
-        # target_len=5, target_hotspots="2-3" -> set_range gives [2] (exclusive!)
-        # binder_hotspots="1-3" -> [1, 2]; cdr_range = [1,2] + 5 = [6, 7]
-        # contacts set at (x-1, i-1) and (i-1, x-1):
-        #   i=2 -> i-1=1 ; x in {6,7} -> x-1 in {5,6}
-        # => entries (5,1),(1,5),(6,1),(1,6) == 1
+        # set_range is inclusive: target_hotspots="2-3" -> [2, 3];
+        # binder_hotspots="1-3" -> [1, 2, 3]; cdr_range = [1,2,3] + 5 = [6,7,8].
+        # contacts set at (x-1, i-1) and (i-1, x-1) for i in {2,3}, x-1 in {5,6,7}.
         bc = np.zeros((4, 4))
         out = cu.assemble_fold_conditioned_cmap(bc, 5, 4, "2-3", "1-3", "")
-        for r, c in [(5, 1), (1, 5), (6, 1), (1, 6)]:
+        for r, c in [(5, 1), (1, 5), (6, 1), (1, 6), (7, 1)]:
             assert out[r, c] == 1.0
-        # target residue 3 was dropped by the exclusive bound -> no (.,2) contacts
-        assert out[6, 2] == 0.0 and out[2, 6] == 0.0
+        # target residue 3 is now included (inclusive bound) -> (.,2) contacts present
+        assert out[6, 2] == 1.0 and out[2, 6] == 1.0
+        np.testing.assert_array_equal(out, out.T)  # symmetry preserved
 
 
 class TestApplyBinderMask:
     def test_masks_rows_and_cols_without_mutating_input(self):
-        bc = np.ones((4, 4))
-        masked = cu.apply_binder_mask(bc, "1-3")  # set_range -> [1, 2]
-        assert np.all(masked[1, :] == 0) and np.all(masked[:, 1] == 0)
-        assert np.all(masked[2, :] == 0) and np.all(masked[:, 2] == 0)
-        # row/col 0 and 3 untouched at their intersection
-        assert masked[0, 3] == 1 and masked[3, 0] == 1
+        bc = np.ones((5, 5))
+        masked = cu.apply_binder_mask(bc, "1-2")  # set_range -> [1, 2] (inclusive)
+        for i in (1, 2):
+            assert np.all(masked[i, :] == 0) and np.all(masked[:, i] == 0)
+        # unmasked indices (0, 3, 4) untouched at their intersections
+        assert masked[0, 3] == 1 and masked[3, 0] == 1 and masked[4, 4] == 1
         # input not mutated
         assert np.all(bc == 1)
 
