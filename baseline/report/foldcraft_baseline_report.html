@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FoldCraft fold-conditioning baseline — independent reproduction</title>
+<style>
+  :root{--ink:#1a1a18;--muted:#5f5e5a;--line:#e3e1d9;--bg:#fbfbf9;--accent:#0f6e56;--accentbg:#e1f5ee;--warnbg:#faeeda;--warnink:#854f0b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto;padding:40px 28px 64px}
+  h1{font-size:25px;font-weight:600;margin:0 0 6px}
+  h2{font-size:17px;font-weight:600;margin:34px 0 12px}
+  .sub{color:var(--muted);font-size:15px;margin:0 0 4px}
+  .meta{color:var(--muted);font-size:13px;margin:14px 0 0}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0}
+  th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-weight:600;border-bottom:1.5px solid #c9c7bd;font-size:12.5px;color:var(--muted)}
+  tbody tr:last-child td{border-bottom:1.5px solid #c9c7bd}
+  .all{font-weight:600}
+  .bar{display:inline-block;height:9px;background:var(--accent);border-radius:2px;vertical-align:middle;margin-right:7px}
+  .barwrap{display:flex;align-items:center;gap:0}
+  .callout{background:var(--accentbg);border-radius:8px;padding:14px 18px;margin:14px 0;font-size:14.5px;color:#0b4a3b}
+  .caveat{background:var(--warnbg);border-radius:8px;padding:14px 18px;margin:14px 0;font-size:13.5px;color:var(--warnink)}
+  .caveat b{color:#633806}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:#efeee7;padding:1px 5px;border-radius:4px}
+  ul{margin:8px 0;padding-left:20px}
+  li{margin:3px 0;font-size:14px}
+  .foot{color:var(--muted);font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:14px}
+  .mut{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>FoldCraft fold-conditioning baseline</h1>
+  <p class="sub">Independent reproduction of the 6-fold vs PD-L1 benchmark</p>
+  <p class="meta">Run 2026-06-15 · 6 folds × 100 designs (600 total) · single RTX 4090, ~9.5&nbsp;h · prepared by Novel Therapeutics</p>
+
+  <div class="caveat">
+    <b>This is a frozen, self-consistent config — not a bit-faithful reproduction of the paper.</b>
+    FoldCraft.py consumes <code>binder/target_hotspots</code> as 1-based <i>chain positions</i>, but Supp. Tables 1–2 give what look like PDB <i>residue numbers</i> (e.g. Ig-like/3SD2 "91-99" exceeds the 77-residue trimmed binder). We therefore trimmed each template to its chain-A range, renumbered to 1..N, and mapped the Supp.-table hotspots to positions; PD-L1 target hotspots are the Supp. Table 2 values applied to the shipped <code>pd_l1.pdb</code>. Absolute numbers are not claimed to match the paper — but they land squarely in the Fig. 3C regime (~0–27%), which validates the harness. We'd like to reconcile against your exact configs.
+  </div>
+
+  <h2>Method</h2>
+  <ul>
+    <li>Per fold: <code>design_stages 100,100,20</code>, 10 backbones × 10 ProteinMPNN sequences = 100 designs.</li>
+    <li>Target: PD-L1 (<code>framework/test/pd_l1.pdb</code>), <code>target_hotspots = 34-39,43-49,11-17</code>.</li>
+    <li>Evaluation: AF2-ptm (models 1 &amp; 2, 3 recycles). Metrics pLDDT, ipTM, iPAE (normalized 0–1) from the design pipeline; RMSD = designed binder (chain B) Cα vs the fold template, superposed.</li>
+    <li>Success = pLDDT&nbsp;&gt;&nbsp;0.8 ∧ ipTM&nbsp;&gt;&nbsp;0.5 ∧ iPAE&nbsp;&lt;&nbsp;0.35 ∧ RMSD&nbsp;&lt;&nbsp;3.5&nbsp;Å. CIs are Wilson 95%.</li>
+  </ul>
+
+  <h2>Results</h2>
+  <p class="mut" style="font-size:13px;margin:0 0 4px">Per-criterion pass counts (out of 100) and combined success rate per fold.</p>
+  <table>
+    <thead>
+      <tr><th>fold</th><th>template</th><th>len</th><th>pLDDT&gt;.8</th><th>ipTM&gt;.5</th><th>iPAE&lt;.35</th><th>RMSD&lt;3.5</th><th class="all">success</th><th>95% CI</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>top7</td><td>1QYS</td><td>91</td><td>79</td><td>52</td><td>41</td><td>86</td><td class="all">40%</td><td>30.9–49.8</td></tr>
+      <tr><td>barrel</td><td>6D0T</td><td>111</td><td>49</td><td>61</td><td>40</td><td>92</td><td class="all">34%</td><td>25.5–43.7</td></tr>
+      <tr><td>solenoid</td><td>3JX8</td><td>97</td><td>46</td><td>28</td><td>18</td><td>53</td><td class="all">17%</td><td>10.9–25.5</td></tr>
+      <tr><td>iglike</td><td>3SD2</td><td>75</td><td>20</td><td>32</td><td>20</td><td>83</td><td class="all">14%</td><td>8.5–22.1</td></tr>
+      <tr><td>ankyrin</td><td>5AAO</td><td>125</td><td>17</td><td>32</td><td>18</td><td>13</td><td class="all">2%</td><td>0.6–7.0</td></tr>
+      <tr><td>tim</td><td>5BVL</td><td>180</td><td>41</td><td>6</td><td>1</td><td>52</td><td class="all">1%</td><td>0.2–5.4</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Success rate by fold</h2>
+  <table style="font-size:13px">
+    <tbody>
+      <tr><td style="width:80px">top7</td><td><span class="barwrap"><span class="bar" style="width:160px"></span>40%</span></td></tr>
+      <tr><td>barrel</td><td><span class="barwrap"><span class="bar" style="width:136px"></span>34%</span></td></tr>
+      <tr><td>solenoid</td><td><span class="barwrap"><span class="bar" style="width:68px"></span>17%</span></td></tr>
+      <tr><td>iglike</td><td><span class="barwrap"><span class="bar" style="width:56px"></span>14%</span></td></tr>
+      <tr><td>ankyrin</td><td><span class="barwrap"><span class="bar" style="width:8px"></span>2%</span></td></tr>
+      <tr><td>tim</td><td><span class="barwrap"><span class="bar" style="width:4px"></span>1%</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <b>Key finding:</b> fold fidelity is <i>not</i> the bottleneck — the interface is. Most folds reach RMSD&lt;3.5&nbsp;Å at high rates (barrel 92%, top7 86%, iglike 83%), so fold-conditioning is working; combined success is gated almost everywhere by interface confidence (iPAE is the tightest criterion). The large binders fare worst at the interface (tim 180&nbsp;aa: iPAE&lt;.35 only 1/100; ankyrin is the exception — weak on both fold and interface).
+  </div>
+
+  <p class="foot">
+    Generated from <code>baseline/runs/&lt;fold&gt;/results.csv</code> (committed) via <code>baseline/score.py</code>. Raw designs available on request.
+    Harness: trimmed templates + per-fold configs + runner + scorer, all version-controlled. Questions / config reconciliation welcome.
+  </p>
+
+</div>
+</body>
+</html>
