@@ -1,12 +1,13 @@
 # Development / test dependencies for the GPU-free test layer.
 #
-# These cover the pure helper functions (biopython_utils.py) and the test
-# suite. They do NOT include the heavy design-time stack (jax, colabdesign,
-# alphafold weights, pyrosetta, BindCraft) — that is GPU-only and installed via
-# install_foldcraft.sh. See tests/README.md.
+# These cover the pure helper functions (biopython_utils.py, cmap_utils.py,
+# baseline/ipsae.py) and the baseline scorer. They do NOT include the heavy
+# design-time stack (jax, colabdesign, alphafold weights, pyrosetta, BindCraft) —
+# that is GPU-only and installed via install_foldcraft.sh. See tests/README.md.
 #
 # Install:  python -m venv .venv && ./.venv/bin/pip install -r requirements-dev.txt
 biopython==1.87
 numpy==2.4.6
 scipy==1.17.1
+pandas==3.0.3
 pytest==9.1.0

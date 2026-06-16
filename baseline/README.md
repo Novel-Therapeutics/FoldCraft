@@ -50,18 +50,22 @@ python baseline/score.py     baseline/runs                       # success rates
 
 ## Frozen baseline results (100 designs/fold; success = pLDDT>0.8, ipTM>0.5, iPAE<0.35, RMSD-to-template<3.5)
 
-Per-criterion pass counts out of 100, plus combined success rate (Wilson 95% CI):
+Per-criterion pass counts out of 100, plus combined success rate (Wilson 95%
+CI). ipSAE>.3 is *reported* (a less size-biased interface metric), not part of
+the success gate:
 
-| fold | pLDDT>.8 | ipTM>.5 | iPAE<.35 | RMSD<3.5 | **ALL** | success% [95% CI] |
-|---|---|---|---|---|---|---|
-| top7 | 79 | 52 | 41 | 86 | **40** | 40% [30.9–49.8] |
-| barrel | 49 | 61 | 40 | 92 | **34** | 34% [25.5–43.7] |
-| solenoid | 46 | 28 | 18 | 53 | **17** | 17% [10.9–25.5] |
-| iglike | 20 | 32 | 20 | 83 | **14** | 14% [8.5–22.1] |
-| ankyrin | 17 | 32 | 18 | 13 | **2** | 2% [0.6–7.0] |
-| tim | 41 | 6 | 1 | 52 | **1** | 1% [0.2–5.4] |
+| fold | pLDDT>.8 | ipTM>.5 | iPAE<.35 | ipSAE>.3 | RMSD<3.5 | **ALL** | success% [95% CI] |
+|---|---|---|---|---|---|---|---|
+| top7 | 79 | 52 | 41 | 38 | 86 | **40** | 40% [30.9–49.8] |
+| barrel | 49 | 61 | 40 | 39 | 92 | **34** | 34% [25.5–43.7] |
+| solenoid | 46 | 28 | 18 | 14 | 53 | **17** | 17% [10.9–25.5] |
+| iglike | 20 | 32 | 20 | 12 | 83 | **14** | 14% [8.5–22.1] |
+| ankyrin | 17 | 32 | 18 | 20 | 13 | **2** | 2% [0.6–7.0] |
+| tim | 41 | 6 | 1 | 1 | 52 | **1** | 1% [0.2–5.4] |
 
 **Reading:** fold fidelity (RMSD<3.5) is generally *not* the bottleneck — the
-interface (iPAE especially) is. Fold-conditioning works (most folds hit RMSD<3.5
-at high rates); the weak link is AF2 interface confidence, worst on the large
-binders (tim 180 aa, ankyrin 125 aa). ankyrin is the exception — weak on both.
+interface is. Fold-conditioning works (most folds hit RMSD<3.5 at high rates);
+the weak link is interface confidence, worst on the large binders. ipSAE
+sharpens it: tim's interface is genuinely hopeless (1/100 above 0.3), while
+ankyrin is the reverse — ~20/100 have a confident interface by ipSAE, so its
+failure is fold fidelity (RMSD<3.5 only 13/100), not binding.

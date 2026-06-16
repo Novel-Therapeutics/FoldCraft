@@ -17,6 +17,11 @@ Covered today (all CPU-only, run on a laptop in seconds):
 - `biopython_utils.calculate_clash_score` — clash counting (real PDB fixtures)
 - `biopython_utils.hotspot_residues` — interface detection (synthetic complex)
 - `biopython_utils.target_pdb_rmsd` — CA RMSD after superposition
+- `cmap_utils` — fold-conditioned cmap assembly + binder_mask (differential test vs an independent re-implementation)
+- `bindcraft_deps` — locating the BindCraft checkout used by the binder pipeline
+- `baseline/ipsae.py` — ipSAE interface score (differential test vs the reference DunbrackLab/IPSAE algorithm)
+- `baseline/score.py` — the baseline scorer, run as a subprocess (reports ipSAE, fails loud on missing/inconsistent columns)
+- portability — the committed baseline scripts contain no machine-specific paths
 
 ## Fixed behaviors the tests now lock
 
