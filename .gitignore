@@ -25,6 +25,8 @@ htmlcov/
 *.pickle
 results*.csv
 fold_cond_cmap*.npy
+# ...but DO keep the committed baseline benchmark metrics (the reference numbers).
+!baseline/runs/**/results.csv
 
 # OS noise
 .DS_Store
