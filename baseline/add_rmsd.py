@@ -22,12 +22,22 @@ TEMPL = os.path.join(HERE, "templates")
 _parser = PDBParser(QUIET=True)
 
 
-def rmsd_to_template(design_pdb, template_pdb):
-    """CA RMSD of the designed binder (chain B) to the fold template, superposed."""
-    d = _parser.get_structure("d", design_pdb)
+def template_ca_atoms(template_pdb):
+    """CA atoms of the fold template's first chain (parsed once per fold)."""
     t = _parser.get_structure("t", template_pdb)
+    return [r["CA"] for r in list(t[0])[0] if "CA" in r]
+
+
+def rmsd_to_template(design_pdb, templ):
+    """CA RMSD of the designed binder (chain B) to the fold template, superposed.
+
+    ``templ`` is the template's pre-extracted CA atom list (the template is the
+    same for every design in a fold, so it is parsed once by the caller rather
+    than re-parsed per design). Superposition is stateless, so this is
+    bit-identical to parsing the template inline.
+    """
+    d = _parser.get_structure("d", design_pdb)
     binder = [r["CA"] for r in d[0]["B"] if "CA" in r]
-    templ = [r["CA"] for r in list(t[0])[0] if "CA" in r]
     n = min(len(binder), len(templ))
     if n < 3:
         raise ValueError(f"{design_pdb}: fewer than 3 comparable CA atoms")
@@ -48,12 +58,13 @@ def main():
             sys.exit(f"missing fold template: {tmpl}")
         df = pd.read_csv(csvf)
         df = df.loc[:, ~df.columns.str.startswith("Unnamed")]  # drop stale index col
+        templ = template_ca_atoms(tmpl)  # parse the template once per fold
         rmsds = []
         for name in df["name"]:
             dp = os.path.join(RUNS, fold, "designs", f"{name}.pdb")
             if not os.path.exists(dp):
                 sys.exit(f"design PDB missing, cannot compute rmsd: {dp}")
-            rmsds.append(rmsd_to_template(dp, tmpl))
+            rmsds.append(rmsd_to_template(dp, templ))
         df["rmsd"] = rmsds
         df.to_csv(csvf, index=False)
         print(f"{fold}: wrote rmsd for {len(rmsds)} designs -> {csvf}")
