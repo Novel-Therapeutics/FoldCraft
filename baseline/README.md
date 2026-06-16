@@ -23,6 +23,12 @@ designed against PD-L1, scored by AF2 confidence + fold fidelity. This is the
   `templates/<fold>.pdb`) for each design and writes it back into `results.csv`
   as an `rmsd` column. This is the only step that needs the raw design PDBs;
   run it where the designs live. Fails loudly if a referenced PDB is missing.
+- `ipsae.py` / `add_ipsae.py [runs_dir] [pae_cutoff]` — ipSAE (Dunbrack 2025), a
+  PAE-derived interface score that fixes ipTM's size bias. `ipsae.py` is the
+  pure-numpy core (validated bit-for-bit against DunbrackLab/IPSAE); `add_ipsae.py`
+  computes it offline from each design's saved PAE matrix
+  (`aux['all']['pae']`, in the pickle — no GPU / no re-prediction) and writes an
+  `ipsae` column. Default pae_cutoff 10.
 - `score.py [runs_dir]` — per-criterion + combined success rate with Wilson 95%
   CIs. Reads the metrics **and the `rmsd` column** from `results.csv`, so it
   works from the committed CSVs alone, from any working directory.
@@ -35,8 +41,9 @@ designed against PD-L1, scored by AF2 confidence + fold fidelity. This is the
 # from repo root, in the FoldCraft env
 python baseline/prep_templates.py                                # (re)build templates + config
 bash   baseline/run_campaign.sh 100,100,20 10 10 baseline/runs   # 6 folds x 100 designs (GPU)
-python baseline/add_rmsd.py baseline/runs                        # rmsd-to-template -> results.csv (needs raw designs)
-python baseline/score.py  baseline/runs                          # success rates (works from committed CSVs)
+python baseline/add_rmsd.py  baseline/runs                       # rmsd-to-template -> results.csv (needs raw designs)
+python baseline/add_ipsae.py baseline/runs 10                    # ipSAE -> results.csv (needs design pickles)
+python baseline/score.py     baseline/runs                       # success rates (works from committed CSVs)
 ```
 
 ## Frozen baseline results (100 designs/fold; success = pLDDT>0.8, ipTM>0.5, iPAE<0.35, RMSD-to-template<3.5)
