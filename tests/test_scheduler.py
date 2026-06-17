@@ -130,20 +130,102 @@ class TestCanLaunch:
 
 
 # --- resume detection ------------------------------------------------------
+def _merged(repro, fold, with_template=True):
+    """Create a merged fold dir (results.csv, optionally template.pdb)."""
+    d = os.path.join(repro, fold)
+    os.makedirs(d, exist_ok=True)
+    open(os.path.join(d, "results.csv"), "w").close()
+    if with_template:
+        open(os.path.join(d, "template.pdb"), "w").close()
+
+
 class TestResume:
-    def test_skips_completed_chunk_and_merged_fold(self, tmp_path):
+    def test_skips_completed_chunk_and_scoreable_fold(self, tmp_path):
         repro = str(tmp_path)
         folds = [_fold("a", 20), _fold("b", 20)]
         chunks = sch.plan_chunks(folds, chunk_traj=10)
-        # mark a__c0 done (has results.csv) and fold b fully merged
+        # a__c0 chunk done (results.csv); fold b fully merged AND scoreable
         os.makedirs(os.path.join(repro, "a__c0"))
         open(os.path.join(repro, "a__c0", "results.csv"), "w").close()
-        os.makedirs(os.path.join(repro, "b"))
-        open(os.path.join(repro, "b", "results.csv"), "w").close()
+        _merged(repro, "b", with_template=True)
 
         todo = sch.filter_todo(chunks, repro)
-        tags = {c.tag for c in todo}
-        assert tags == {"a__c1"}  # a__c0 done, both b chunks skipped (fold merged)
+        assert {c.tag for c in todo} == {"a__c1"}  # a__c0 + both b chunks skipped
+
+    def test_fold_with_results_but_no_template_is_not_done(self, tmp_path):
+        # a fold merged before merge_chunks recorded the template: results.csv but
+        # no template.pdb -> NOT scoreable, must not be treated as done/skipped.
+        repro = str(tmp_path)
+        _merged(repro, "b", with_template=False)
+        assert not sch.fold_done("b", repro)
+        # with the template it is done
+        open(os.path.join(repro, "b", "template.pdb"), "w").close()
+        assert sch.fold_done("b", repro)
+
+
+# --- repair_fold_template (P2: keep merged folds scoreable) ----------------
+class TestRepairFoldTemplate:
+    def test_repairs_missing_template(self, tmp_path):
+        repro = str(tmp_path)
+        _merged(repro, "b", with_template=False)
+        src = os.path.join(repro, "src_template.pdb")
+        with open(src, "w") as fh:
+            fh.write("TEMPLATE")
+        assert sch.repair_fold_template(os.path.join(repro, "b"), src) is True
+        copied = os.path.join(repro, "b", "template.pdb")
+        assert os.path.exists(copied) and open(copied).read() == "TEMPLATE"
+
+    def test_noop_when_template_present(self, tmp_path):
+        repro = str(tmp_path)
+        _merged(repro, "b", with_template=True)
+        src = os.path.join(repro, "src.pdb"); open(src, "w").close()
+        assert sch.repair_fold_template(os.path.join(repro, "b"), src) is False
+
+    def test_noop_when_not_merged(self, tmp_path):
+        # no results.csv -> nothing to repair (the fold isn't merged yet)
+        repro = str(tmp_path)
+        os.makedirs(os.path.join(repro, "b"))
+        src = os.path.join(repro, "src.pdb"); open(src, "w").close()
+        assert sch.repair_fold_template(os.path.join(repro, "b"), src) is False
+
+    def test_raises_when_source_template_missing(self, tmp_path):
+        repro = str(tmp_path)
+        _merged(repro, "b", with_template=False)
+        with pytest.raises(FileNotFoundError):
+            sch.repair_fold_template(os.path.join(repro, "b"),
+                                     os.path.join(repro, "nope.pdb"))
+
+
+# --- resolve_paths (P1: scheduler/child cwd agreement) ---------------------
+class TestResolvePaths:
+    def test_relative_paths_resolved_against_repo_not_cwd(self):
+        folds = [{"fold": "a", "template": "examples/templates/1qys1.pdb",
+                  "target": "examples/targets/pd-l1-1.pdb",
+                  "target_hotspots": "1", "binder_hotspots": "1",
+                  "total_traj": 40, "mem_gb": 11}]
+        out, repo, repro = sch.resolve_paths(folds, "/abs/repo", "baseline/repro")
+        assert repo == "/abs/repo"
+        # repro + template + target resolve against repo, not the scheduler cwd
+        assert repro == "/abs/repo/baseline/repro"
+        assert out[0]["template"] == "/abs/repo/examples/templates/1qys1.pdb"
+        assert out[0]["target"] == "/abs/repo/examples/targets/pd-l1-1.pdb"
+
+    def test_absolute_paths_pass_through(self):
+        folds = [{"fold": "a", "template": "/data/t.pdb", "target": "/data/g.pdb",
+                  "target_hotspots": "1", "binder_hotspots": "1",
+                  "total_traj": 40, "mem_gb": 11}]
+        out, repo, repro = sch.resolve_paths(folds, "/abs/repo", "/scratch/out")
+        assert repro == "/scratch/out"
+        assert out[0]["template"] == "/data/t.pdb"
+        assert out[0]["target"] == "/data/g.pdb"
+
+    def test_idempotent(self):
+        folds = [{"fold": "a", "template": "/data/t.pdb", "target": "/data/g.pdb",
+                  "target_hotspots": "1", "binder_hotspots": "1",
+                  "total_traj": 40, "mem_gb": 11}]
+        once = sch.resolve_paths(folds, "/abs/repo", "/scratch/out")
+        twice = sch.resolve_paths(once[0], once[1], once[2])
+        assert twice[1:] == once[1:] and twice[0] == once[0]
 
 
 # --- merge_chunks ----------------------------------------------------------

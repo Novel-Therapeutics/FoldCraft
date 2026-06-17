@@ -94,8 +94,30 @@ def chunk_done(chunk, repro):
 
 
 def fold_done(fold, repro):
-    """A fold is finished iff its merged dir has a results.csv."""
-    return os.path.exists(os.path.join(repro, fold, "results.csv"))
+    """A fold is finished iff its merged dir is *scoreable*: both the merged
+    ``results.csv`` and the ``template.pdb`` that add_rmsd needs. (results.csv
+    alone -- e.g. a fold merged before merge_chunks recorded the template -- is
+    not enough; it would be skipped on resume yet fail RMSD scoring.)"""
+    d = os.path.join(repro, fold)
+    return (os.path.exists(os.path.join(d, "results.csv"))
+            and os.path.exists(os.path.join(d, "template.pdb")))
+
+
+def repair_fold_template(fold_dir, template):
+    """Restore a merged fold's ``template.pdb`` if it is missing.
+
+    Handles a fold that was merged before merge_chunks recorded the template:
+    results.csv is present but template.pdb is not, so the fold would be skipped
+    on resume yet remain unscoreable. Copies ``template`` in (no re-merge needed).
+    Returns True if a repair was made. Raises if the source template is missing.
+    """
+    if not os.path.exists(os.path.join(fold_dir, "results.csv")):
+        return False
+    tpath = os.path.join(fold_dir, "template.pdb")
+    if os.path.exists(tpath):
+        return False
+    shutil.copy2(template, tpath)
+    return True
 
 
 def filter_todo(chunks, repro):
@@ -171,6 +193,23 @@ def merge_chunks(fold, chunk_dirs, out_dir, template):
     return len(merged)
 
 
+def resolve_paths(folds, repo, repro):
+    """Make every path absolute so the scheduler process and the FoldCraft child
+    (which runs with ``cwd=repo``) agree regardless of where the scheduler was
+    invoked. ``repo`` is resolved against the CWD; ``repro`` and each fold's
+    ``template`` / ``target`` are resolved against ``repo`` -- the same base
+    FoldCraft uses for its relative ``--output_folder`` / ``--binder_template``.
+    Returns (folds, repo, repro) with absolute paths; absolute inputs pass
+    through unchanged (idempotent).
+    """
+    repo = os.path.abspath(repo)
+    rel = lambda p: p if os.path.isabs(p) else os.path.join(repo, p)
+    repro = rel(repro)
+    folds = [{**f, "template": rel(f["template"]), "target": rel(f["target"])}
+             for f in folds]
+    return folds, repo, repro
+
+
 # ---------------------------------------------------------------------------
 # orchestration (GPU + subprocess) -- not unit-tested
 # ---------------------------------------------------------------------------
@@ -216,6 +255,9 @@ def launch(chunk, repro, gpu, repo, python):
 def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
         poll_s=15, log=print):
     """Schedule all folds' chunks across ``gpus`` with memory gating, then merge."""
+    # absolute paths so makedirs/exists checks here and FoldCraft's cwd=repo child
+    # resolve to the same directories regardless of the scheduler's own cwd.
+    folds, repo, repro = resolve_paths(folds, repo, repro)
     smi = _nvidia_smi()
     caps = {g: gpu_mem_gb(smi, g)[1] for g in gpus}
     committed = {g: 0.0 for g in gpus}          # GB reserved by running jobs
@@ -296,11 +338,16 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
     for f in folds:
         if fold_done(f["fold"], repro):
             continue
+        fold_dir = os.path.join(repro, f["fold"])
+        # already merged but missing its template (e.g. an older merge) -> repair
+        # in place rather than recompute; this makes it scoreable again.
+        if repair_fold_template(fold_dir, f["template"]):
+            log(f"[sched] repaired {f['fold']}: restored template.pdb")
+            continue
         cdirs = sorted(
             d.out_dir(repro) for d in plan_chunks([f], chunk_traj))
         if all(os.path.exists(os.path.join(d, "results.csv")) for d in cdirs):
-            n = merge_chunks(f["fold"], cdirs, os.path.join(repro, f["fold"]),
-                             f["template"])
+            n = merge_chunks(f["fold"], cdirs, fold_dir, f["template"])
             merged.append((f["fold"], n))
             log(f"[sched] merged {f['fold']}: {n} designs")
         else:
@@ -346,8 +393,10 @@ def main(argv=None):
 
     folds = load_config(args.config)
     if args.dry_run:
+        # resolve paths so the done/todo split reflects the real repro dir
+        folds, _, repro = resolve_paths(folds, args.repo, args.repro)
         chunks = plan_chunks(folds, args.chunk_traj)
-        todo = filter_todo(chunks, args.repro)
+        todo = filter_todo(chunks, repro)
         print(f"folds={len(folds)} chunks={len(chunks)} todo={len(todo)} "
               f"(done={len(chunks) - len(todo)})")
         for c in todo:
