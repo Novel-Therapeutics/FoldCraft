@@ -7,13 +7,13 @@
 # Run with the INCLUSIVE set_range fix (verified to reproduce the author's
 # shipped examples/cmaps/*.npy). Outputs one scoreable dir per fold:
 #   baseline/repro/<fold>/{results.csv,designs/,traj/}
+# The FoldCraft conda env must already be ACTIVE (this script does not activate
+# it -- see baseline/README.md), keeping it portable across machines.
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO"
 
-source /opt/conda/etc/profile.d/conda.sh
-conda activate /opt/conda/envs/FoldCraft
 export XLA_PYTHON_CLIENT_PREALLOCATE=false PYTHONUNBUFFERED=1
 
 TARGET="examples/targets/pd-l1-1.pdb"
