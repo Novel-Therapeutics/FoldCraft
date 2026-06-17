@@ -50,6 +50,7 @@ class Chunk:
         self.mem_gb = mem_gb
         self.spec = spec  # dict: template, target, target_hotspots, binder_hotspots
         self.tag = f"{fold}__c{idx}"
+        self.solo = False  # set on a failed chunk so its retry runs on an empty GPU
 
     def out_dir(self, repro):
         return os.path.join(repro, self.tag)
@@ -111,21 +112,42 @@ def fits(actual_free_gb, committed_gb, capacity_gb, job_mem_gb, headroom_gb):
             and actual_free_gb >= job_mem_gb + headroom_gb)
 
 
+def unschedulable_chunks(chunks, max_capacity_gb, headroom_gb):
+    """Chunks whose ``mem_gb + headroom`` exceeds the largest available GPU and so
+    can never be placed -- a static infeasibility we catch up front rather than
+    spinning on forever."""
+    return [c for c in chunks if c.mem_gb + headroom_gb > max_capacity_gb]
+
+
+def can_launch(chunk, actual_free_gb, committed_gb, capacity_gb, headroom_gb):
+    """Whether ``chunk`` may start on a GPU now. A solo chunk (a retry of a failed
+    pack) additionally requires the GPU to be otherwise empty, so it gets the whole
+    card -- memory pressure being the most common cause of the original failure."""
+    if chunk.solo and committed_gb > 0:
+        return False
+    return fits(actual_free_gb, committed_gb, capacity_gb, chunk.mem_gb, headroom_gb)
+
+
 def remap_name(name, chunk_idx):
     """Chunk-tag a trajectory/design name so merged chunks don't collide."""
     return f"c{chunk_idx}_{name}"
 
 
-def merge_chunks(fold, chunk_dirs, out_dir):
+def merge_chunks(fold, chunk_dirs, out_dir, template):
     """Stitch a fold's chunk dirs into one scoreable dir with unique names.
 
     Concatenates each chunk's results.csv (re-tagging the ``name`` column) and
     copies the matching designs/<name>.pdb (+ .pickle, needed for ipSAE) under the
-    re-tagged name. Returns the merged row count. Raises if a chunk lacks
-    results.csv or a referenced design file is missing (fail loud).
+    re-tagged name. Also copies the binder ``template`` to ``<out_dir>/template.pdb``
+    so the merged fold is self-describing for RMSD scoring (add_rmsd reads it).
+    Returns the merged row count. Raises if a chunk lacks results.csv, a referenced
+    design file is missing, or the template is missing (fail loud).
     """
+    if not os.path.exists(template):
+        raise FileNotFoundError(f"merge {fold}: binder template missing: {template}")
     designs_out = os.path.join(out_dir, "designs")
     os.makedirs(designs_out, exist_ok=True)
+    shutil.copy2(template, os.path.join(out_dir, "template.pdb"))
     frames = []
     for idx, cdir in enumerate(chunk_dirs):
         csv = os.path.join(cdir, "results.csv")
@@ -201,12 +223,24 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
 
     queue = filter_todo(plan_chunks(folds, chunk_traj), repro)
     total = len(plan_chunks(folds, chunk_traj))
+
+    # preflight: a chunk bigger than the largest GPU can never be placed -- fail
+    # now rather than spin forever waiting for room that will never exist.
+    biggest = max(caps.values())
+    impossible = unschedulable_chunks(queue, biggest, headroom_gb)
+    if impossible:
+        raise SystemExit(
+            f"[sched] {len(impossible)} chunk(s) need more memory than the largest "
+            f"GPU ({biggest:.1f}GB) can give with {headroom_gb}GB headroom: "
+            + ", ".join(f"{c.tag}({c.mem_gb}GB)" for c in impossible))
+
     log(f"[sched] {len(queue)}/{total} chunks to run on GPUs {gpus} "
         f"(rest already complete)")
     failed, retried = [], set()
 
     while queue or running:
         # try to launch as many queued jobs as fit
+        launched = 0
         progress = True
         while progress and queue:
             progress = False
@@ -216,15 +250,24 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
                 # pick the largest queued job that fits this GPU
                 free, _ = gpu_mem_gb(smi, g)
                 for j, c in enumerate(queue):
-                    if fits(free, committed[g], caps[g], c.mem_gb, headroom_gb):
+                    if can_launch(c, free, committed[g], caps[g], headroom_gb):
                         proc, lf = launch(c, repro, g, repo, python)
                         committed[g] += c.mem_gb
                         running[proc.pid] = (proc, lf, c, g)
                         queue.pop(j)
-                        log(f"[sched] launch {c.tag} -> gpu{g} "
-                            f"(free {free:.1f}GB, committed {committed[g]:.1f}GB)")
+                        log(f"[sched] launch {c.tag}{' [solo]' if c.solo else ''} "
+                            f"-> gpu{g} (free {free:.1f}GB, "
+                            f"committed {committed[g]:.1f}GB)")
                         progress = True
+                        launched += 1
                         break
+        # deadlock guard: nothing running and nothing could launch -> no running
+        # job will ever free memory, so we would spin forever. Surface it.
+        if queue and not running and launched == 0:
+            raise SystemExit(
+                f"[sched] cannot place {len(queue)} remaining chunk(s) on any GPU "
+                f"(live free memory too low / GPUs externally occupied): "
+                + ", ".join(c.tag for c in queue))
         # reap finished jobs
         time.sleep(poll_s)
         for pid in list(running):
@@ -238,10 +281,11 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
             if rc == 0 and chunk_done(c, repro):
                 log(f"[sched] DONE {c.tag} (gpu{g}, rc=0)")
             elif c.tag not in retried:
-                # one solo retry with full headroom (memory pressure is the
-                # most common cause of a failed pack)
+                # one retry, flagged solo so it reruns on an otherwise-empty GPU
+                # (memory pressure is the most common cause of a failed pack)
                 log(f"[sched] FAIL {c.tag} (rc={rc}); will retry solo")
                 retried.add(c.tag)
+                c.solo = True
                 queue.append(c)
             else:
                 log(f"[sched] FAIL {c.tag} (rc={rc}) on retry -- giving up")
@@ -255,7 +299,8 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
         cdirs = sorted(
             d.out_dir(repro) for d in plan_chunks([f], chunk_traj))
         if all(os.path.exists(os.path.join(d, "results.csv")) for d in cdirs):
-            n = merge_chunks(f["fold"], cdirs, os.path.join(repro, f["fold"]))
+            n = merge_chunks(f["fold"], cdirs, os.path.join(repro, f["fold"]),
+                             f["template"])
             merged.append((f["fold"], n))
             log(f"[sched] merged {f['fold']}: {n} designs")
         else:

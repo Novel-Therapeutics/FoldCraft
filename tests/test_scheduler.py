@@ -88,6 +88,47 @@ class TestFits:
         assert not sch.fits(5, 17, 24, 17, 2)
 
 
+# --- unschedulable preflight (P2: no infinite spin) ------------------------
+class TestUnschedulable:
+    def test_flags_chunk_bigger_than_largest_gpu(self):
+        # tim needs 17+2=19GB; a 16GB card can never run it.
+        chunks = sch.plan_chunks([_fold("tim", 10, mem=17)], chunk_traj=10)
+        bad = sch.unschedulable_chunks(chunks, max_capacity_gb=16, headroom_gb=2)
+        assert [c.fold for c in bad] == ["tim"]
+
+    def test_empty_when_everything_fits(self):
+        chunks = sch.plan_chunks([_fold("tim", 10, mem=17)], chunk_traj=10)
+        assert sch.unschedulable_chunks(chunks, max_capacity_gb=24, headroom_gb=2) == []
+
+    def test_boundary_exact_fit_is_schedulable(self):
+        # 22+2 == 24 exactly -> schedulable (not flagged)
+        chunks = sch.plan_chunks([_fold("x", 10, mem=22)], chunk_traj=10)
+        assert sch.unschedulable_chunks(chunks, max_capacity_gb=24, headroom_gb=2) == []
+
+
+# --- can_launch (P2: true solo retry) --------------------------------------
+class TestCanLaunch:
+    def _chunk(self, mem=11, solo=False):
+        c = sch.plan_chunks([_fold("a", 10, mem=mem)], chunk_traj=10)[0]
+        c.solo = solo
+        return c
+
+    def test_normal_chunk_packs_alongside_others(self):
+        c = self._chunk(mem=11)
+        # 13GB free, 11GB already committed by a neighbour -> still packs
+        assert sch.can_launch(c, 13, 11, 24, 2)
+
+    def test_solo_chunk_refused_when_gpu_busy(self):
+        c = self._chunk(mem=11, solo=True)
+        # even though 11GB would fit memory-wise, a solo retry must wait for an
+        # empty GPU (committed > 0 blocks it)
+        assert not sch.can_launch(c, 13, 11, 24, 2)
+
+    def test_solo_chunk_runs_on_empty_gpu(self):
+        c = self._chunk(mem=11, solo=True)
+        assert sch.can_launch(c, 24, 0, 24, 2)
+
+
 # --- resume detection ------------------------------------------------------
 class TestResume:
     def test_skips_completed_chunk_and_merged_fold(self, tmp_path):
@@ -118,13 +159,18 @@ class TestMergeChunks:
                 open(os.path.join(cdir, "designs", f"{n}{ext}"), "w").close()
         return cdir
 
+    def _template(self, root):
+        path = os.path.join(root, "tmpl.pdb")
+        open(path, "w").close()
+        return path
+
     def test_merge_concats_and_retags_without_collision(self, tmp_path):
         root = str(tmp_path)
         # both chunks independently produced traj_1_0 / traj_1_1 -- would collide
         c0 = self._make_chunk(root, "a__c0", ["traj_1_0", "traj_1_1"])
         c1 = self._make_chunk(root, "a__c1", ["traj_1_0", "traj_1_1"])
         out = os.path.join(root, "a")
-        n = sch.merge_chunks("a", [c0, c1], out)
+        n = sch.merge_chunks("a", [c0, c1], out, self._template(root))
 
         assert n == 4
         df = pd.read_csv(os.path.join(out, "results.csv"))
@@ -136,6 +182,8 @@ class TestMergeChunks:
         for nm in df["name"]:
             assert os.path.exists(os.path.join(out, "designs", f"{nm}.pdb"))
             assert os.path.exists(os.path.join(out, "designs", f"{nm}.pickle"))
+        # the merged fold is self-describing: template recorded for RMSD scoring
+        assert os.path.exists(os.path.join(out, "template.pdb"))
 
     def test_merge_fails_loud_on_missing_design(self, tmp_path):
         root = str(tmp_path)
@@ -145,14 +193,23 @@ class TestMergeChunks:
             os.path.join(cdir, "results.csv"), index=False)
         # results.csv references traj_1_0 but no PDB exists -> must raise
         with pytest.raises(FileNotFoundError):
-            sch.merge_chunks("a", [cdir], os.path.join(root, "a"))
+            sch.merge_chunks("a", [cdir], os.path.join(root, "a"), self._template(root))
 
     def test_merge_fails_loud_on_missing_results(self, tmp_path):
         root = str(tmp_path)
         cdir = os.path.join(root, "a__c0")
         os.makedirs(cdir)
         with pytest.raises(FileNotFoundError):
-            sch.merge_chunks("a", [cdir], os.path.join(root, "a"))
+            sch.merge_chunks("a", [cdir], os.path.join(root, "a"), self._template(root))
+
+    def test_merge_fails_loud_on_missing_template(self, tmp_path):
+        root = str(tmp_path)
+        c0 = self._make_chunk(root, "a__c0", ["traj_1_0"])
+        # template path does not exist -> must raise (merged fold would be
+        # unscoreable for RMSD)
+        with pytest.raises(FileNotFoundError):
+            sch.merge_chunks("a", [c0], os.path.join(root, "a"),
+                             os.path.join(root, "nope.pdb"))
 
 
 # --- remap_name ------------------------------------------------------------

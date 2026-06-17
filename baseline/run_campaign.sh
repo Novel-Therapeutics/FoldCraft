@@ -17,6 +17,7 @@ tail -n +2 baseline/config.tsv | while IFS=$'\t' read fold tmpl bhot blen; do
     --binder_template "$tmpl" --target_template "$TARGET" \
     --target_hotspots "$THOT" --binder_hotspots "$bhot" \
     --design_stages "$STAGES" --num_designs "$NDES" --mpnn_samples "$NSAMP" \
+    && cp "$tmpl" "$OUT/$fold/template.pdb" \
     && echo "FOLD_OK $fold rows=$(($(wc -l < $OUT/$fold/results.csv 2>/dev/null || echo 1)-1))" \
     || echo "FOLD_FAIL $fold"
 done

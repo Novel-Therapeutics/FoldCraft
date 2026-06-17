@@ -20,17 +20,29 @@ designed against PD-L1, scored by AF2 confidence + fold fidelity. This is the
   are fetched from RCSB.)
 - `config.tsv` — per-fold `template`, `binder_hotspots`, `binder_len`.
 - `run_campaign.sh STAGES NDES NSAMP OUTROOT` — runs `FoldCraft.py` for all 6
-  folds against PD-L1 (`target_hotspots=34-39,43-49,11-17`).
-- `add_rmsd.py [runs_dir]` — computes RMSD-to-template (binder chain B vs
-  `templates/<fold>.pdb`) for each design and writes it back into `results.csv`
-  as an `rmsd` column. This is the only step that needs the raw design PDBs;
-  run it where the designs live. Fails loudly if a referenced PDB is missing.
+  folds against PD-L1 (`target_hotspots=34-39,43-49,11-17`). Records the binder
+  template it used as `<runs>/<fold>/template.pdb` so the run is self-describing
+  for scoring.
+- `run_repro.sh` — the author-config reproduction run (their `examples/` templates
+  + hotspots, `num_designs=40`); see `repro_config.tsv`. Also records each fold's
+  `template.pdb`.
+- `scheduler.py CONFIG [--gpus ...] [--chunk-traj N] [--dry-run]` — memory-gated,
+  multi-GPU parallel scheduler (single-GPU packing **and** cloud N-GPU fan-out);
+  chunks folds, merges with collision-free names, resume-aware, records each
+  merged fold's `template.pdb`.
+- `add_rmsd.py [runs_dir]` — computes RMSD-to-template (binder chain B vs the
+  run's own `<runs>/<fold>/template.pdb`) for each design and writes it back into
+  `results.csv` as an `rmsd` column. This is the only step that needs the raw
+  design PDBs; run it where the designs live. Fails loudly if the per-fold
+  template or a referenced design PDB is missing.
 - `ipsae.py` / `add_ipsae.py [runs_dir] [pae_cutoff]` — ipSAE (Dunbrack 2025), a
   PAE-derived interface score that fixes ipTM's size bias. `ipsae.py` is the
   pure-numpy core (validated bit-for-bit against DunbrackLab/IPSAE); `add_ipsae.py`
   computes it offline from each design's saved PAE matrix
   (`aux['all']['pae']`, in the pickle — no GPU / no re-prediction) and writes an
-  `ipsae` column. Default pae_cutoff 10.
+  `ipsae` column. The target/binder split is read from each design PDB's own
+  chains (A=target, B=binder), so it is correct regardless of which template
+  produced the run. Default pae_cutoff 10.
 - `score.py [runs_dir]` — per-criterion + combined success rate with Wilson 95%
   CIs. Reads the metrics **and the `rmsd` column** from `results.csv`, so it
   works from the committed CSVs alone, from any working directory.
