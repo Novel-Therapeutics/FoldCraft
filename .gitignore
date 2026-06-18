@@ -31,8 +31,10 @@ results*.csv
 fold_cond_cmap.npy
 fold_cond_cmap_mask.npy
 fold_cond_cmap.png
-# ...but DO keep the committed baseline benchmark metrics (the reference numbers).
+# ...but DO keep the committed benchmark metrics (the reference numbers):
+# our improvised baseline (runs/) and the author-config reproduction (repro/).
 !baseline/runs/**/results.csv
+!baseline/repro/**/results.csv
 
 # OS / editor
 .DS_Store
