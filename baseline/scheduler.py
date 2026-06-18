@@ -103,6 +103,14 @@ def fold_done(fold, repro):
             and os.path.exists(os.path.join(d, "template.pdb")))
 
 
+def _merged_without_template(fold_dir):
+    """A merged fold (has results.csv) whose template.pdb is absent -- the state
+    repair_fold_template restores. Shared by the repair and its read-only
+    predictor (is_repairable) so the two can't drift."""
+    return (os.path.exists(os.path.join(fold_dir, "results.csv"))
+            and not os.path.exists(os.path.join(fold_dir, "template.pdb")))
+
+
 def repair_fold_template(fold_dir, template):
     """Restore a merged fold's ``template.pdb`` if it is missing.
 
@@ -111,13 +119,18 @@ def repair_fold_template(fold_dir, template):
     on resume yet remain unscoreable. Copies ``template`` in (no re-merge needed).
     Returns True if a repair was made. Raises if the source template is missing.
     """
-    if not os.path.exists(os.path.join(fold_dir, "results.csv")):
+    if not _merged_without_template(fold_dir):
         return False
-    tpath = os.path.join(fold_dir, "template.pdb")
-    if os.path.exists(tpath):
-        return False
-    shutil.copy2(template, tpath)
+    shutil.copy2(template, os.path.join(fold_dir, "template.pdb"))
     return True
+
+
+def is_repairable(fold_dir, template):
+    """Whether repair_fold_template() would restore the template -- read-only
+    (the template is missing AND the source exists). --dry-run uses this to
+    predict run()'s pre-scheduling repair without mutating the filesystem (a dry
+    run must not write files)."""
+    return _merged_without_template(fold_dir) and os.path.exists(template)
 
 
 def repair_merged_folds(folds, repro, log=lambda *_: None):
@@ -136,10 +149,17 @@ def repair_merged_folds(folds, repro, log=lambda *_: None):
     return repaired
 
 
-def filter_todo(chunks, repro):
-    """Drop chunks whose fold is already merged or whose own chunk is complete."""
+def filter_todo(chunks, repro, extra_done=()):
+    """Drop chunks whose fold is already merged or whose own chunk is complete.
+
+    ``extra_done`` is an extra set of fold names to treat as done -- used by
+    --dry-run to fold in the templates run() would restore before scheduling, so
+    the dry-run plan matches the real run without performing the repair.
+    """
+    extra = set(extra_done)
     return [c for c in chunks
-            if not fold_done(c.fold, repro) and not chunk_done(c, repro)]
+            if c.fold not in extra
+            and not fold_done(c.fold, repro) and not chunk_done(c, repro)]
 
 
 def fits(actual_free_gb, committed_gb, capacity_gb, job_mem_gb, headroom_gb):
@@ -419,9 +439,16 @@ def main(argv=None):
         # resolve paths so the done/todo split reflects the real repro dir
         folds, _, repro = resolve_paths(folds, args.repo, args.repro)
         chunks = plan_chunks(folds, args.chunk_traj)
-        todo = filter_todo(chunks, repro)
+        # predict (read-only) the templates run() would restore before scheduling,
+        # so dry-run doesn't over-report those folds' chunks as todo.
+        repairs = sorted(f["fold"] for f in folds
+                         if not fold_done(f["fold"], repro)
+                         and is_repairable(os.path.join(repro, f["fold"]), f["template"]))
+        todo = filter_todo(chunks, repro, extra_done=repairs)
         print(f"folds={len(folds)} chunks={len(chunks)} todo={len(todo)} "
               f"(done={len(chunks) - len(todo)})")
+        if repairs:
+            print(f"would repair template.pdb for: {', '.join(repairs)}")
         for c in todo:
             print(f"  {c!r}")
         return

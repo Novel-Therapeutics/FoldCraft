@@ -220,6 +220,64 @@ class TestRepairBeforeFilter:
         assert sch.repair_merged_folds(folds, repro) == []
 
 
+# --- is_repairable / dry-run prediction (P3: dry-run mirrors run) -----------
+class TestIsRepairable:
+    def test_true_when_template_missing_and_source_exists(self, tmp_path):
+        repro = str(tmp_path); _merged(repro, "b", with_template=False)
+        src = str(tmp_path / "src.pdb"); open(src, "w").close()
+        assert sch.is_repairable(os.path.join(repro, "b"), src) is True
+
+    def test_false_when_template_present(self, tmp_path):
+        repro = str(tmp_path); _merged(repro, "b", with_template=True)
+        src = str(tmp_path / "src.pdb"); open(src, "w").close()
+        assert sch.is_repairable(os.path.join(repro, "b"), src) is False
+
+    def test_false_when_not_merged(self, tmp_path):
+        repro = str(tmp_path); os.makedirs(os.path.join(repro, "b"))
+        src = str(tmp_path / "src.pdb"); open(src, "w").close()
+        assert sch.is_repairable(os.path.join(repro, "b"), src) is False
+
+    def test_false_when_source_missing(self, tmp_path):
+        # read-only predictor: unlike repair_fold_template it does NOT raise; a
+        # fold it can't actually repair is simply "not repairable" for planning.
+        repro = str(tmp_path); _merged(repro, "b", with_template=False)
+        assert sch.is_repairable(os.path.join(repro, "b"),
+                                 os.path.join(repro, "nope.pdb")) is False
+
+
+class TestFilterTodoExtraDone:
+    def test_extra_done_excludes_folds_chunks(self, tmp_path):
+        repro = str(tmp_path)  # nothing on disk -> all chunks normally todo
+        chunks = sch.plan_chunks([_fold("a", 20), _fold("b", 20)], chunk_traj=10)
+        todo = sch.filter_todo(chunks, repro, extra_done=["a"])
+        assert {c.fold for c in todo} == {"b"}  # a's chunks dropped
+
+
+class TestDryRunPredictsRepair:
+    def test_dry_run_excludes_repairable_fold_and_reports_it(
+            self, tmp_path, monkeypatch, capsys):
+        # The reviewer's case: a fold merged with results.csv but no template.pdb.
+        # run() repairs it before scheduling; dry-run must predict that (without
+        # writing the template) instead of over-reporting its chunks as todo.
+        repo = tmp_path / "repo"; (repo / "baseline").mkdir(parents=True)
+        (repo / "t.pdb").write_text("X")            # source template (exists)
+        (repo / "baseline" / "c.tsv").write_text(
+            "fold\ttemplate\ttarget\ttarget_hotspots\tbinder_hotspots\ttotal_traj\tmem_gb\n"
+            "top7\tt.pdb\tg.pdb\t1\t1\t20\t11\n")
+        merged = repo / "baseline" / "repro" / "top7"; merged.mkdir(parents=True)
+        (merged / "results.csv").write_text("")     # merged, NO template.pdb
+
+        monkeypatch.chdir(tmp_path)
+        sch.main(["baseline/c.tsv", "--repo", str(repo),
+                  "--chunk-traj", "10", "--dry-run"])
+        out = capsys.readouterr().out
+        assert "todo=0" in out                       # 2 chunks predicted-done
+        assert "top7__c0" not in out and "top7__c1" not in out
+        assert "would repair template.pdb for: top7" in out
+        # dry-run must NOT have written the template (stays read-only)
+        assert not os.path.exists(merged / "template.pdb")
+
+
 # --- resolve_config_path (P3: CONFIG resolves against --repo) ---------------
 class TestResolveConfigPath:
     def test_relative_config_resolved_against_repo(self):
