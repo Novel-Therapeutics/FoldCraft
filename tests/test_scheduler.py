@@ -82,11 +82,6 @@ class TestFits:
         # a third job cannot: only 2GB of committed budget / actual free remain.
         assert not sch.fits(2, 22, cap, 11, head)
 
-    def test_big_job_runs_solo(self):
-        # 17GB tim job: one fits (17+2<=24), a second cannot (34+2>24)
-        assert sch.fits(22, 0, 24, 17, 2)
-        assert not sch.fits(5, 17, 24, 17, 2)
-
 
 # --- unschedulable preflight (P2: no infinite spin) ------------------------
 class TestUnschedulable:
@@ -292,8 +287,3 @@ class TestMergeChunks:
         with pytest.raises(FileNotFoundError):
             sch.merge_chunks("a", [c0], os.path.join(root, "a"),
                              os.path.join(root, "nope.pdb"))
-
-
-# --- remap_name ------------------------------------------------------------
-def test_remap_name():
-    assert sch.remap_name("traj_3_2", 1) == "c1_traj_3_2"

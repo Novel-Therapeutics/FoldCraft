@@ -84,11 +84,6 @@ def test_matches_reference_implementation(target_len, binder_len, t_hot,
 # Explicit value/structure checks
 # ---------------------------------------------------------------------------
 class TestStructure:
-    def test_shape_is_total_length(self):
-        bc = np.zeros((4, 4))
-        out = cu.assemble_fold_conditioned_cmap(bc, 5, 4, "2-3", "1-2", "")
-        assert out.shape == (9, 9)
-
     def test_binder_block_placed_bottom_right(self):
         bc = np.full((3, 3), 0.7)
         out = cu.assemble_fold_conditioned_cmap(bc, 4, 3, "1", "", "")

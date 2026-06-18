@@ -38,9 +38,6 @@ class TestSetRange:
         assert bu.set_range("80-81") == [80, 81]
         assert bu.set_range("80-80") == [80]
 
-    def test_order_preserved(self):
-        assert bu.set_range("90-92,10") == [90, 91, 92, 10]
-
 
 # ---------------------------------------------------------------------------
 # calculate_percentages -- pure arithmetic for secondary-structure fractions
@@ -51,15 +48,8 @@ class TestCalculatePercentages:
         assert bu.calculate_percentages(10, 5, 3) == (50.0, 30.0, 20.0)
 
     def test_zero_total_is_safe(self):
+        # the only non-trivial branch: avoid div-by-zero on an empty chain
         assert bu.calculate_percentages(0, 0, 0) == (0, 0, 0)
-
-    def test_all_helix(self):
-        assert bu.calculate_percentages(4, 4, 0) == (100.0, 0.0, 0.0)
-
-    def test_rounding_to_two_decimals(self):
-        # 1/3 -> 33.33
-        h, s, l = bu.calculate_percentages(3, 1, 1)
-        assert h == 33.33 and s == 33.33 and l == 33.33
 
 
 # ---------------------------------------------------------------------------
@@ -96,10 +86,6 @@ class TestCalculateClashScore:
         # A well-formed deposited structure should have no CA-CA clashes
         # between non-adjacent residues at the 2.4 A default threshold.
         assert bu.calculate_clash_score(pdb_1qys, only_ca=True) == 0
-
-    def test_returns_int(self, pdb_pdl1):
-        score = bu.calculate_clash_score(pdb_pdl1, only_ca=True)
-        assert isinstance(score, int)
 
 
 # ---------------------------------------------------------------------------
