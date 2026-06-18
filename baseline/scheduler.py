@@ -120,6 +120,22 @@ def repair_fold_template(fold_dir, template):
     return True
 
 
+def repair_merged_folds(folds, repro, log=lambda *_: None):
+    """Repair every already-merged fold that is missing its template.pdb.
+
+    Must run BEFORE filter_todo: a merged-but-template-less fold has
+    ``fold_done() == False``, so without an up-front repair its chunks would be
+    re-queued and needlessly re-run on the GPU before the (cheap) template copy
+    that would have marked the fold done. Returns the repaired fold names.
+    """
+    repaired = []
+    for f in folds:
+        if repair_fold_template(os.path.join(repro, f["fold"]), f["template"]):
+            repaired.append(f["fold"])
+            log(f"[sched] repaired {f['fold']}: restored template.pdb")
+    return repaired
+
+
 def filter_todo(chunks, repro):
     """Drop chunks whose fold is already merged or whose own chunk is complete."""
     return [c for c in chunks
@@ -210,6 +226,13 @@ def resolve_paths(folds, repo, repro):
     return folds, repo, repro
 
 
+def resolve_config_path(config, repo):
+    """Resolve a relative CONFIG path against ``repo`` (the same base as --repro
+    and the per-fold templates), so the scheduler can be invoked from outside the
+    repo with --repo. Absolute config paths pass through unchanged."""
+    return config if os.path.isabs(config) else os.path.join(os.path.abspath(repo), config)
+
+
 # ---------------------------------------------------------------------------
 # orchestration (GPU + subprocess) -- not unit-tested
 # ---------------------------------------------------------------------------
@@ -263,6 +286,9 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
     committed = {g: 0.0 for g in gpus}          # GB reserved by running jobs
     running = {}                                  # pid -> (proc, log, chunk, gpu)
 
+    # repair merged-but-template-less folds BEFORE deciding what's done, so their
+    # chunks aren't re-run just to restore a template that a cheap copy fixes.
+    repair_merged_folds(folds, repro, log)
     queue = filter_todo(plan_chunks(folds, chunk_traj), repro)
     total = len(plan_chunks(folds, chunk_traj))
 
@@ -333,17 +359,13 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
                 log(f"[sched] FAIL {c.tag} (rc={rc}) on retry -- giving up")
                 failed.append(c)
 
-    # merge folds whose chunks all completed
+    # merge folds whose chunks all completed (merged-but-template-less folds were
+    # already repaired up front, before the queue was built).
     merged = []
     for f in folds:
         if fold_done(f["fold"], repro):
             continue
         fold_dir = os.path.join(repro, f["fold"])
-        # already merged but missing its template (e.g. an older merge) -> repair
-        # in place rather than recompute; this makes it scoreable again.
-        if repair_fold_template(fold_dir, f["template"]):
-            log(f"[sched] repaired {f['fold']}: restored template.pdb")
-            continue
         cdirs = sorted(
             d.out_dir(repro) for d in plan_chunks([f], chunk_traj))
         if all(os.path.exists(os.path.join(d, "results.csv")) for d in cdirs):
@@ -378,7 +400,8 @@ def load_config(path):
 def main(argv=None):
     import argparse
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("config", help="TSV config (see load_config)")
+    p.add_argument("config", help="TSV config (see load_config); resolved against "
+                                   "--repo if a relative path")
     p.add_argument("--repro", default="baseline/repro", help="output root")
     p.add_argument("--repo", default=os.getcwd(), help="FoldCraft repo root")
     p.add_argument("--python", default=sys.executable)
@@ -391,7 +414,7 @@ def main(argv=None):
                    help="print the schedule plan and exit (no GPU needed)")
     args = p.parse_args(argv)
 
-    folds = load_config(args.config)
+    folds = load_config(resolve_config_path(args.config, args.repo))
     if args.dry_run:
         # resolve paths so the done/todo split reflects the real repro dir
         folds, _, repro = resolve_paths(folds, args.repo, args.repro)

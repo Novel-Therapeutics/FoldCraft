@@ -191,6 +191,57 @@ class TestRepairFoldTemplate:
                                      os.path.join(repro, "nope.pdb"))
 
 
+# --- repair ordering (P2: repair before filter_todo, not after scheduling) -
+class TestRepairBeforeFilter:
+    def test_repair_marks_fold_done_so_chunks_are_not_requeued(self, tmp_path):
+        # Reproduces the bug: a fold merged by an older scheduler (results.csv,
+        # NO template.pdb) with its chunk dirs gone. Without an up-front repair,
+        # filter_todo would re-queue (and the run would re-run) its chunks.
+        repro = str(tmp_path / "repro"); os.makedirs(repro)
+        src = str(tmp_path / "tmpl.pdb"); open(src, "w").write("X")
+        folds = [_fold("top7", 20)]
+        folds[0]["template"] = src
+        _merged(repro, "top7", with_template=False)  # results.csv only
+        chunks = sch.plan_chunks(folds, chunk_traj=10)
+
+        # before repair: both chunks are wrongly considered outstanding work
+        assert {c.tag for c in sch.filter_todo(chunks, repro)} == {"top7__c0", "top7__c1"}
+
+        # repairing first restores the template -> fold is done -> chunks skipped
+        assert sch.repair_merged_folds(folds, repro) == ["top7"]
+        assert os.path.exists(os.path.join(repro, "top7", "template.pdb"))
+        assert sch.filter_todo(chunks, repro) == []
+
+    def test_no_repair_when_template_already_present(self, tmp_path):
+        repro = str(tmp_path / "repro"); os.makedirs(repro)
+        src = str(tmp_path / "tmpl.pdb"); open(src, "w").close()
+        folds = [_fold("top7", 20)]; folds[0]["template"] = src
+        _merged(repro, "top7", with_template=True)
+        assert sch.repair_merged_folds(folds, repro) == []
+
+
+# --- resolve_config_path (P3: CONFIG resolves against --repo) ---------------
+class TestResolveConfigPath:
+    def test_relative_config_resolved_against_repo(self):
+        assert sch.resolve_config_path("baseline/c.tsv", "/abs/repo") == \
+            "/abs/repo/baseline/c.tsv"
+
+    def test_absolute_config_passes_through(self):
+        assert sch.resolve_config_path("/data/c.tsv", "/abs/repo") == "/data/c.tsv"
+
+    def test_main_dry_run_with_relative_config_from_foreign_cwd(
+            self, tmp_path, monkeypatch, capsys):
+        # The reviewer's exact scenario: invoke from OUTSIDE the repo with a
+        # repo-relative config + --repo. Must load the config, not FileNotFoundError.
+        repo = tmp_path / "repo"; (repo / "baseline").mkdir(parents=True)
+        (repo / "baseline" / "c.tsv").write_text(
+            "fold\ttemplate\ttarget\ttarget_hotspots\tbinder_hotspots\ttotal_traj\tmem_gb\n"
+            "top7\texamples/t.pdb\texamples/g.pdb\t1\t1\t40\t11\n")
+        monkeypatch.chdir(tmp_path)  # a cwd where "baseline/c.tsv" does NOT exist
+        sch.main(["baseline/c.tsv", "--repo", str(repo), "--dry-run"])
+        assert "folds=1" in capsys.readouterr().out
+
+
 # --- resolve_paths (P1: scheduler/child cwd agreement) ---------------------
 class TestResolvePaths:
     def test_relative_paths_resolved_against_repo_not_cwd(self):
