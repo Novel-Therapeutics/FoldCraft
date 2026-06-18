@@ -1,7 +1,7 @@
 """Locate and expose the BindCraft utilities that FoldCraft's PyRosetta pipeline needs.
 
-``FoldCraft_binder.py`` reuses two functions from Martin Pacesa's BindCraft
-(https://github.com/martinpacesa/BindCraft):
+``FoldCraft_binder.py`` (in this ``test/`` directory) reuses two functions from
+Martin Pacesa's BindCraft (https://github.com/martinpacesa/BindCraft):
 
   - ``pr_relax(pdb_file, relaxed_pdb_path)``
   - ``score_interface(pdb_file, binder_chain="B")``
@@ -12,11 +12,11 @@ plus PyRosetta itself (conventionally imported as ``pr``) and the bundled
 BindCraft is a collection of scripts, not a pip-installable package, so it has
 to be cloned and placed on ``sys.path`` (the import is ``BindCraft.functions``,
 which resolves as a namespace package when BindCraft's *parent* directory is on
-the path). Upstream FoldCraft relied on an implicit ``from BindCraft.functions
-import *`` that (a) was never installed by ``install_foldcraft.sh`` and (b)
-silently shadowed FoldCraft's own ``biopython_utils`` helpers. This module
-makes the dependency explicit and fails with an actionable message when it is
-missing.
+the path). Run ``test/install_foldcraft_binder.sh`` to clone it next to this
+file (``test/BindCraft``). Upstream FoldCraft relied on an implicit
+``from BindCraft.functions import *`` that (a) was never installed and (b)
+silently shadowed FoldCraft's own ``biopython_utils`` helpers. This module makes
+the dependency explicit and fails with an actionable message when it is missing.
 
 The path-resolution logic here is intentionally free of any PyRosetta/BindCraft
 import so it can be unit-tested on a machine without the GPU design stack.
@@ -35,7 +35,7 @@ def _bindcraft_candidates(explicit_path=None):
     env = os.environ.get("BINDCRAFT_PATH")
     if env:
         candidates.append(env)
-    # Installer default: a ``BindCraft`` checkout next to this file.
+    # Installer default: a ``BindCraft`` checkout next to this file (test/BindCraft).
     here = os.path.dirname(os.path.abspath(__file__))
     candidates.append(os.path.join(here, "BindCraft"))
     return candidates
@@ -63,7 +63,7 @@ def find_bindcraft_repo(explicit_path=None):
     searched = [os.path.abspath(c) for c in _bindcraft_candidates(explicit_path)]
     raise ImportError(
         "FoldCraft's binder pipeline requires BindCraft, which was not found.\n"
-        "Re-run install_foldcraft.sh, or clone it manually:\n"
+        "Run test/install_foldcraft_binder.sh, or clone it manually:\n"
         f"    git clone {BINDCRAFT_REPO_URL}\n"
         "and/or set the BINDCRAFT_PATH environment variable to its location.\n"
         f"Searched: {searched}"
@@ -99,6 +99,6 @@ def dalphaball_path(explicit_path=None):
     raise FileNotFoundError(
         "DAlphaBall.gcc not found. It ships with BindCraft at "
         "functions/DAlphaBall.gcc and is required for interface holes scoring. "
-        "Re-run install_foldcraft.sh to set it up.\n"
+        "Run test/install_foldcraft_binder.sh to set it up.\n"
         f"Looked for: {bundled} and {cwd_copy}"
     )

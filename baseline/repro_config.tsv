@@ -4,4 +4,4 @@ barrel	examples/templates/6d0t1.pdb	examples/targets/pd-l1-1.pdb	30-34,50-54,69-
 iglike	examples/templates/3sd21.pdb	examples/targets/pd-l1-1.pdb	30-34,50-54,69-76	17-24,39-46	40	11
 solenoid	examples/templates/3jx81.pdb	examples/targets/pd-l1-1.pdb	30-34,50-54,69-76	7-13,26-33,46-53,64-71,83-88	40	12
 ankyrin	examples/templates/5aao1.pdb	examples/targets/pd-l1-1.pdb	30-34,50-54,69-76	15-26,48-58,81-91,116-124	40	13
-tim	examples/templates/5bvl1.pdb	examples/targets/pd-l1-1.pdb	29-35,49-55,68-77	42-65,68-87,89-113	40	17
+tim	examples/templates/5bvl_af2.pdb	examples/targets/pd-l1-1.pdb	29-35,49-55,68-77	42-65,68-87,89-113	40	17

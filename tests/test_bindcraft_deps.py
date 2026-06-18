@@ -1,14 +1,19 @@
-"""Tests for the BindCraft locator (bindcraft_deps.py).
+"""Tests for the BindCraft locator (test/bindcraft_deps.py).
 
 These exercise only the path-resolution logic, which is deliberately free of
 PyRosetta/BindCraft imports, so they run on a plain CPU machine. We fake a
 BindCraft checkout on disk rather than cloning the real one.
+
+The locator lives in ``test/`` (next to FoldCraft_binder.py) -- upstream scoped
+the experimental binder pipeline's BindCraft dependency there, away from the
+validated FoldCraft.py pipeline -- so we add that dir to the path to import it.
 """
 import os
 import sys
 
 import pytest
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "test"))
 import bindcraft_deps as bd
 
 

@@ -39,3 +39,12 @@ fold_cond_cmap.png
 # OS / editor
 .DS_Store
 *.swp
+
+# Local venv / test caches
+.venv/
+.pytest_cache/
+.coverage
+
+# BindCraft checkout for the experimental binder pipeline
+# (cloned by test/install_foldcraft_binder.sh)
+test/BindCraft/

@@ -45,12 +45,14 @@ import warnings
 
 # BindCraft provides the PyRosetta relax + interface-scoring helpers reused
 # below. It is not pip-installable, so locate the checkout (created by
-# install_foldcraft.sh or pointed to via $BINDCRAFT_PATH), put it on sys.path,
-# and import only what we use -- avoiding the previous `import *`, which both
-# failed when BindCraft was absent and shadowed FoldCraft's own biopython_utils.
-# This script lives in test/ but bindcraft_deps.py is at the repo root.
+# test/install_foldcraft_binder.sh or pointed to via $BINDCRAFT_PATH), put it on
+# sys.path, and import only what we use -- avoiding the previous `import *`,
+# which both failed when BindCraft was absent and shadowed FoldCraft's own
+# biopython_utils helpers. This script and bindcraft_deps.py both live in test/;
+# the repo root is added so `biopython_utils` (above) also resolves.
 import sys as _sys
-_sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))            # test/ -> bindcraft_deps
+_sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root -> biopython_utils
 from bindcraft_deps import ensure_bindcraft_importable, dalphaball_path
 ensure_bindcraft_importable()
 import pyrosetta as pr
@@ -128,7 +130,10 @@ def main():
     model_name = 'v_48_010'
 
     if start_with==0:
-        os.makedirs(folder_name, exist_ok=True)
+    	try:
+    	    os.system(f'mkdir {folder_name}')
+    	except:
+            pass  
     
     # Start to design
 
@@ -149,10 +154,10 @@ def main():
 
     # Create folders to save outputs
     if start_with == 0:
-        os.makedirs(f'{folder_name}/traj/', exist_ok=True)
-        os.makedirs(f'{folder_name}/mpnn/', exist_ok=True)
-        os.makedirs(f'{folder_name}/designs/', exist_ok=True)
-        os.makedirs(f'{folder_name}/relaxed/', exist_ok=True)
+    	os.system(f'mkdir {folder_name}/traj/')
+    	os.system(f'mkdir {folder_name}/mpnn/')
+    	os.system(f'mkdir {folder_name}/designs/')
+    	os.system(f'mkdir {folder_name}/relaxed/')
 
     # Generate N number of trajectories
     
@@ -281,8 +286,8 @@ def main():
                             df.to_csv(f"{folder_name}/results_pyrosetta.csv")
                             passed+=1
                         else:
-
-                            os.remove(mpnn_design_relaxed)
+                            
+                            os.system(f'rm {mpnn_design_relaxed}')
                         
                         
     

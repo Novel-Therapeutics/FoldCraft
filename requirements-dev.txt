@@ -1,13 +1,9 @@
-# Development / test dependencies for the GPU-free test layer.
-#
-# These cover the pure helper functions (biopython_utils.py, cmap_utils.py,
-# baseline/ipsae.py) and the baseline scorer. They do NOT include the heavy
-# design-time stack (jax, colabdesign, alphafold weights, pyrosetta, BindCraft) —
-# that is GPU-only and installed via install_foldcraft.sh. See tests/README.md.
-#
-# Install:  python -m venv .venv && ./.venv/bin/pip install -r requirements-dev.txt
-biopython==1.87
-numpy==2.4.6
-scipy==1.17.1
-pandas==3.0.3
-pytest==9.1.0
+# Test dependencies for the CPU-only test suite (the GPU-free helper functions).
+# Lower-bound ranges so the suite resolves across supported Python versions.
+biopython>=1.83
+numpy>=1.26,<3
+scipy>=1.11
+pytest>=8
+# Additionally required by the internal baseline/ tests (scheduler, scorers,
+# add_ipsae) -- not needed for the upstream helper tests.
+pandas>=2

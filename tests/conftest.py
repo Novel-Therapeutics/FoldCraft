@@ -33,6 +33,14 @@ def pdb_1qys():
     return path
 
 
+@pytest.fixture(scope="session")
+def pdb_pdl1():
+    """Path to a real single-chain protein structure (PD-L1 target)."""
+    path = os.path.join(REPO_ROOT, "examples", "targets", "pd-l1-1.pdb")
+    assert os.path.exists(path), f"missing test fixture: {path}"
+    return path
+
+
 def _add_residue(chain, resseq, resname, atoms):
     """Add a residue with the given (name, (x, y, z)) atoms to a chain."""
     res = Residue((" ", resseq, " "), resname, "")
