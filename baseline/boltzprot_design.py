@@ -2,23 +2,23 @@
 output into the baseline scoring layout (so the oracle re-scoring treats it
 exactly like a FoldCraft fold).
 
-BoltzProt-1 is API-only (Boltz API, ~$0.025/prediction, $2k company launch
-credit) and was released 2026-06-16, so the SDK schema below is built from the
-documented BoltzGen/Tamarind workflow it inherits and MUST be confirmed against
-the live API once a key exists. The two pieces that are *not* speculative and
-that this file pins down are:
+BoltzProt-1 is API-only (Boltz API, $0.05/protein design, $2k company launch
+credit; released 2026-06-16). The request body and mmCIF requirements below are
+validated against the live `protein:design` endpoint (boltz-api CLI v0.31.1).
 
-  1. build_request() -- the job spec, matched to FoldCraft's PD-L1 run so the two
-     methods design against the *same target and epitope* (fairness rule #1).
-  2. ingest() -- convert downloaded BoltzProt complexes (CIF) + sequences into
-     ``<out>/designs/<name>.pdb`` (chain A = target, chain B = binder) + a
-     ``results.csv``, the same layout add_rmsd.py / add_ipsae.py / score.py read.
+  1. build_request() -- the validated job spec, matched to FoldCraft's PD-L1 run
+     so the two methods design against the *same target and epitope* (fairness #1).
+  2. build_target_cif_b64() -- the non-obvious part: the API requires PDBx/mmCIF
+     polymer metadata that naive PDB->CIF drops; gemmi produces a conformant file.
+  3. ingest() -- convert downloaded BoltzProt complexes (CIF) into
+     ``<out>/designs/<name>.pdb`` + ``results.csv``, the layout add_rmsd.py /
+     add_ipsae.py / score.py read. (Adjust chain ids to the real output.)
 
-submit() is intentionally a stub: it prints the exact request and the steps,
-rather than guessing SDK calls. Fill it in once the API key + SDK are available.
+Submission is via the `boltz-api` CLI (estimate-cost is free; run is metered) --
+see run_command(). Requires `gemmi` (target prep) and an authenticated boltz-api.
 
 Usage:
-  python baseline/boltzprot_design.py request --n 100        # print the job spec
+  python baseline/boltzprot_design.py payload --n 200      # write JSON + run cmds
   python baseline/boltzprot_design.py ingest --raw <dir> --out baseline/boltzprot
 """
 import csv
@@ -31,42 +31,83 @@ import sys
 # target_hotspots 30-34,50-54,69-76 on pd-l1-1.pdb, renumbered-from-1).
 TARGET_PDB = "examples/targets/pd-l1-1.pdb"
 EPITOPE_RESIDUES = "30-34,50-54,69-76"
-BINDER_TYPE = "protein"      # de novo mini-protein binder (not nanobody) for the
-                             # closest comparison to FoldCraft's fold-conditioned
-                             # mini-binders; switch to "nanobody" for a VHH arm.
-BINDER_LENGTH = [60, 130]    # spans FoldCraft's binder sizes (77-184); keep wide.
+MODALITY = "custom_protein"   # de novo mini-protein binder (closest to FoldCraft's
+                              # fold-conditioned mini-binders); "nanobody" for a VHH arm.
+BINDER_LENGTH_DSL = "70..185"  # variable-length de novo segment spanning all six
+                               # FoldCraft fold sizes (77-184); each design samples a
+                               # length in-range (recover it post-hoc per design).
+
+
+def _hotspots_to_0based(hotspots_1based):
+    """FoldCraft's 1-based target_hotspots string -> the 0-based residue-index list
+    the Boltz API's ``epitope_residues`` expects. Valid because pd-l1-1.pdb is
+    contiguously numbered from 1 (verified)."""
+    out = []
+    for part in hotspots_1based.split(","):
+        if "-" in part:
+            a, b = part.split("-"); out += list(range(int(a), int(b) + 1))
+        else:
+            out.append(int(part))
+    return [r - 1 for r in out]
+
+
+def build_target_cif_b64(pdb=TARGET_PDB):
+    """base64 PDBx/mmCIF the API accepts. It requires polymer metadata
+    (_entity_poly_seq, _struct_asym) that naive PDB->mmCIF converters drop, and it
+    keys chain_selection on ``label_asym_id``. gemmi -- with the entity
+    full_sequence populated and the subchain forced to a clean 'A' -- produces a
+    conformant file (Biopython's MMCIFIO does not)."""
+    import base64
+    import gemmi
+    st = gemmi.read_structure(pdb)
+    st.setup_entities()
+    seq = [r.name for r in st[0]["A"].get_polymer()]
+    for ent in st.entities:
+        if ent.entity_type == gemmi.EntityType.Polymer:
+            ent.full_sequence = seq
+            ent.subchains = ["A"]
+    for res in st[0]["A"]:
+        res.subchain = "A"                 # clean label_asym_id ('A'), not gemmi's 'Axp'
+    st.assign_label_seq_id()
+    cif = st.make_mmcif_document(gemmi.MmcifOutputGroups(True)).as_string()
+    for tag in ("_entity_poly_seq", "_struct_asym"):
+        assert tag in cif, f"gemmi mmCIF missing {tag}"
+    return base64.b64encode(cif.encode()).decode()
 
 
 def build_request(n_designs):
-    """The BoltzProt-1 job spec. Fields follow the documented BoltzGen/Tamarind
-    schema; confirm names against the live SDK before submitting."""
+    """The validated `protein:design` request body, matched to FoldCraft's PD-L1
+    run: same target + epitope, de novo no_template mini-protein binder."""
     return {
-        "task": "de_novo_binder_design",
-        "target_structure": TARGET_PDB,      # API wants the PDB uploaded/inlined
-        "target_chains": ["A"],
-        "binder_type": BINDER_TYPE,
-        "binder_length": BINDER_LENGTH,
-        "epitope_residues": EPITOPE_RESIDUES,  # targeted design at FoldCraft's site
-        "num_designs": n_designs,
-        # return raw designs; we apply our own gate, not BoltzProt's pass_filters
-        "return_all": True,
+        "binder_specification": {
+            "type": "no_template",
+            "modality": MODALITY,
+            "entities": [{"type": "designed_protein", "chain_ids": ["B"],
+                          "value": BINDER_LENGTH_DSL, "modifications": []}],
+            "bonds": [],
+        },
+        "num_proteins": n_designs,
+        "target": {
+            "type": "structure_template",
+            "structure": {"type": "base64", "media_type": "chemical/x-cif",
+                          "data": build_target_cif_b64()},
+            "chain_selection": {
+                "A": {"chain_type": "polymer", "crop_residues": "all",
+                      "epitope_residues": _hotspots_to_0based(EPITOPE_RESIDUES)},
+            },
+        },
     }
 
 
-def submit(req):
-    """STUB: submit the job to the Boltz API and return a job id.
-
-    Pending an API key + confirmed SDK. Two paths once available:
-      - pip the Boltz SDK and call its design endpoint, or
-      - POST req to api.boltz.bio with the API key header.
-    Snapshot the returned model/version string + date into the output dir for
-    reproducibility (it is a moving, closed target).
-    """
-    raise NotImplementedError(
-        "BoltzProt-1 submission needs a Boltz API key + confirmed SDK schema.\n"
-        "Run `python baseline/boltzprot_design.py request` to print the exact job "
-        "spec, submit it via the SDK / Tamarind, download the results, then\n"
-        "`python baseline/boltzprot_design.py ingest --raw <dir> --out baseline/boltzprot`."
+def run_command(payload_path, run_dir="baseline/boltzprot/run1",
+                idem="foldcraft-pdl1-baseline-70to185-n200-v1"):
+    """The exact CLI flow. Estimate first (free, no GPU); keep the idempotency key
+    stable so retries don't double-bill. The run record stores ``engine_version``
+    for reproducibility (BoltzProt is a moving, closed target)."""
+    return (
+        f"boltz-api protein:design estimate-cost --input @json://{payload_path}\n"
+        f"boltz-api protein:design run --input @json://{payload_path} \\\n"
+        f"  --idempotency-key '{idem}' --run-dir {run_dir} --download-mode everything"
     )
 
 
@@ -121,19 +162,20 @@ def main(argv=None):
     import argparse
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest="cmd", required=True)
-    r = sub.add_parser("request", help="print the job spec (no submission)")
-    r.add_argument("--n", type=int, default=100)
-    s = sub.add_parser("submit", help="submit to the Boltz API (stub)")
-    s.add_argument("--n", type=int, default=100)
+    w = sub.add_parser("payload", help="write the validated request JSON + print "
+                                       "the boltz-api estimate/run commands")
+    w.add_argument("--n", type=int, default=200)
+    w.add_argument("--out", default="/tmp/boltzprot_payload.json")
     g = sub.add_parser("ingest", help="normalise downloaded results")
     g.add_argument("--raw", required=True, help="dir of downloaded .cif designs")
     g.add_argument("--out", default="baseline/boltzprot")
     args = p.parse_args(argv)
 
-    if args.cmd == "request":
-        print(json.dumps(build_request(args.n), indent=2))
-    elif args.cmd == "submit":
-        submit(build_request(args.n))
+    if args.cmd == "payload":
+        with open(args.out, "w") as fh:
+            json.dump(build_request(args.n), fh)
+        print(f"wrote payload ({args.n} designs) -> {args.out}\n")
+        print(run_command(args.out))
     elif args.cmd == "ingest":
         ingest(args.raw, args.out)
 

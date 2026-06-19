@@ -7,3 +7,5 @@ pytest>=8
 # Additionally required by the internal baseline/ tests (scheduler, scorers,
 # add_ipsae) -- not needed for the upstream helper tests.
 pandas>=2
+# Target -> PDBx/mmCIF prep for the BoltzProt-1 benchmark arm (boltzprot_design.py).
+gemmi>=0.6
