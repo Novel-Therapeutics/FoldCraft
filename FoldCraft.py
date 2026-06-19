@@ -248,6 +248,19 @@ def main():
     iptms = []
     cmap_loss = []
 
+    # Persist results incrementally so an OOM/RunTimeError/preemption mid-run keeps
+    # every design recorded so far, instead of losing the whole table (it was
+    # previously written only once, after both loops). Rewrites the full CSV after
+    # each accepted design -- cheap at these row counts, and the final file is
+    # identical to the old end-only write.
+    def write_results():
+        pd.DataFrame({'name':names,
+                      'sequence':sequences,
+                      'plddt':plddts,
+                      'ipae':ipaes,
+                      'iptm':iptms,
+                      'cmap_loss':cmap_loss}).to_csv(f"{folder_name}/results.csv")
+
     # Create folders to save outputs
     os.makedirs(f'{folder_name}/traj/', exist_ok=True)
     os.makedirs(f'{folder_name}/mpnn/', exist_ok=True)
@@ -343,7 +356,8 @@ def main():
                 ipaes.append(af_model.aux['log']['i_pae'])
                 iptms.append(af_model.aux['log']['i_ptm'])
                 cmap_loss.append(af_model.aux['log']['cmap_loss_binder'])
-    
+                write_results()   # checkpoint after each design
+
     else:
         passed = 0
         #success_target = success_target
@@ -424,15 +438,10 @@ def main():
                         iptms.append(af_model.aux['log']['i_ptm'])
                         cmap_loss.append(af_model.aux['log']['cmap_loss_binder'])
                         passed+=1
+                        write_results()   # checkpoint after each design
     
-    df = pd.DataFrame({'name':names,
-                               'sequence':sequences,
-                               'plddt':plddts,
-                               'ipae':ipaes,
-                               'iptm':iptms,
-                               'cmap_loss':cmap_loss})
-    
-    df.to_csv(f"{folder_name}/results.csv")
+    # Final flush (also writes an empty table if no designs passed, as before).
+    write_results()
 
 if __name__ == '__main__':
     main()
