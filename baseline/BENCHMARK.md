@@ -11,6 +11,38 @@ RFdiffusion) is **deferred** — see *Future expansion*.
 
 ---
 
+## RESULTS (resolved 2026-06-19)
+
+All 1200 designs (FoldCraft 5 folds × 200 + BoltzProt-1 × 200) scored. **The ML
+oracle gate was inconclusive and had to be replaced by a family-neutral physics
+metric** — that journey is the main methodological finding:
+
+1. **AF2 leg is family-biased.** FoldCraft hallucinates against AF2, so AF2
+   favours it (188/1000 = 18.8% pass) over BoltzProt (0/200). Not a fair judge.
+2. **Open Boltz-2 leg is non-discriminating.** It passes ~73% of AF2-*failers*
+   and ~82% of AF2-passers (and 84% of BoltzProt) — it rubber-stamps almost
+   everything, so the AF2∩Boltz-2 consensus collapses to AF2 (≈ the biased leg).
+   → The consensus benchmark **cannot** honestly rank the two methods.
+3. **OpenMM interface energy is the family-neutral tiebreak** (`score_openmm.py`,
+   Amber ff14SB/GBN2, ΔE = E(complex) − E(target) − E(binder); open, no license,
+   independent of both AF2 and Boltz). `openmm_compare.py` reports:
+
+| Framing | FoldCraft | BoltzProt-1 | Verdict |
+|---------|-----------|-------------|---------|
+| **RAW** (all designs, no selection) | median **−33.1** kcal/mol (n=1000) | median **−33.2** (n=200) | indistinguishable (Mann-Whitney p=0.22) |
+| **Net-repulsive (ΔE>0) rate** | **9%** (weak folds: ankyrin 16%, solenoid 17%) | **0%** | BoltzProt output more uniformly physical |
+| **FORWARDED** (each method's deliverables) | AF2-passers median **−46.4** (n=188) | best-20 median **−35.0** | FoldCraft far better (p=1e-5, rank-biserial −0.60) |
+
+**Conclusion.** Raw populations are equivalent; BoltzProt's output is cleaner
+(no repulsive tail); but **FoldCraft's AF2-gated deliverables are physically
+better by a neutral force field** — corroborating the AF2 gate rather than
+echoing it, which retires the self-bias worry. FoldCraft's edge is its *filter*:
+it forwards genuinely better interfaces. In-silico only; ΔE is an interaction
+energy (no entropy / unbound relaxation), a proxy not a Kd — wet-lab is ground
+truth. Shareable write-up: `baseline/REPORT.md`.
+
+---
+
 ## Methods
 
 | Method | Family | How | Status |
