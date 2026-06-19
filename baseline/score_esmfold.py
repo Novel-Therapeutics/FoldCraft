@@ -24,6 +24,7 @@ import sys
 import numpy as np
 import pandas as pd
 from Bio.PDB import PDBParser, Superimposer
+from Bio.SeqUtils import seq1
 
 _parser = PDBParser(QUIET=True)
 _MODEL = None
@@ -58,11 +59,18 @@ def esmfold_predict(seq):
     return plddt, ca
 
 
-def binder_ca(pdb, chain="B"):
-    """CA coords (Nx3) of the design's binder chain, in sequence order."""
+def binder_seq_and_ca(pdb, chain="B"):
+    """(binder sequence, CA coords Nx3) of the design's binder chain, in order.
+
+    Read straight from the structure (not results.csv, whose 'sequence' column is
+    the full 'target/binder' complex for FoldCraft) so the ESMFold input and the
+    RMSD reference come from one consistent source.
+    """
     model = _parser.get_structure("d", pdb)[0]
-    return np.array([r["CA"].coord for r in model[chain]
-                     if r.id[0] == " " and "CA" in r])
+    residues = [r for r in model[chain] if r.id[0] == " "]
+    seq = seq1("".join(r.resname for r in residues))
+    ca = np.array([r["CA"].coord for r in residues if "CA" in r])
+    return seq, ca
 
 
 def ca_rmsd(a, b):
@@ -81,6 +89,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("design_dir", help="dir with results.csv + designs/<name>.pdb")
     ap.add_argument("--sample", type=int, default=0, help="score only N random rows")
+    ap.add_argument("--af2-pass-only", action="store_true",
+                    help="score only designs that clear the AF2 gate (consensus candidates)")
     args = ap.parse_args()
 
     csvf = os.path.join(args.design_dir, "results.csv")
@@ -93,19 +103,22 @@ def main():
             df[col] = pd.NA
 
     todo = df[df["esmfold_plddt"].isna()]
+    if args.af2_pass_only:
+        p, i, e = (("plddt", "iptm", "ipae") if "iptm" in df.columns
+                   else ("af2_plddt", "af2_iptm", "af2_ipae"))
+        todo = todo[(todo[p] > 0.8) & (todo[i] > 0.5) & (todo[e] < 0.35)]
     if args.sample and len(todo) > args.sample:
         todo = todo.sample(args.sample, random_state=0)
     print(f"{args.design_dir}: {len(todo)} to score "
           f"({len(df) - len(todo)} already done / skipped)")
 
     for i, (idx, row) in enumerate(todo.iterrows(), 1):
-        if pd.isna(row.get("sequence")):
-            sys.exit(f"row {row['name']} has no binder sequence")
-        plddt, ca_pred = esmfold_predict(str(row["sequence"]))
         pdb = os.path.join(args.design_dir, "designs", f"{row['name']}.pdb")
         if not os.path.exists(pdb):
             sys.exit(f"design PDB missing: {pdb}")
-        rmsd = ca_rmsd(ca_pred, binder_ca(pdb))
+        binder_seq, ca_design = binder_seq_and_ca(pdb)
+        plddt, ca_pred = esmfold_predict(binder_seq)
+        rmsd = ca_rmsd(ca_pred, ca_design)
         df.loc[idx, ["esmfold_plddt", "esmfold_rmsd"]] = [round(plddt, 1), rmsd]
         if i % 20 == 0 or i == len(todo):
             df.to_csv(csvf, index=False)      # checkpoint for resumability

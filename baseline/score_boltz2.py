@@ -62,8 +62,11 @@ def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=
             f"  - protein: {{id: A, sequence: {target_seq}}}\n"
             f"  - protein: {{id: B, sequence: {binder_seq}}}\n"
         )
+    # --no_kernels uses the pure-torch triangular-update path; the optimized
+    # cuequivariance kernels are an optional dep that is finicky to match to the
+    # CUDA build, and the speed cost is acceptable for a few hundred complexes.
     cmd = ["boltz", "predict", yml, "--out_dir", workdir, "--override",
-           "--diffusion_samples", str(diffusion_samples)]
+           "--no_kernels", "--diffusion_samples", str(diffusion_samples)]
     if use_msa:
         cmd.append("--use_msa_server")
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -76,9 +79,12 @@ def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=
     # highest confidence_score sample
     best = max((json.load(open(c)) for c in confs),
                key=lambda d: d.get("confidence_score", d.get("iptm", 0.0)))
+    # pair_chains_iptm is keyed by integer chain index as strings ("0"=target A,
+    # "1"=binder B); the A<->B interface value is [0][1] (== overall iptm for a
+    # 2-chain complex, but kept explicit).
     pair = best.get("pair_chains_iptm", {})
-    pair_iptm = (pair.get("A", {}).get("B")
-                 if isinstance(pair.get("A"), dict) else None)
+    pair_iptm = (pair.get("0", {}).get("1")
+                 if isinstance(pair.get("0"), dict) else None)
     return best.get("iptm"), pair_iptm, best.get("complex_plddt")
 
 
@@ -87,6 +93,9 @@ def main():
     ap.add_argument("design_dir", help="dir with results.csv + designs/<name>.pdb")
     ap.add_argument("--sample", type=int, default=0,
                     help="score only a random N rows (0 = all); for a fast pass")
+    ap.add_argument("--af2-pass-only", action="store_true",
+                    help="score only designs that already clear the AF2 gate "
+                         "(the consensus candidates), to spare the heavy Boltz-2 pass")
     ap.add_argument("--no-msa", action="store_true",
                     help="single-sequence (no MSA server); keeps data local")
     ap.add_argument("--diffusion-samples", type=int, default=1)
@@ -103,6 +112,12 @@ def main():
             df[col] = pd.NA
 
     todo = df[df["boltz2_iptm"].isna()]
+    if args.af2_pass_only:
+        # AF2 gate, using whichever AF2 columns the dir carries: FoldCraft's
+        # design-time plddt/iptm/ipae, or score_af2.py's af2_* for BoltzProt.
+        p, i, e = (("plddt", "iptm", "ipae") if "iptm" in df.columns
+                   else ("af2_plddt", "af2_iptm", "af2_ipae"))
+        todo = todo[(todo[p] > 0.8) & (todo[i] > 0.5) & (todo[e] < 0.35)]
     if args.sample and len(todo) > args.sample:
         todo = todo.sample(args.sample, random_state=0)
     print(f"{args.design_dir}: {len(todo)} to score "
