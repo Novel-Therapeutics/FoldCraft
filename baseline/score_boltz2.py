@@ -56,12 +56,16 @@ def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=
     Boltz's public server (the de novo binder is effectively single-sequence) --
     fine for the public PD-L1 target; pass --no-msa to keep everything local.
     """
+    # Without --use_msa_server boltz needs an explicit MSA; `msa: empty` selects
+    # single-sequence mode (no server query) -- the robust path when the public
+    # MSA server is throttling. With use_msa we let --use_msa_server fetch it.
+    msa = "" if use_msa else ", msa: empty"
     yml = os.path.join(workdir, "complex.yaml")
     with open(yml, "w") as fh:
         fh.write(
             "version: 1\nsequences:\n"
-            f"  - protein: {{id: A, sequence: {target_seq}}}\n"
-            f"  - protein: {{id: B, sequence: {binder_seq}}}\n"
+            f"  - protein: {{id: A, sequence: {target_seq}{msa}}}\n"
+            f"  - protein: {{id: B, sequence: {binder_seq}{msa}}}\n"
         )
     # Use the Novel-Therapeutics/boltz-community fork: it gracefully falls back
     # from the (uninstalled) cuequivariance triangle kernels to pure torch
