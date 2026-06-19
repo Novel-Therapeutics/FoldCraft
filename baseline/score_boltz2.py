@@ -47,8 +47,9 @@ def chain_sequences(pdb, chains=("A", "B")):
     return seqs
 
 
-def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=1):
-    """Predict the A(target)+B(binder) complex; return (iptm, pair_iptm, plddt).
+def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=1,
+               flash_attn=True):
+    """Predict the A(target)+B(binder) complex; return (iptm, pair_iptm, plddt, ipae).
 
     Writes a minimal Boltz YAML and shells out to `boltz predict`, then reads the
     best sample's confidence JSON. `--use_msa_server` fetches the target MSA from
@@ -62,11 +63,15 @@ def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=
             f"  - protein: {{id: A, sequence: {target_seq}}}\n"
             f"  - protein: {{id: B, sequence: {binder_seq}}}\n"
         )
-    # --no_kernels uses the pure-torch triangular-update path; the optimized
-    # cuequivariance kernels are an optional dep that is finicky to match to the
-    # CUDA build, and the speed cost is acceptable for a few hundred complexes.
+    # Use the Novel-Therapeutics/boltz-community fork: it gracefully falls back
+    # from the (uninstalled) cuequivariance triangle kernels to pure torch
+    # instead of crashing, so --no_kernels is no longer required, and --flash_attn
+    # (SDPA/FlashAttention-2) accelerates attention -- the speedup that matters
+    # since the triangle kernels are unavailable on this CUDA build.
     cmd = ["boltz", "predict", yml, "--out_dir", workdir, "--override",
-           "--no_kernels", "--diffusion_samples", str(diffusion_samples)]
+           "--diffusion_samples", str(diffusion_samples)]
+    if flash_attn:
+        cmd.append("--flash_attn")
     if use_msa:
         cmd.append("--use_msa_server")
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -82,10 +87,15 @@ def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=
     # pair_chains_iptm is keyed by integer chain index as strings ("0"=target A,
     # "1"=binder B); the A<->B interface value is [0][1] (== overall iptm for a
     # 2-chain complex, but kept explicit).
-    pair = best.get("pair_chains_iptm", {})
-    pair_iptm = (pair.get("0", {}).get("1")
-                 if isinstance(pair.get("0"), dict) else None)
-    return best.get("iptm"), pair_iptm, best.get("complex_plddt")
+    def cross(d):  # off-diagonal [0][1] of a chain-pair dict, or None
+        return d.get("0", {}).get("1") if isinstance(d.get("0"), dict) else None
+    pair_iptm = cross(best.get("pair_chains_iptm", {}))
+    # interface PAE (the fork adds aggregated complex_ipae / pair_chains_pae);
+    # gives a Boltz-2 leg symmetric with AF2's iPAE. None on stock upstream.
+    ipae = best.get("complex_ipae")
+    if ipae is None:
+        ipae = cross(best.get("pair_chains_pae", {}))
+    return best.get("iptm"), pair_iptm, best.get("complex_plddt"), ipae
 
 
 def main():
@@ -107,7 +117,7 @@ def main():
         sys.exit(f"no results.csv in {args.design_dir}")
     df = pd.read_csv(csvf)
     df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
-    for col in ("boltz2_iptm", "boltz2_pair_iptm", "boltz2_plddt"):
+    for col in ("boltz2_iptm", "boltz2_pair_iptm", "boltz2_plddt", "boltz2_ipae"):
         if col not in df.columns:
             df[col] = pd.NA
 
@@ -131,13 +141,14 @@ def main():
         tgt, binder = chain_sequences(pdb)
         wd = os.path.join(work_root, str(row["name"]))
         os.makedirs(wd, exist_ok=True)
-        iptm, pair, plddt = run_boltz2(tgt, binder, wd, use_msa=not args.no_msa,
-                                       diffusion_samples=args.diffusion_samples)
-        df.loc[idx, ["boltz2_iptm", "boltz2_pair_iptm", "boltz2_plddt"]] = [
-            iptm, pair, plddt]
+        iptm, pair, plddt, ipae = run_boltz2(
+            tgt, binder, wd, use_msa=not args.no_msa,
+            diffusion_samples=args.diffusion_samples)
+        df.loc[idx, ["boltz2_iptm", "boltz2_pair_iptm", "boltz2_plddt",
+                     "boltz2_ipae"]] = [iptm, pair, plddt, ipae]
         if i % 10 == 0 or i == len(todo):
             df.to_csv(csvf, index=False)   # checkpoint for resumability
-            print(f"  [{i}/{len(todo)}] {row['name']}: iptm={iptm}")
+            print(f"  [{i}/{len(todo)}] {row['name']}: iptm={iptm} ipae={ipae}")
     df.to_csv(csvf, index=False)
     print(f"wrote boltz2_* columns -> {csvf}")
 
