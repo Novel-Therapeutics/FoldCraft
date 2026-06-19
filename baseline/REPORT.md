@@ -110,7 +110,7 @@ Interface ΔE (kcal/mol; more negative is better):
 |---------|-----------|-------------|------|
 | **RAW** — every design, no selection | median **−33.1**  (IQR −43,−22; n=1000) | median **−33.2**  (IQR −41,−27; n=200) | Mann-Whitney **p=0.22** (n.s.) |
 | **Net-repulsive (ΔE>0)** | **9%** | **0%** | — |
-| **FORWARDED** — each method's deliverables | AF2-passers median **−46.4** (n=188) | best-20 by ipTM median **−35.0** | **p=1×10⁻⁵**, rank-biserial **−0.60** (large) |
+| **FORWARDED** — each method's deliverables | AF2-passers median **−46.4** (n=188) | best-20 by self-ipTM (`boltz_iptm`) median **−36.5** | **p=2.2×10⁻⁴**, rank-biserial **−0.50** (large) |
 
 **1. The raw populations are equivalent.** Draw a random design from each — the
 interface energies are statistically identical. By neutral physics, both are
@@ -124,7 +124,7 @@ downstream filter catches them, and it does:
 
 **3. FoldCraft's filtered deliverables are clearly better — and this is the
 non-circular part.** Its 188 AF2-passing designs reach a median ΔE of −46 kcal/mol,
-far below both its own bulk (−33) and BoltzProt's best (−35). The key point: **OpenMM
+far below both its own bulk (−33) and BoltzProt's best (−36.5). The key point: **OpenMM
 is family-neutral**, so an independent force field *agreeing* that the AF2-gated
 designs are the physically best one means the AF2 gate is selecting genuinely better
 interfaces, not just AF2-flattering ones. This is the discriminating, unbiased
@@ -146,8 +146,8 @@ success rates.
   not an affinity.
 - **The FORWARDED row is asymmetric.** FoldCraft's "best" are its AF2-passers
   (selected from 1000); BoltzProt had **0** AF2-passers, so its "best" are its top-20
-  by self-ipTM (AF2 non-passers). It is a fair "each method's best deliverables"
-  comparison, but the selection is not symmetric.
+  by its own self-reported confidence (`boltz_iptm`, all AF2 non-passers). It is a fair
+  "each method's best deliverables" comparison, but the selection is not symmetric.
 - **Each method is scored on its own predictor's complex** (AF2 structure for
   FoldCraft, Boltz structure for BoltzProt). That's the fair choice — each delivers
   its own predicted geometry — but it's a mild confound worth naming.
@@ -195,3 +195,14 @@ back idempotently:
 - `score_esmfold.py` — ESMFold monomer fold-fidelity (both arms fold well).
 - `score_openmm.py` — the family-neutral interface energy (the decisive metric).
 - `openmm_compare.py` — the comparison + statistics in this report.
+
+**Artifacts & reproducibility.** Every number in this report is reproducible from
+the **tracked** scored tables — `baseline/repro/<fold>/results.csv` (FoldCraft) and
+`baseline/boltzprot/results.csv` (BoltzProt) carry all oracle columns including
+`openmm_dE`, and `python baseline/openmm_compare.py` regenerates the tables above
+directly from them. The raw design **PDBs are not tracked** (`designs/` is
+git-ignored — ~1200 structures); re-running the scorers from scratch needs them.
+Provenance: FoldCraft designs are the reproduction run under `baseline/repro/`
+(author configs, n=200/fold); BoltzProt designs are Boltz API run
+`prot_des_sqpsGbr8wv1N3FNFGt6Z` (see `BENCHMARK.md` for the full provenance). Both
+sets are retained on the GPU box (`reg-box-1:/root/FoldCraft/baseline/`).

@@ -35,6 +35,27 @@ def af2_mask(d):
     return (d[p] > 0.8) & (d[i] > 0.5) & (d[e] < 0.35)
 
 
+def self_iptm_column(d):
+    """The column holding a method's OWN ipTM, for the 'each method's own top
+    designs' (forwarded) framing.
+
+    FoldCraft hallucinates against AF2, so its design-time ``iptm`` IS its
+    self-score; BoltzProt-1 is Boltz-family and self-reports ``boltz_iptm``.
+    Neither ``af2_iptm`` (the independent AF2 *judge*) nor ``boltz2_iptm`` (the
+    open Boltz-2 *oracle*) is a method's own ranking, so they must NOT be used to
+    pick a method's own top designs -- doing so silently judges one method by
+    another's model. Fail loud rather than fall back to a judge column (the bug
+    this replaces: with no bare ``iptm`` column, BoltzProt was ranked by
+    ``af2_iptm`` instead of ``boltz_iptm``).
+    """
+    for col in ("iptm", "boltz_iptm"):
+        if col in d.columns:
+            return col
+    raise SystemExit(
+        "no self-ipTM column ('iptm' or 'boltz_iptm') in results.csv; cannot "
+        "rank a method's own top designs. Columns: " + ", ".join(map(str, d.columns)))
+
+
 def mann_whitney(a, b):
     """Two-sided Mann-Whitney U of a vs b with tie-corrected normal approx.
     Returns (U, z, p_two_sided, rank_biserial). rank_biserial>0 means a tends
@@ -124,9 +145,11 @@ def main():
         bp_fwd = bp_af2["openmm_dE"].dropna()
         bp_lbl = f"AF2-passers (n={len(bp_fwd)})"
     else:
-        # BoltzProt has ~no AF2-passers; fall back to its own top decile by ipTM
+        # BoltzProt has ~no AF2-passers; approximate its pipeline output by its
+        # own top designs, ranked by its self-reported confidence (boltz_iptm) --
+        # NOT af2_iptm/boltz2_iptm, which are external judges (see self_iptm_column).
         k = max(20, len(bp) // 10)
-        col = "iptm" if "iptm" in bp.columns else "af2_iptm"
+        col = self_iptm_column(bp)
         bp_fwd = bp.nlargest(k, col)["openmm_dE"].dropna()
         bp_lbl = f"self-top-{k} by {col} (only {len(bp_af2)} AF2-passers)"
     print(f"  FoldCraft  AF2-passers (n={len(fc_fwd)})  {describe(fc_fwd)}")

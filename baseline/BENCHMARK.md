@@ -31,7 +31,7 @@ metric** — that journey is the main methodological finding:
 |---------|-----------|-------------|---------|
 | **RAW** (all designs, no selection) | median **−33.1** kcal/mol (n=1000) | median **−33.2** (n=200) | indistinguishable (Mann-Whitney p=0.22) |
 | **Net-repulsive (ΔE>0) rate** | **9%** (weak folds: ankyrin 16%, solenoid 17%) | **0%** | BoltzProt output more uniformly physical |
-| **FORWARDED** (each method's deliverables) | AF2-passers median **−46.4** (n=188) | best-20 median **−35.0** | FoldCraft far better (p=1e-5, rank-biserial −0.60) |
+| **FORWARDED** (each method's deliverables) | AF2-passers median **−46.4** (n=188) | best-20 by self-ipTM median **−36.5** | FoldCraft far better (p=2.2e-4, rank-biserial −0.50) |
 
 **Conclusion.** Raw populations are equivalent; BoltzProt's output is cleaner
 (no repulsive tail); but **FoldCraft's AF2-gated deliverables are physically
@@ -47,8 +47,8 @@ truth. Shareable write-up: `baseline/REPORT.md`.
 
 | Method | Family | How | Status |
 |--------|--------|-----|--------|
-| **FoldCraft** | AF2 (hallucination) | the reproduction run — 6 fold campaigns × 200 designs vs PD-L1, author configs | **done** (`baseline/repro/`); needs oracle re-scoring |
-| **BoltzProt-1** | Boltz (Boltz-PPI) | Boltz API `protein:design`, de novo no_template, length 70–185, n=200 | **done** (`baseline/boltzprot/`); needs oracle re-scoring |
+| **FoldCraft** | AF2 (hallucination) | the reproduction run — 6 fold campaigns × 200 designs vs PD-L1, author configs | **done + oracle-scored** (`baseline/repro/`; AF2/Boltz-2/ESMFold/OpenMM — see RESULTS) |
+| **BoltzProt-1** | Boltz (Boltz-PPI) | Boltz API `protein:design`, de novo no_template, length 70–185, n=200 | **done + oracle-scored** (`baseline/boltzprot/`; AF2/Boltz-2/ESMFold/OpenMM — see RESULTS) |
 
 **BoltzProt-1 run provenance:** run `prot_des_sqpsGbr8wv1N3FNFGt6Z`, engine
 `boltzprot v1.0`, 2026-06-18, $10/200 designs, idempotency-key
