@@ -32,9 +32,15 @@ fold_cond_cmap.npy
 fold_cond_cmap_mask.npy
 fold_cond_cmap.png
 # ...but DO keep the committed benchmark metrics (the reference numbers):
-# our improvised baseline (runs/) and the author-config reproduction (repro/).
+# our improvised baseline (runs/), the author-config reproduction (repro/), and
+# the BoltzProt-1 competitor arm (boltzprot/).
 !baseline/runs/**/results.csv
 !baseline/repro/**/results.csv
+!baseline/boltzprot/results.csv
+
+# BoltzProt API raw downloads (bulky per-design archives/structures); the
+# per-design metrics live in baseline/boltzprot/results.csv (committed above).
+baseline/boltzprot/run*/
 
 # OS / editor
 .DS_Store

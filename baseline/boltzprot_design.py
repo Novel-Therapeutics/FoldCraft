@@ -112,49 +112,50 @@ def run_command(payload_path, run_dir="baseline/boltzprot/run1",
 
 
 # --- ingest downloaded results into the baseline scoring layout -------------
-def ingest(raw_dir, out_dir, target_chain="A", binder_chain="B"):
-    """Convert a directory of BoltzProt complex structures (.cif) + a sequence
-    table into ``<out>/designs/<name>.pdb`` + ``<out>/results.csv``.
-
-    Assumptions (override if the real output differs): each design is a CIF
-    complex with the target as ``target_chain`` and the binder as
-    ``binder_chain``; binder sequences are in ``<raw>/sequences.csv`` (columns
-    name,sequence) or recovered from the CIF. Raises loudly on a missing/empty
-    input rather than silently producing an empty benchmark.
-    """
+# Boltz `run --run-dir <dir>` writes one folder per design:
+#   <dir>/results/<id>/metadata.json                  (binder sequence + self-metrics)
+#   <dir>/results/<id>/files/result/<id>_predicted.cif (the binder+target complex)
+def ingest(run_dir, out_dir, binder_chain="B"):
+    """Normalise a completed Boltz ``protein:design run`` directory into
+    ``<out>/designs/<id>.pdb`` (the predicted complex) + ``<out>/results.csv``
+    (binder sequence, length, and BoltzProt's *self*-metrics as reference columns
+    -- the gate comes from the external oracle, never these). Fails loudly if a
+    result is missing its metadata or structure."""
+    import glob
     from Bio.PDB import MMCIFParser, PDBIO
-    from Bio.SeqUtils import seq1
 
-    cifs = sorted(f for f in os.listdir(raw_dir) if f.endswith(".cif"))
-    if not cifs:
-        sys.exit(f"no .cif designs found in {raw_dir}")
+    metas = sorted(glob.glob(os.path.join(run_dir, "results", "*", "metadata.json")))
+    if not metas:
+        sys.exit(f"no results/*/metadata.json under {run_dir}")
     designs_out = os.path.join(out_dir, "designs")
     os.makedirs(designs_out, exist_ok=True)
     parser, io = MMCIFParser(QUIET=True), PDBIO()
 
     rows = []
-    for cif in cifs:
-        name = os.path.splitext(cif)[0]
-        struct = parser.get_structure(name, os.path.join(raw_dir, cif))
-        model = struct[0]
-        for cid in (target_chain, binder_chain):
-            if cid not in model:
-                sys.exit(f"{cif}: missing chain {cid} (expected target="
-                         f"{target_chain}, binder={binder_chain})")
-        binder_seq = seq1("".join(r.resname for r in model[binder_chain]
-                                  if r.id[0] == " "))
-        io.set_structure(struct)
-        io.save(os.path.join(designs_out, f"{name}.pdb"))
-        rows.append({"name": name, "sequence": binder_seq})
+    for mpath in metas:
+        d = json.load(open(mpath))
+        rid = d["id"]
+        seq = next(e["value"] for e in d["entities"] if binder_chain in e["chain_ids"])
+        cif = os.path.join(os.path.dirname(mpath), "files", "result",
+                           f"{rid}_predicted.cif")
+        if not os.path.exists(cif):
+            sys.exit(f"{rid}: predicted structure missing: {cif}")
+        io.set_structure(parser.get_structure(rid, cif))
+        io.save(os.path.join(designs_out, f"{rid}.pdb"))
+        mx = d.get("metrics", {})
+        rows.append({"name": rid, "sequence": seq, "length": len(seq),
+                     "boltz_iptm": mx.get("iptm"),
+                     "boltz_binding_confidence": mx.get("binding_confidence"),
+                     "boltz_min_interaction_pae": mx.get("min_interaction_pae")})
 
-    # carry through any metrics file BoltzProt provides (reference only -- not
-    # used for the gate, which comes from the external oracle)
+    cols = ["name", "sequence", "length", "boltz_iptm",
+            "boltz_binding_confidence", "boltz_min_interaction_pae"]
     with open(os.path.join(out_dir, "results.csv"), "w", newline="") as fh:
-        w = csv.DictWriter(fh, fieldnames=["name", "sequence"])
+        w = csv.DictWriter(fh, fieldnames=cols)
         w.writeheader()
         w.writerows(rows)
-    # record the binder template for RMSD scoring is N/A here (no intended fold);
-    # fold fidelity for BoltzProt is judged by ESMFold self-consistency instead.
+    # No RMSD-to-template here (BoltzProt has no intended fold); fold fidelity is
+    # judged by ESMFold self-consistency in the oracle step instead.
     print(f"ingested {len(rows)} BoltzProt designs -> {out_dir}/")
 
 
@@ -166,8 +167,8 @@ def main(argv=None):
                                        "the boltz-api estimate/run commands")
     w.add_argument("--n", type=int, default=200)
     w.add_argument("--out", default="/tmp/boltzprot_payload.json")
-    g = sub.add_parser("ingest", help="normalise downloaded results")
-    g.add_argument("--raw", required=True, help="dir of downloaded .cif designs")
+    g = sub.add_parser("ingest", help="normalise a completed run dir")
+    g.add_argument("--run-dir", required=True, help="boltz-api run dir (has results/)")
     g.add_argument("--out", default="baseline/boltzprot")
     args = p.parse_args(argv)
 
@@ -177,7 +178,7 @@ def main(argv=None):
         print(f"wrote payload ({args.n} designs) -> {args.out}\n")
         print(run_command(args.out))
     elif args.cmd == "ingest":
-        ingest(args.raw, args.out)
+        ingest(args.run_dir, args.out)
 
 
 if __name__ == "__main__":

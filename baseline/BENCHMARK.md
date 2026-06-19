@@ -16,7 +16,16 @@ RFdiffusion) is **deferred** — see *Future expansion*.
 | Method | Family | How | Status |
 |--------|--------|-----|--------|
 | **FoldCraft** | AF2 (hallucination) | the reproduction run — 6 fold campaigns × 200 designs vs PD-L1, author configs | **done** (`baseline/repro/`); needs oracle re-scoring |
-| **BoltzProt-1** | Boltz (Boltz-PPI) | Boltz API: de novo binder design vs PD-L1, same epitope, ~100 designs | pending (needs API key) |
+| **BoltzProt-1** | Boltz (Boltz-PPI) | Boltz API `protein:design`, de novo no_template, length 70–185, n=200 | **done** (`baseline/boltzprot/`); needs oracle re-scoring |
+
+**BoltzProt-1 run provenance:** run `prot_des_sqpsGbr8wv1N3FNFGt6Z`, engine
+`boltzprot v1.0`, 2026-06-18, $10/200 designs, idempotency-key
+`foldcraft-pdl1-baseline-70to185-n200-v1`. Regenerate the payload with
+`python baseline/boltzprot_design.py payload --n 200`. Length coverage spanned
+the full 70–185 (median 111, 20 designs ≥180) → no targeted top-up needed.
+First look at its *self*-metrics (reference only): ipTM median 0.74 (163/200 >
+0.5) but `binding_confidence` median 0.0000 — its structure head and affinity
+head disagree, which the external oracle will adjudicate.
 
 FoldCraft is fold-*conditioned* (the binder fold is specified); BoltzProt-1
 designs unconstrained binders/nanobodies. The comparison is therefore not
