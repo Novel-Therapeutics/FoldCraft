@@ -329,7 +329,10 @@ def main():
         passed = 0
         #success_target = success_target
         i=0
-        while passed <= success_target:
+        # `< target` (not `<=`): `passed` is incremented once per accepted design
+        # with no break, so `<=` exited only at passed == target+1, generating one
+        # extra accepted design (plus the trajectories needed to reach it) per run.
+        while passed < success_target:
             clear_mem()
             i+=1
             name = f'traj_{i}' #@param {type:"string"}
