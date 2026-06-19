@@ -78,6 +78,36 @@ the AF2 and Boltz-2 legs pass. Report success rate ± Wilson 95% CI.
   AF2 scores). Re-scoring ~1300 FoldCraft + ~100 BoltzProt designs ≈ ~1–2 GPU-days,
   parallelizable via `baseline/scheduler.py`.
 
+## Oracle scoring — how to run (on reg-box-1; scripts written, not yet box-tested)
+
+Three `baseline/` scorers, each operating on a *design dir* (`results.csv` +
+`designs/<name>.pdb`, complex = chain A target / chain B binder) and writing
+columns back idempotently:
+
+- `score_af2.py <dir>` → `af2_plddt/af2_iptm/af2_ipae` (colabdesign, mirrors
+  FoldCraft's own eval). Only needed for **BoltzProt** (FoldCraft already has
+  `plddt/iptm/ipae`).
+- `score_boltz2.py <dir>` → `boltz2_iptm/boltz2_pair_iptm/boltz2_plddt` (open
+  MIT Boltz-2). The independent leg for **FoldCraft**; the self-family leg for
+  BoltzProt (reported, not trusted). `pip install boltz[cuda]`.
+- `score_esmfold.py <dir>` → `esmfold_plddt/esmfold_rmsd` (fold check, both arms).
+  `pip install transformers accelerate torch`.
+
+**Efficient order (Boltz-2 is the cost driver, ~3–5 min/complex):** gate on AF2
+first, then run the expensive Boltz-2/ESMFold **only on AF2-passers**, since a
+design failing AF2 can't clear the consensus anyway. Concretely:
+1. BoltzProt: `score_af2.py baseline/boltzprot` (200). FoldCraft: already scored.
+2. Filter each `results.csv` to AF2-passers (pLDDT>0.8, ipTM>0.5, iPAE<0.35) and
+   run `score_boltz2.py` + `score_esmfold.py` on those rows (the scripts skip
+   already-filled rows; pre-filter or `--sample` to bound compute).
+3. Consensus gate = **AF2 leg AND Boltz-2 leg** both pass (Boltz-2 threshold
+   calibrated on a small set); `esmfold_rmsd` reports fold fidelity. Success rate
+   ± Wilson CI, per method.
+
+Scoring everything is ~93 GPU-hrs; the AF2-first prune cuts Boltz-2 to the
+~hundreds of survivors (~1 GPU-day). Drive it through `baseline/scheduler.py` or
+fan out on cloud if needed.
+
 ## Open items (some need you)
 
 - [ ] **BoltzProt-1 API key** (signup at api.boltz.bio; $2k company credits) — *you*.
