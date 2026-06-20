@@ -155,6 +155,7 @@ def main():
 
     for i in range(1, args.n + 1):
         clear_mem()
+        mpnn.set_seed(None)   # clear_mem() deletes the hoisted mpnn model's RNG key
         name = f"traj_{i}"
         m = design_model(cond_cmap, cond_cmap_mask, binder_len)
         m.design_3stage(*DESIGN_STAGES)
