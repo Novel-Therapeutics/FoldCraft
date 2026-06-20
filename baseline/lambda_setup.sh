@@ -40,6 +40,13 @@ fi
 export PATH="$CONDA_BASE/condabin:$CONDA_BASE/bin:$PATH"   # conda binary for subshells
 source "$CONDA_BASE/etc/profile.d/conda.sh"                # conda activate in this shell
 
+# Recent conda gates the default channels behind a Terms-of-Service acceptance;
+# install_foldcraft.sh's `conda create python=3.10` uses pkgs/main, so accept it
+# up front (no-op on older conda / if already accepted).
+for ch in main r; do
+  conda tos accept --override-channels --channel "https://repo.anaconda.com/pkgs/$ch" 2>/dev/null || true
+done
+
 # --- FoldCraft env (design): env + AF2 params + ColabDesign, via the repo installer ---
 if conda env list | grep -qw FoldCraft; then
   echo "=== FoldCraft env already present, skipping install ==="
