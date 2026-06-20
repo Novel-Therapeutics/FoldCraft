@@ -24,13 +24,21 @@ CUDA_VER=$(nvidia-smi | grep -oP 'CUDA Version: \K[0-9]+\.[0-9]+' | head -1)
 CUDA_MAJOR=${CUDA_VER%%.*}
 echo "driver CUDA: ${CUDA_VER:-unknown}"
 
-# --- conda ---
-if ! command -v conda >/dev/null 2>&1; then
+# --- conda --- (resolve CONDA_BASE robustly: conda may be installed but not on
+# PATH after a batch miniconda install, and a re-run must not reinstall over an
+# existing miniconda dir)
+if command -v conda >/dev/null 2>&1; then
+  CONDA_BASE="$(conda info --base)"
+elif [ -d "$HOME/miniconda3" ]; then
+  CONDA_BASE="$HOME/miniconda3"
+else
   echo "=== installing miniconda ==="
   wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/mc.sh
   bash /tmp/mc.sh -b -p "$HOME/miniconda3"
+  CONDA_BASE="$HOME/miniconda3"
 fi
-source "$(conda info --base)/etc/profile.d/conda.sh"
+export PATH="$CONDA_BASE/condabin:$CONDA_BASE/bin:$PATH"   # conda binary for subshells
+source "$CONDA_BASE/etc/profile.d/conda.sh"                # conda activate in this shell
 
 # --- FoldCraft env (design): env + AF2 params + ColabDesign, via the repo installer ---
 if conda env list | grep -qw FoldCraft; then
