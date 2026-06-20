@@ -17,10 +17,14 @@ Design
   free memory (capacity minus already-committed jobs) AND its *actual* free memory
   (from nvidia-smi) both clear ``job_mem + headroom``. The double check guards
   against both over-commit and a newly-launched neighbour still ramping up.
-* **Resume**: FoldCraft.py writes ``results.csv`` only after a chunk finishes all
-  its trajectories, so ``results.csv`` existing == chunk done. Completed chunks
-  (and already-merged folds) are skipped, making the whole campaign restartable
-  without losing finished work.
+* **Resume**: ``results.csv`` exists only once a chunk has finished all its
+  trajectories, so ``results.csv`` existing == chunk done. FoldCraft.py streams
+  progress to ``results.csv.partial`` during the run and atomically promotes it to
+  ``results.csv`` only at the end (see write_atomic), so a preempted chunk leaves a
+  ``.partial`` but no ``results.csv`` and is correctly re-run rather than skipped.
+  Completed chunks (and already-merged folds) are skipped, making the whole
+  campaign restartable without losing finished work. (Do NOT change FoldCraft.py to
+  write ``results.csv`` incrementally -- that silently breaks this invariant.)
 * **Loud failure**: a chunk whose process exits non-zero is recorded as failed and
   (once) retried solo with full headroom; a fold is merged only when all its
   chunks succeeded. Nothing is silently dropped.

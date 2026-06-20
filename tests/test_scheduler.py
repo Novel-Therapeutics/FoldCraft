@@ -157,6 +157,26 @@ class TestResume:
         open(os.path.join(repro, "b", "template.pdb"), "w").close()
         assert sch.fold_done("b", repro)
 
+    def test_partial_results_csv_is_not_done_and_not_skipped(self, tmp_path):
+        # The reported P1: FoldCraft streams progress to results.csv.partial and
+        # only atomically promotes it to results.csv once the chunk finishes. A
+        # preempted chunk thus has results.csv.partial but no results.csv -- the
+        # scheduler must NOT treat that as done, else it skips the chunk on resume
+        # and merges it as complete, silently dropping the rest of its designs.
+        repro = str(tmp_path)
+        chunks = sch.plan_chunks([_fold("a", 20)], chunk_traj=10)
+        c0 = next(c for c in chunks if c.tag == "a__c0")
+        os.makedirs(c0.out_dir(repro))
+        open(os.path.join(c0.out_dir(repro), "results.csv.partial"), "w").close()
+
+        assert not sch.chunk_done(c0, repro)                        # partial != done
+        assert "a__c0" in {c.tag for c in sch.filter_todo(chunks, repro)}  # re-run
+
+        # promoting it to results.csv (the atomic finalize) marks the chunk done
+        open(os.path.join(c0.out_dir(repro), "results.csv"), "w").close()
+        assert sch.chunk_done(c0, repro)
+        assert "a__c0" not in {c.tag for c in sch.filter_todo(chunks, repro)}
+
 
 # --- repair_fold_template (P2: keep merged folds scoreable) ----------------
 class TestRepairFoldTemplate:
