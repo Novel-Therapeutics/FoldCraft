@@ -28,6 +28,8 @@ examples/outputs/
 **/relaxed/
 *.pickle
 results*.csv
+# transient atomic-write partials (FoldCraft streams here, promotes to results.csv)
+results*.csv.partial
 fold_cond_cmap.npy
 fold_cond_cmap_mask.npy
 fold_cond_cmap.png
@@ -54,3 +56,6 @@ baseline/boltzprot/run*/
 # BindCraft checkout for the experimental binder pipeline
 # (cloned by test/install_foldcraft_binder.sh)
 test/BindCraft/
+
+# Rendered report artifacts -- baseline/REPORT.md is the tracked source of truth
+baseline/REPORT.pdf
