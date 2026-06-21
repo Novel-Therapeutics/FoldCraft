@@ -39,6 +39,10 @@ fold_cond_cmap.png
 !baseline/runs/**/results.csv
 !baseline/repro/**/results.csv
 !baseline/boltzprot/results.csv
+# accuracy A/B experiment metrics (designs/ PDBs stay ignored; CSVs carry the verdict)
+!baseline/ab_get_best/**/results.csv
+!baseline/ab_loss/**/results.csv
+!baseline/ab_loss_fp/**/results.csv
 
 # BoltzProt API raw downloads (bulky per-design archives/structures); the
 # per-design metrics live in baseline/boltzprot/results.csv (committed above).
