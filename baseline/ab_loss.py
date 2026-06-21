@@ -57,19 +57,25 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--fold", default="top7", choices=list(A.FOLDS))
     ap.add_argument("--n", type=int, default=15, help="trajectories per arm")
-    ap.add_argument("--ipae", type=float, default=0.1, help="i_pae weight for the variant arm")
+    ap.add_argument("--ipae", type=str, default="0.1",
+                    help="comma-separated i_pae weights for the variant arms (sweep), "
+                         "e.g. 0.05,0.1,0.2")
     ap.add_argument("--mpnn-samples", type=int, default=5)
     ap.add_argument("--mpnn-temp", type=float, default=0.1)
     ap.add_argument("--out", default="baseline/ab_loss")
     args = ap.parse_args()
 
+    weights = [float(w) for w in args.ipae.split(",")]
     binder_template, binder_hotspots = A.FOLDS[args.fold]
     cond_cmap, cond_cmap_mask, binder_len = A.build_cond_cmap(binder_template, binder_hotspots)
-    print(f"fold={args.fold} binder_len={binder_len} n={args.n} ipae_w={args.ipae} "
+    print(f"fold={args.fold} binder_len={binder_len} n={args.n} ipae_weights={weights} "
           f"mpnn_samples={args.mpnn_samples}", flush=True)
 
     mpnn = mk_mpnn_model(A.MODEL_NAME, backbone_noise=0.0, weights="soluble")
-    arms = {"cmap": 0.0, "cmap_ipae": args.ipae}
+    # 'cmap' is the validated baseline; one variant arm per swept i_pae weight.
+    arms = {"cmap": 0.0}
+    for w in weights:
+        arms[f"ipae{w}"] = w
     rows = {a: [] for a in arms}
     design_loss = {a: [] for a in arms}   # design-trajectory cmap_loss (fold fidelity)
 
