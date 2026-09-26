@@ -2,52 +2,38 @@
 
 **Purpose.** An *internal* baseline to calibrate our own future model improvements
 against the current state of the art — **not** a publication-grade benchmark.
-Rigor is kept where it is cheap (unbiased scoring); relaxed where it costs
-compute without changing the decision (single target, default configs, modest n).
+This single-target, modest-size study uses several scoring proxies. It does not
+establish unbiased scoring or a definitive ranking of the methods.
 
-**Scope (now).** FoldCraft (fold-conditioned) **vs BoltzProt-1** (the June-2026
-SOTA de novo binder designer), one target (PD-L1). A fuller panel (BindCraft,
+**Scope.** FoldCraft (fold-conditioned) **vs BoltzProt-1** (June 2026 snapshot), one target (PD-L1). A fuller panel (BindCraft,
 RFdiffusion) is **deferred** — see *Future expansion*.
 
 ---
 
-## RESULTS (resolved 2026-06-19)
+## Results and interpretation
 
-All 1200 designs (FoldCraft 5 folds × 200 + BoltzProt-1 × 200) scored. **The ML
-oracle gate was inconclusive and had to be replaced by a family-neutral physics
-metric** — that journey is the main methodological finding:
+The June 2026 comparison scored 1,000 FoldCraft and 200 BoltzProt designs.
+See [REPORT.md](REPORT.md) for recorded measurements and their limitations.
+OpenMM interaction energy is an additional proxy, not an unbiased ground-truth
+arbiter. Similar raw medians do not establish equivalence; lower energy in an
+asymmetrically selected subset does not establish superior binding accuracy.
 
-1. **AF2 leg is family-biased.** FoldCraft hallucinates against AF2, so AF2
-   favours it (188/1000 = 18.8% pass) over BoltzProt (0/200). Not a fair judge.
-2. **Open Boltz-2 leg is non-discriminating.** It passes ~73% of AF2-*failers*
-   and ~82% of AF2-passers (and 84% of BoltzProt) — it rubber-stamps almost
-   everything, so the AF2∩Boltz-2 consensus collapses to AF2 (≈ the biased leg).
-   → The consensus benchmark **cannot** honestly rank the two methods.
-3. **OpenMM interface energy is the family-neutral tiebreak** (`score_openmm.py`,
-   Amber ff14SB/GBN2, ΔE = E(complex) − E(target) − E(binder); open, no license,
-   independent of both AF2 and Boltz). `openmm_compare.py` reports:
+## Historical protocol and planning notes
 
-| Framing | FoldCraft | BoltzProt-1 | Verdict |
-|---------|-----------|-------------|---------|
-| **RAW** (all designs, no selection) | median **−33.1** kcal/mol (n=1000) | median **−33.2** (n=200) | indistinguishable (Mann-Whitney p=0.22) |
-| **Net-repulsive (ΔE>0) rate** | **9%** (weak folds: ankyrin 16%, solenoid 17%) | **0%** | BoltzProt output more uniformly physical |
-| **FORWARDED** (each method's deliverables) | AF2-passers median **−46.4** (n=188) | best-20 by self-ipTM median **−36.5** | FoldCraft far better (p=2.2e-4, rank-biserial −0.50) |
-
-**Conclusion.** Raw populations are equivalent; BoltzProt's output is cleaner
-(no repulsive tail); but **FoldCraft's AF2-gated deliverables are physically
-better by a neutral force field** — corroborating the AF2 gate rather than
-echoing it, which retires the self-bias worry. FoldCraft's edge is its *filter*:
-it forwards genuinely better interfaces. In-silico only; ΔE is an interaction
-energy (no entropy / unbound relaxation), a proxy not a Kd — wet-lab is ground
-truth. Shareable write-up: `baseline/REPORT.md`.
-
----
+The sections below preserve the original campaign plan and provenance. Some
+setup checkboxes and compute estimates predate the completed run; they are not
+current deployment status. Cross-model scoring was intended to reduce bias, but
+neither model independence nor consensus establishes an unbiased binding label.
+The implemented AF2 scorer uses **AF2-ptm**, not AF2-multimer, and its effective
+model count needs correction. ESMFold RMSD is to the designed binder chain,
+not directly to the intended fold template. Sequence-level Wilson intervals do
+not account for shared trajectories. See [INTEGRATION.md](INTEGRATION.md).
 
 ## Methods
 
 | Method | Family | How | Status |
 |--------|--------|-----|--------|
-| **FoldCraft** | AF2 (hallucination) | the reproduction run — 6 fold campaigns × 200 designs vs PD-L1, author configs | **done + oracle-scored** (`baseline/repro/`; AF2/Boltz-2/ESMFold/OpenMM — see RESULTS) |
+| **FoldCraft** | AF2 (hallucination) | the reproduction run — 5 completed fold campaigns × 200 designs vs PD-L1; TIM excluded | **done + oracle-scored** (`baseline/repro/`; AF2/Boltz-2/ESMFold/OpenMM — see RESULTS) |
 | **BoltzProt-1** | Boltz (Boltz-PPI) | Boltz API `protein:design`, de novo no_template, length 70–185, n=200 | **done + oracle-scored** (`baseline/boltzprot/`; AF2/Boltz-2/ESMFold/OpenMM — see RESULTS) |
 
 **BoltzProt-1 run provenance:** run `prot_des_sqpsGbr8wv1N3FNFGt6Z`, engine
@@ -70,21 +56,21 @@ entry pooled across its fold campaigns.
    with the same epitope FoldCraft used: `30-34,50-54,69-76` (renumbered-from-1).
 2. **Judge by an external oracle, never by self-scores.** A method's own model is
    biased toward its designs (it optimized against it). Because the two methods
-   are from different families, the clean unbiased judge for each is the *other's*
-   model:
+   are from different families, an additional cross-family comparison uses the
+   other model; its calibration and remaining biases still need evaluation:
    - FoldCraft (AF2-family) → judged by **Boltz-2** (independent).
-   - BoltzProt-1 (Boltz-family) → judged by **AF2-multimer** (independent).
-   - **Consensus** (both models agree) = the fair gate reported for both.
+   - BoltzProt-1 (Boltz-family) → judged by **AF2-ptm** (independent).
+   - **Consensus** (both models agree) = a shared confidence gate, not a validated binding label.
 3. **Re-score raw designs.** BoltzProt-1 pre-filters/ranks its output (Boltz-PPI +
    developability); we score *its raw designs* through the same gate as FoldCraft,
    not its self-reported hit rate.
 
-## Oracle stack (kept rigorous — scoring is cheap vs generation)
+## Planned scoring stack
 
 | Signal | Tool | Notes |
 |--------|------|-------|
-| Interface confidence (primary) | **AF2-multimer** + **open Boltz-2** | Report each + agreement. Boltz-2 gives ipTM / `pair_chains_iptm` / PAE. **Open Boltz-2 has no protein-protein affinity head** (small-molecule only) — so this is interface *confidence*, not a Kd. |
-| Fold fidelity | **ESMFold** | Predict the binder monomer from sequence → RMSD/TM to intended fold. Independent of both families. |
+| Interface confidence (primary) | **AF2-ptm** + **open Boltz-2** | Report each + agreement. Boltz-2 gives ipTM / `pair_chains_iptm` / PAE. **Open Boltz-2 has no protein-protein affinity head** (small-molecule only) — so this is interface *confidence*, not a Kd. |
+| Fold fidelity | **ESMFold** | Predict the binder monomer from sequence → RMSD to the designed binder chain. Independent of both families. |
 | (reference only) | each method's self-score | reported but **not** used for the gate |
 
 **Gate (per design).** Reuse the FoldCraft criteria as the AF2 leg
@@ -106,7 +92,7 @@ the AF2 and Boltz-2 legs pass. Report success rate ± Wilson 95% CI.
 
 - **BoltzProt-1:** API, ~hours, **$-tens within the $2k company launch credit**.
 - **Oracle re-scoring:** Boltz-2 ~3–5 min/complex on a 4090 (~10–20/h); ESMFold
-  seconds/seq; AF2-multimer for the ~100 BoltzProt designs (FoldCraft already has
+  seconds/seq; AF2-ptm for the ~100 BoltzProt designs (FoldCraft already has
   AF2 scores). Re-scoring ~1300 FoldCraft + ~100 BoltzProt designs ≈ ~1–2 GPU-days,
   parallelizable via `baseline/scheduler.py`.
 

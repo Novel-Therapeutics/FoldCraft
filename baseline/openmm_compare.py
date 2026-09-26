@@ -1,21 +1,10 @@
-"""The family-neutral tiebreak: compare FoldCraft vs BoltzProt by the open-source
-OpenMM interface interaction energy (openmm_dE, kcal/mol; more negative = more
-favourable interface). This is the discriminator the ML oracles couldn't give --
-AF2 is FoldCraft's family (biased) and open Boltz-2 is non-discriminating, so
-neither can honestly rank the two. OpenMM (Amber ff14SB / GBN2) is open and
-family-neutral: it judges each design on its own predicted complex by molecular
-mechanics, which penalises clashes and rewards complementarity.
+"""Exploratory OpenMM interaction-energy comparison of recorded design sets.
 
-Two framings, because "better method" has two fair meanings:
-  (A) RAW   -- every design each method emitted (selection-free): if you draw a
-              design at random from each, whose interface is more favourable?
-  (B) FORWARDED -- each method's own pipeline output (AF2-passers for FoldCraft;
-              for BoltzProt its AF2-passers if any, else its self-top by ipTM):
-              whose *deliverables* are better?
-
-Significance: Mann-Whitney U (distribution-free; ranks, no normality assumption)
-with a normal approximation + rank-biserial effect size. Lower dE for FoldCraft
-=> FoldCraft makes more favourable interfaces by neutral physics.
+Reports raw and selected populations under the existing selection rules.
+Interaction energy is not binding free energy; unequal budgets, different
+selection rules, predicted geometries, and shared trajectories limit inference.
+The sequence-level Mann-Whitney statistics do not establish generator equivalence
+or superiority in binding accuracy. See REPORT.md for the historical results.
 
 Usage: python baseline/openmm_compare.py
 """
@@ -124,7 +113,7 @@ def main():
 
     print("=" * 78)
     print("OpenMM interface interaction energy  (kcal/mol, more negative = better)")
-    print("family-neutral physics; the tiebreak AF2/Boltz-2 couldn't give")
+    print("Exploratory proxy; sequence-level statistics do not account for shared trajectories")
     print("=" * 78)
 
     print("\n(A) RAW -- every design emitted (selection-free)")
@@ -132,7 +121,7 @@ def main():
     print(f"  BoltzProt  {describe(bp_dE)}")
     U, z, p_raw, rb = mann_whitney(fc_dE, bp_dE)
     p = p_raw
-    better = "FoldCraft more favourable" if fc_dE.median() < bp_dE.median() else "BoltzProt more favourable"
+    better = "FoldCraft lower median energy" if fc_dE.median() < bp_dE.median() else "BoltzProt lower median energy"
     print(f"  Mann-Whitney: z={z:.2f} p={p:.1e} rank-biserial={rb:+.2f}  -> {better}")
     print(f"  per-fold medians: " +
           ", ".join(f"{k}={v:.1f}" for k, v in
@@ -158,19 +147,19 @@ def main():
         U, z, p, rb = mann_whitney(fc_fwd, bp_fwd)
         better = "FoldCraft" if fc_fwd.median() < bp_fwd.median() else "BoltzProt"
         print(f"  Mann-Whitney: z={z:.2f} p={p:.1e} rank-biserial={rb:+.2f}  "
-              f"-> {better} more favourable")
+              f"-> {better} lower median energy")
 
-    print("\nVERDICT")
-    print(f"  RAW median: FoldCraft {fc_dE.median():.1f} vs BoltzProt "
-          f"{bp_dE.median():.1f} kcal/mol -- indistinguishable (p={p_raw:.2f} on full set).")
-    print(f"  Net-repulsive (dE>0) interfaces: FoldCraft {100*(fc_dE>0).mean():.0f}% "
-          f"vs BoltzProt {100*(bp_dE>0).mean():.0f}% -- BoltzProt's output is more "
-          f"uniformly physical; FoldCraft has a junk tail (weak folds).")
-    print(f"  FORWARDED: FoldCraft's AF2-gated designs reach {fc_fwd.median():.0f} "
-          f"kcal/mol, far below its own bulk and BoltzProt's best -- and OpenMM is")
-    print("  family-neutral, so this corroborates the AF2 gate rather than echoing")
-    print("  it. Net: comparable raw populations; FoldCraft's *filtered deliverables*")
-    print("  are physically better. In-silico only -- wet-lab remains the ground truth.")
+    print("\nINTERPRETATION LIMITS")
+    print(f"  RAW medians: FoldCraft {fc_dE.median():.1f}, BoltzProt "
+          f"{bp_dE.median():.1f} kcal/mol; sequence-level p={p_raw:.2g}.")
+    print("  A non-significant difference does not demonstrate equivalence.")
+    print(f"  Positive interaction energy: FoldCraft {100*(fc_dE>0).mean():.0f}%, "
+          f"BoltzProt {100*(bp_dE>0).mean():.0f}%.")
+    print(f"  SELECTED medians: FoldCraft {fc_fwd.median():.1f}, BoltzProt "
+          f"{bp_fwd.median():.1f} kcal/mol.")
+    print("  Unequal generation budgets and different selection rules limit comparison.")
+    print("  OpenMM energy is not binding free energy or experimental binding evidence.")
+    print("  These measurements do not resolve predictor bias or establish better binders.")
 
 
 if __name__ == "__main__":

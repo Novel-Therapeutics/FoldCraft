@@ -1,5 +1,11 @@
 # FoldCraft fold-conditioning baseline
 
+**Experimental research baseline.** See [integration status](INTEGRATION.md)
+for known implementation and evaluation limitations. Recorded results are
+historical measurements, not proof of improved binding accuracy. Reported Wilson
+intervals treat sequences as independent; multiple sequences share a trajectory,
+so those intervals do not capture trajectory-level dependence.
+
 A reproducible benchmark of FoldCraft's fold-conditioned binder design: 6 folds
 designed against PD-L1, scored by AF2 confidence + fold fidelity. This is the
 **frozen reference** we measure changes (e.g. the `set_range` fix) against.
