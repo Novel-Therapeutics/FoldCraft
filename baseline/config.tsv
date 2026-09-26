@@ -1,0 +1,7 @@
+fold	template	binder_hotspots	binder_len
+top7	baseline/templates/top7.pdb	27-39,58-72	91
+barrel	baseline/templates/barrel.pdb	39-45,26-30	111
+iglike	baseline/templates/iglike.pdb	49-56,7-12,28-36	75
+tim	baseline/templates/tim.pdb	136-149,160-170,3-15	180
+solenoid	baseline/templates/solenoid.pdb	70-76,48-52,28-32	97
+ankyrin	baseline/templates/ankyrin.pdb	50-57,62-83,116-123	125

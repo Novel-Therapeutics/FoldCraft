@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test / tooling caches
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# AlphaFold2 weights (downloaded by install_foldcraft.sh)
+params/
+
+# Design pipeline outputs (trajectories, mpnn samples, designs, relaxed)
+examples/outputs/
+**/traj/
+**/mpnn/
+**/designs/
+**/relaxed/
+*.pickle
+results*.csv
+# transient atomic-write partials (FoldCraft streams here, promotes to results.csv)
+results*.csv.partial
+fold_cond_cmap.npy
+fold_cond_cmap_mask.npy
+fold_cond_cmap.png
+# ...but DO keep the committed benchmark metrics (the reference numbers):
+# our improvised baseline (runs/), the author-config reproduction (repro/), and
+# the BoltzProt-1 competitor arm (boltzprot/).
+!baseline/runs/**/results.csv
+!baseline/repro/**/results.csv
+!baseline/boltzprot/results.csv
+# accuracy A/B experiment metrics (designs/ PDBs stay ignored; CSVs carry the verdict)
+!baseline/ab_get_best/**/results.csv
+!baseline/ab_loss/**/results.csv
+!baseline/ab_loss_fp/**/results.csv
+
+# BoltzProt API raw downloads (bulky per-design archives/structures); the
+# per-design metrics live in baseline/boltzprot/results.csv (committed above).
+baseline/boltzprot/run*/
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Local venv / test caches
+.venv/
+.pytest_cache/
+.coverage
+
+# BindCraft checkout for the experimental binder pipeline
+# (cloned by test/install_foldcraft_binder.sh)
+test/BindCraft/
+
+# Rendered report artifacts -- baseline/REPORT.md is the tracked source of truth
+baseline/REPORT.pdf

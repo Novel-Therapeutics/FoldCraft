@@ -1,5 +1,11 @@
 <h1>FoldCraft</h1>
 
+This is the Novel Therapeutics working repository. The `baseline/` directory
+contains experimental evaluation tools and recorded June 2026 results; these do
+not establish an improvement in binding accuracy. See the
+[integration status and known limitations](baseline/INTEGRATION.md).
+The Colab links below still run the original upstream notebooks.
+
 <h3>Fold-conditioned de novo binder design</h3>
 FoldCraft enables fold-conditioning of binder structure, enabling design of binders with diverse folds like TIM-barrels, solenoid folds or Ig-like domains. 
 Using VHH conditioned framework FoldCraft can succesfully design single domain nanobody binders against diverse tergets. The FoldCraft pipeline is described in this preprint
@@ -19,7 +25,7 @@ Paper: https://www.biorxiv.org/content/10.1101/2025.07.02.662497v1.abstract
 
 First you need to install FoldCraft repository on your local machine:
 
-`git clone https://github.com/KhondamirRustamov/FoldCraft`
+`git clone https://github.com/Novel-Therapeutics/FoldCraft.git`
 
 Then run code below to download all requirements, ColabDesign and AlphaFold2 weights
 
@@ -51,7 +57,7 @@ python FoldCraft.py \
 Or run this code if you want to design nanobody fold-conditioned binders using VHH framework. In that case you don't need to specify the binder template pdb
 ```
 python FoldCraft.py \
-      --vhh 
+      --vhh \
       --output_folder design_vhh_pd_l1 \
       --target_template pd_l1.pdb \
       --target_hotspots '36-41,84-88,92-96' \

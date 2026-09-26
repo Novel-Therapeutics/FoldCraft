@@ -1,0 +1,144 @@
+# FoldCraft baseline benchmark — vs BoltzProt-1 (PD-L1)
+
+**Purpose.** An *internal* baseline to calibrate our own future model improvements
+against the current state of the art — **not** a publication-grade benchmark.
+This single-target, modest-size study uses several scoring proxies. It does not
+establish unbiased scoring or a definitive ranking of the methods.
+
+**Scope.** FoldCraft (fold-conditioned) **vs BoltzProt-1** (June 2026 snapshot), one target (PD-L1). A fuller panel (BindCraft,
+RFdiffusion) is **deferred** — see *Future expansion*.
+
+---
+
+## Results and interpretation
+
+The June 2026 comparison scored 1,000 FoldCraft and 200 BoltzProt designs.
+See [REPORT.md](REPORT.md) for recorded measurements and their limitations.
+OpenMM interaction energy is an additional proxy, not an unbiased ground-truth
+arbiter. Similar raw medians do not establish equivalence; lower energy in an
+asymmetrically selected subset does not establish superior binding accuracy.
+
+## Historical protocol and planning notes
+
+The sections below preserve the original campaign plan and provenance. Some
+setup checkboxes and compute estimates predate the completed run; they are not
+current deployment status. Cross-model scoring was intended to reduce bias, but
+neither model independence nor consensus establishes an unbiased binding label.
+The implemented AF2 scorer uses **AF2-ptm**, not AF2-multimer, and its effective
+model count needs correction. ESMFold RMSD is to the designed binder chain,
+not directly to the intended fold template. Sequence-level Wilson intervals do
+not account for shared trajectories. See [INTEGRATION.md](INTEGRATION.md).
+
+## Methods
+
+| Method | Family | How | Status |
+|--------|--------|-----|--------|
+| **FoldCraft** | AF2 (hallucination) | the reproduction run — 5 completed fold campaigns × 200 designs vs PD-L1; TIM excluded | **done + oracle-scored** (`baseline/repro/`; AF2/Boltz-2/ESMFold/OpenMM — see RESULTS) |
+| **BoltzProt-1** | Boltz (Boltz-PPI) | Boltz API `protein:design`, de novo no_template, length 70–185, n=200 | **done + oracle-scored** (`baseline/boltzprot/`; AF2/Boltz-2/ESMFold/OpenMM — see RESULTS) |
+
+**BoltzProt-1 run provenance:** run `prot_des_sqpsGbr8wv1N3FNFGt6Z`, engine
+`boltzprot v1.0`, 2026-06-18, $10/200 designs, idempotency-key
+`foldcraft-pdl1-baseline-70to185-n200-v1`. Regenerate the payload with
+`python baseline/boltzprot_design.py payload --n 200`. Length coverage spanned
+the full 70–185 (median 111, 20 designs ≥180) → no targeted top-up needed.
+First look at its *self*-metrics (reference only): ipTM median 0.74 (163/200 >
+0.5) but `binding_confidence` median 0.0000 — its structure head and affinity
+head disagree, which the external oracle will adjudicate.
+
+FoldCraft is fold-*conditioned* (the binder fold is specified); BoltzProt-1
+designs unconstrained binders/nanobodies. The comparison is therefore not
+per-fold but **"confident PD-L1 binders produced per method"**, with FoldCraft's
+entry pooled across its fold campaigns.
+
+## Fairness rules
+
+1. **Same target + epitope.** Both design against `examples/targets/pd-l1-1.pdb`
+   with the same epitope FoldCraft used: `30-34,50-54,69-76` (renumbered-from-1).
+2. **Judge by an external oracle, never by self-scores.** A method's own model is
+   biased toward its designs (it optimized against it). Because the two methods
+   are from different families, an additional cross-family comparison uses the
+   other model; its calibration and remaining biases still need evaluation:
+   - FoldCraft (AF2-family) → judged by **Boltz-2** (independent).
+   - BoltzProt-1 (Boltz-family) → judged by **AF2-ptm** (independent).
+   - **Consensus** (both models agree) = a shared confidence gate, not a validated binding label.
+3. **Re-score raw designs.** BoltzProt-1 pre-filters/ranks its output (Boltz-PPI +
+   developability); we score *its raw designs* through the same gate as FoldCraft,
+   not its self-reported hit rate.
+
+## Planned scoring stack
+
+| Signal | Tool | Notes |
+|--------|------|-------|
+| Interface confidence (primary) | **AF2-ptm** + **open Boltz-2** | Report each + agreement. Boltz-2 gives ipTM / `pair_chains_iptm` / PAE. **Open Boltz-2 has no protein-protein affinity head** (small-molecule only) — so this is interface *confidence*, not a Kd. |
+| Fold fidelity | **ESMFold** | Predict the binder monomer from sequence → RMSD to the designed binder chain. Independent of both families. |
+| (reference only) | each method's self-score | reported but **not** used for the gate |
+
+**Gate (per design).** Reuse the FoldCraft criteria as the AF2 leg
+(pLDDT>0.8, ipTM>0.5, iPAE<0.35) and a matched Boltz-2 leg (ipTM/`pair_chains_iptm`
+threshold TBD on a small calibration set). A design "passes consensus" if **both**
+the AF2 and Boltz-2 legs pass. Report success rate ± Wilson 95% CI.
+
+## Caveats (state with every number)
+
+- **In-silico only** — no wet-lab; all "success" is predicted interface confidence.
+- **BoltzProt-1 is a moving, closed API** — snapshot results once with the date and
+  any version string the API returns; not bit-reproducible later.
+- **Confidence ≠ affinity** — the calibrated protein-protein affinity (Boltz-PPI)
+  is API-only; the local baseline measures interface confidence agreement.
+- **IP** — PD-L1 is public, so sending it to the Boltz API is fine; proprietary
+  targets must stay on the local MIT Boltz-2 oracle.
+
+## Compute
+
+- **BoltzProt-1:** API, ~hours, **$-tens within the $2k company launch credit**.
+- **Oracle re-scoring:** Boltz-2 ~3–5 min/complex on a 4090 (~10–20/h); ESMFold
+  seconds/seq; AF2-ptm for the ~100 BoltzProt designs (FoldCraft already has
+  AF2 scores). Re-scoring ~1300 FoldCraft + ~100 BoltzProt designs ≈ ~1–2 GPU-days,
+  parallelizable via `baseline/scheduler.py`.
+
+## Oracle scoring — how to run (on reg-box-1; scripts written, not yet box-tested)
+
+Three `baseline/` scorers, each operating on a *design dir* (`results.csv` +
+`designs/<name>.pdb`, complex = chain A target / chain B binder) and writing
+columns back idempotently:
+
+- `score_af2.py <dir>` → `af2_plddt/af2_iptm/af2_ipae` (colabdesign, mirrors
+  FoldCraft's own eval). Only needed for **BoltzProt** (FoldCraft already has
+  `plddt/iptm/ipae`).
+- `score_boltz2.py <dir>` → `boltz2_iptm/boltz2_pair_iptm/boltz2_plddt` (open
+  MIT Boltz-2). The independent leg for **FoldCraft**; the self-family leg for
+  BoltzProt (reported, not trusted). `pip install boltz[cuda]`.
+- `score_esmfold.py <dir>` → `esmfold_plddt/esmfold_rmsd` (fold check, both arms).
+  `pip install transformers accelerate torch`.
+
+**Efficient order (Boltz-2 is the cost driver, ~3–5 min/complex):** gate on AF2
+first, then run the expensive Boltz-2/ESMFold **only on AF2-passers**, since a
+design failing AF2 can't clear the consensus anyway. Concretely:
+1. BoltzProt: `score_af2.py baseline/boltzprot` (200). FoldCraft: already scored.
+2. Filter each `results.csv` to AF2-passers (pLDDT>0.8, ipTM>0.5, iPAE<0.35) and
+   run `score_boltz2.py` + `score_esmfold.py` on those rows (the scripts skip
+   already-filled rows; pre-filter or `--sample` to bound compute).
+3. Consensus gate = **AF2 leg AND Boltz-2 leg** both pass (Boltz-2 threshold
+   calibrated on a small set); `esmfold_rmsd` reports fold fidelity. Success rate
+   ± Wilson CI, per method.
+
+Scoring everything is ~93 GPU-hrs; the AF2-first prune cuts Boltz-2 to the
+~hundreds of survivors (~1 GPU-day). Drive it through `baseline/scheduler.py` or
+fan out on cloud if needed.
+
+## Open items (some need you)
+
+- [ ] **BoltzProt-1 API key** (signup at api.boltz.bio; $2k company credits) — *you*.
+- [ ] Confirm the live API schema vs `baseline/boltzprot_design.py` scaffold.
+- [ ] Install **open Boltz-2** (`pip install boltz[cuda]`, MIT) + **ESMFold** on the
+      GPU box (after the box re-sync).
+- [ ] Box re-sync to reconciled `pure-tier-refactor` (still pending; box busy).
+
+## Future expansion (deferred — for investor DD / publication)
+
+Full panel adds **BindCraft** (AF2-hallucination; needs a **PyRosetta commercial
+license**) and **RFdiffusion** (BSD; RFdiffusion→ProteinMPNN→AF2-initial-guess,
+~3–5k backbones/target). Both ~few 4090-days/target; cloud fan-out (Lambda 8×A100,
+~$200, ~1 day) is the cost-effective venue. Multi-target sweep + per-tool fairness
+tuning + larger n also belong to that phase. Tooling assessments captured in the
+session notes.

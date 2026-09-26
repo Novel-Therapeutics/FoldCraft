@@ -8,7 +8,7 @@ from colabdesign import mk_af_model
 import pandas as pd
 import matplotlib.pyplot as plt
 from Bio.PDB import PDBParser
-from Bio.SeqUtils import seq1
+from Bio.PDB.Polypeptide import is_aa
 import numpy as np
 import pickle
 from tqdm.notebook import tqdm
@@ -28,6 +28,7 @@ import matplotlib.pyplot as plt
 from matplotlib import patches
 from colabdesign.mpnn import mk_mpnn_model
 from biopython_utils import *
+from cmap_utils import assemble_fold_conditioned_cmap, binarize_cmap
 import warnings
 
 
@@ -40,7 +41,7 @@ def parse_args():
     parser.add_argument('--num_designs', type=int, default=1, help='Number of design trajectories to generate (ignored if --sample is enabled)')
     parser.add_argument('--vhh', action='store_true', help='Whether to use VHH framework to construct target cmap (all binder information would be ignored in that case)')
     
-    parser.add_argument('--binder_template', type=str, required=True, help='Path to the binder template PDB file (required)')
+    parser.add_argument('--binder_template', type=str, default='', help='Path to the binder template PDB file (required unless --vhh is set)')
     parser.add_argument('--target_template', type=str, required=True, help='Path to the target template PDB file (required)')
     parser.add_argument('--target_hotspots', type=str, required=True, help='''Residue ranges for target hotspots, e.g., "14-30,80-81,90-102" (required)''')
     parser.add_argument('--binder_hotspots', type=str, default='', help='Residue ranges for binder, e.g. "14-30,80-81,90-102"') 
@@ -69,6 +70,9 @@ def main():
     chain_template = args.binder_chain #chain for binder
     vhh = args.vhh
 
+    if not vhh and not template_pdb:
+        raise SystemExit("Error: --binder_template is required unless --vhh is set.")
+
     pdb_target_path = args.target_template #template for target
     chain_id = args.target_chain #Select chain for target protein.
     
@@ -95,90 +99,92 @@ def main():
     mpnn_save = args.mpnn_save
 
     model_name = 'v_48_010'
-    try:
-        os.system(f'mkdir {folder_name}')
-    except:
-        pass
-        
+    os.makedirs(folder_name, exist_ok=True)
+
     if vhh:
-        load_np = np.load(f'framework/vhh.npy')
-        target_hotspots_np = np.array(set_range(target_hotspots))
+        # VHH path: binder cmap comes from the fixed VHH framework, the binder
+        # length is the 127-residue VHH scaffold, and the CDR (binder) hotspots
+        # are fixed -- any user-supplied binder_hotspots/binder_mask is ignored,
+        # matching the original behavior.
+        # Anchor the bundled VHH framework cmap to the script's directory so
+        # --vhh runs work from any CWD (SLURM job dirs, installed invocations);
+        # the previous CWD-relative 'framework/vhh.npy' raised FileNotFoundError
+        # whenever the process was not launched from the repo root.
+        vhh_framework = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                     'framework', 'vhh.npy')
+        load_np = np.load(vhh_framework)
         af_model = mk_afdesign_model(protocol="fixbb", use_templates=True)
         af_model.prep_inputs(pdb_filename=pdb_target_path,
                              ignore_missing=False,
                              chain = chain_id,)
-        
+
         target_len = af_model._len
         binder_len = 127
-        fc_cmap = np.zeros((target_len+binder_len, target_len+binder_len))
-        
         binder_hotspots = '26-35,55-59,102-116'
-        cdr_range = np.array(set_range(binder_hotspots))+target_len
-        
-        fc_cmap[-binder_len:,-binder_len:] = load_np
-        
-        for i in target_hotspots_np:
-            for x in cdr_range:
-                fc_cmap[x-1,i-1] = 1.
-                fc_cmap[i-1,x-1] = 1.
+        fc_cmap = assemble_fold_conditioned_cmap(load_np, target_len, binder_len,
+                                                 target_hotspots, binder_hotspots)
     else:
-        pdbparser = PDBParser()
-        
-        structure = pdbparser.get_structure(binder_template, template_pdb)
-        chains = {chain.id:seq1(''.join(residue.resname for residue in chain)) for chain in structure.get_chains()}
-        
-        query_chain = chains[chain_template]
-        
+        # Count the binder template's *polymer* residues for the gap-numbering
+        # guard below. is_aa() excludes waters/ions/ligands but keeps modified
+        # residues (e.g. MSE) that colabdesign promotes -- so the count matches the
+        # model's view. The sequence itself is taken from the model after
+        # prep_inputs (query_chain, below), NOT from seq1() over raw resnames: the
+        # latter let HETATM/water inflate the length (waters -> 'X') or frame-shift
+        # it (2-char ion names like ZN/NA), which spuriously aborted valid
+        # crystallographic templates at the guard and, more rarely, silently
+        # corrupted the conditioned cmap.
+        structure = PDBParser(QUIET=True).get_structure(binder_template, template_pdb)
+        n_polymer = sum(1 for residue in structure[0][chain_template] if is_aa(residue))
+
         af_binder = mk_afdesign_model(protocol="fixbb", use_templates=True)
         af_binder.prep_inputs(pdb_filename=template_pdb,
                              ignore_missing=False,
                              chain = chain_template,
                              rm_template_seq=False,
                              rm_template_sc=False,)
-        
-        #name='9had'
-        af_binder.set_seq(query_chain[:af_binder._len])
+
+        # A polymer-count vs model-span mismatch means the binder template has gaps
+        # in its residue numbering (non-contiguous resSeq), which otherwise fails
+        # deep inside the model with an opaque broadcasting error.
+        if n_polymer != af_binder._len:
+            raise SystemExit(
+                f"Error: binder template '{template_pdb}' (chain '{chain_template}') "
+                f"has {n_polymer} polymer residues but the model spans "
+                f"{af_binder._len} positions. This usually means the PDB has gaps in "
+                "its residue numbering (missing resSeq entries). Renumber the binder "
+                "template contiguously starting from 1 (and update --binder_hotspots "
+                "accordingly) before running."
+            )
+
+        # Native binder sequence exactly as colabdesign sees it: aligned to _len,
+        # HETATM/water-free, and MODRES-correct (MSE -> M, not 'X').
+        query_chain = ''.join(
+            residue_constants.restypes[a] if a < residue_constants.restype_num else 'X'
+            for a in af_binder._wt_aatype)
+        af_binder.set_seq(query_chain)
         af_binder.predict(num_recycles=3, verbose=False)
         print(f"CMAP of {binder_template} (monomer plddt: {af_binder.aux['log']['plddt']:.3f})")
         #plt.imshow(af_model.aux['cmap'])
-        
-        
+
+
         warnings.filterwarnings("ignore")
-        
+
         #Prepare target protein structure
-        
-        target_hotspots_np = np.array(set_range(target_hotspots))
-        
+
         af_model = mk_afdesign_model(protocol="fixbb", use_templates=True)
         af_model.prep_inputs(pdb_filename=pdb_target_path,
                              ignore_missing=False,
                              chain = chain_id,)
-        
+
         target_len = af_model._len
         binder_len = af_binder._len
-        
+
+        # binder cmap from the AlphaFold2 prediction of the binder monomer
         load_np = af_binder.aux['cmap']
-        
-        if binder_mask != '':
-            binder_mask = set_range(binder_mask)
-            for i in binder_mask:
-                load_np[i,:] = 0.
-                load_np[:,i] = 0.
-        
-        fc_cmap = np.zeros((target_len+binder_len, target_len+binder_len))
-        
-        if binder_hotspots == '':
-            cdr_range = np.array([range(0,binder_len)])+target_len
-        else:
-            cdr_range = np.array(set_range(binder_hotspots))+target_len
-        
-        fc_cmap[-binder_len:,-binder_len:] = load_np
-        
-        for i in target_hotspots_np:
-            for x in cdr_range:
-                fc_cmap[x-1,i-1] = 1.
-                fc_cmap[i-1,x-1] = 1.
-    
+        fc_cmap = assemble_fold_conditioned_cmap(load_np, target_len, binder_len,
+                                                 target_hotspots, binder_hotspots,
+                                                 binder_mask)
+
     from matplotlib import patches
     fig, ax = plt.subplots()
     plt.imshow(fc_cmap)
@@ -187,11 +193,18 @@ def main():
     ax.add_patch(rect)
     ax.add_patch(rect2)
     plt.savefig(f'{folder_name}/fold_cond_cmap.png')
-    
+
     np.save(f'{folder_name}/fold_cond_cmap.npy',fc_cmap)
-    
-    fc_cmap[fc_cmap>0] = 1
-    np.save(f'{folder_name}/fold_cond_cmap_mask.npy',fc_cmap)
+
+    np.save(f'{folder_name}/fold_cond_cmap_mask.npy', binarize_cmap(fc_cmap))
+
+    # The fold-conditioned cmap and its mask are constant for the whole run, so
+    # keep them in memory instead of re-reading the .npy files from disk on every
+    # model build (previously np.load'd once per trajectory and once per MPNN
+    # sample). Each model is handed a fresh copy to preserve the previous
+    # per-iteration isolation; the loss callback only reads these arrays.
+    cond_cmap = fc_cmap
+    cond_cmap_mask = binarize_cmap(fc_cmap)
 
     # Start to design
 
@@ -235,10 +248,41 @@ def main():
     iptms = []
     cmap_loss = []
 
+    # Persist results incrementally so an OOM/RunTimeError/preemption mid-run keeps
+    # every design recorded so far, instead of losing the whole table (it was
+    # previously written only once, after both loops). Progress streams to
+    # results.csv.partial after each accepted design; results.csv itself is created
+    # only by the finalizing call at the very end (atomic os.replace via
+    # write_atomic). This keeps "results.csv exists == chunk complete" true, which
+    # baseline/scheduler.py relies on for resume/merge -- a preempted chunk leaves
+    # results.csv.partial (recoverable) but no results.csv, so the scheduler
+    # re-runs it instead of skipping/merging it as done.
+    results_csv = f"{folder_name}/results.csv"
+    def write_results(finalize=False):
+        df = pd.DataFrame({'name':names,
+                           'sequence':sequences,
+                           'plddt':plddts,
+                           'ipae':ipaes,
+                           'iptm':iptms,
+                           'cmap_loss':cmap_loss})
+        write_atomic(results_csv, df.to_csv, finalize=finalize)
+
     # Create folders to save outputs
-    os.system(f'mkdir {folder_name}/traj/')
-    os.system(f'mkdir {folder_name}/mpnn/')
-    os.system(f'mkdir {folder_name}/designs/')
+    os.makedirs(f'{folder_name}/traj/', exist_ok=True)
+    os.makedirs(f'{folder_name}/mpnn/', exist_ok=True)
+    os.makedirs(f'{folder_name}/designs/', exist_ok=True)
+
+    # Build ProteinMPNN once: model_name/backbone_noise/weights are constant for
+    # the whole run, but mk_mpnn_model joblib-loads the weights and rebuilds its
+    # jitted score/sample functions on every construction. Constructing it per
+    # trajectory (as before) repeated that work each iteration. Only prep_inputs
+    # (which writes self._inputs, not the model) varies per trajectory, so build
+    # here and re-prep inside the loop. The sampler RNG is seeded at construction
+    # with seed=None (non-deterministic), so a single shared key stream is
+    # statistically identical to a fresh model per trajectory -- no distribution
+    # change, just no reload.
+    mpnn_model = mk_mpnn_model(model_name, backbone_noise=mpnn_backbone_noise,
+                               weights=mpnn_version)
 
     # Generate N number of trajectories
     if sample == False:
@@ -246,6 +290,11 @@ def main():
         for i in range(num_designs):
             i+=1
             clear_mem() # clearing memory at each step helps to avoid RunTimeError
+            # clear_mem() deletes every live JAX device buffer, including the hoisted
+            # mpnn_model's RNG key (its params are host-side numpy and survive), which
+            # would break sample_parallel below. Re-seed it: set_seed(None) gives a
+            # fresh key per trajectory, matching the original per-trajectory build.
+            mpnn_model.set_seed(None)
             name = f'traj_{i}'
             rm_aa = 'C'
             
@@ -253,8 +302,8 @@ def main():
                                                  use_templates=True,)
 
             # load the fold-conditioned cmaps inside of af_model
-            af_model.opt['cond_cmap'] = np.load(f'{folder_name}/fold_cond_cmap.npy')
-            af_model.opt['cond_cmap_mask'] = np.load(f'{folder_name}/fold_cond_cmap_mask.npy')
+            af_model.opt['cond_cmap'] = cond_cmap.copy()
+            af_model.opt['cond_cmap_mask'] = cond_cmap_mask.copy()
             
             af_model.prep_inputs(pdb_filename=pdb_target_path,
                                          chain=chain_id, binder_len = binder_len,
@@ -284,8 +333,7 @@ def main():
             else:
                 raise ValueError("Wrong redesign_method was selected. Options: 'full','non-interface'")
         
-            mpnn_model = mk_mpnn_model(model_name, backbone_noise=mpnn_backbone_noise,weights=mpnn_version)
-            mpnn_model.prep_inputs(pdb_filename=f"{folder_name}/traj/{name}.pdb", chain='A,B', 
+            mpnn_model.prep_inputs(pdb_filename=f"{folder_name}/traj/{name}.pdb", chain='A,B',
                                    fix_pos=sol_design_pos, rm_aa = "C", inverse=True)
         
             samples = mpnn_model.sample_parallel(temperature=mpnn_sampling_temp, batch=mpnn_samples)
@@ -296,17 +344,21 @@ def main():
                     pickle.dump(samples, handle, protocol=pickle.HIGHEST_PROTOCOL)   
                 
             #Predict Samples with AF2_ptm
-            print('Predicting sequences with AF2_ptm...')    
+            print('Predicting sequences with AF2_ptm...')
+            # Build the AF2-ptm prediction model once per trajectory and reuse it
+            # across the mpnn_samples sequences (only set_seq changes). Previously a
+            # fresh model + prep_inputs was constructed for every sample, re-running
+            # template featurization and forcing a fresh XLA compile each time.
+            af_model = mk_afdesign_model(protocol="binder", loss_callback=cmap_loss_binder,
+                                                   use_templates=True,)
+            af_model.opt['cond_cmap'] = cond_cmap.copy()
+            af_model.opt['cond_cmap_mask'] = cond_cmap_mask.copy()
+            af_model.prep_inputs(pdb_filename=pdb_target_path,
+                                           chain=chain_id, binder_len = binder_len,
+                                           hotspot=target_hotspots,
+                                           rm_aa=rm_aa, #fix_pos=fixed_positions,
+                                           )
             for num, seq in enumerate(samples['seq']):
-                af_model = mk_afdesign_model(protocol="binder", loss_callback=cmap_loss_binder,
-                                                       use_templates=True,)
-                af_model.opt['cond_cmap'] = np.load(f'{folder_name}/fold_cond_cmap.npy')
-                af_model.opt['cond_cmap_mask'] = np.load(f'{folder_name}/fold_cond_cmap_mask.npy')
-                af_model.prep_inputs(pdb_filename=pdb_target_path,
-                                               chain=chain_id, binder_len = binder_len,
-                                               hotspot=target_hotspots,
-                                               rm_aa=rm_aa, #fix_pos=fixed_positions,
-                                               )
                 af_model.set_seq(seq[-binder_len:])
                 af_model.predict(num_recycles=3, verbose=False, models=["model_1_ptm","model_2_ptm"])
                 print(f"predict: {name}_{num} plddt: {af_model.aux['log']['plddt']:.3f}, i_pae: {(af_model.aux['log']['i_pae']):.3f}, i_ptm: {af_model.aux['log']['i_ptm']:.3f}, cmap_loss: {af_model.aux['log']['cmap_loss_binder']:.3f}")
@@ -319,13 +371,22 @@ def main():
                 ipaes.append(af_model.aux['log']['i_pae'])
                 iptms.append(af_model.aux['log']['i_ptm'])
                 cmap_loss.append(af_model.aux['log']['cmap_loss_binder'])
-    
+                write_results()   # checkpoint after each design
+
     else:
         passed = 0
         #success_target = success_target
         i=0
-        while passed <= success_target:
+        # Stop *starting* trajectories once the target is reached (`<`, not `<=`,
+        # which overshot by one). The inner MPNN-batch loop is *also* capped, via
+        # iter_until_target below -- otherwise the final batch kept saving every
+        # passing sample past the target (up to mpnn_samples-1 extra), since the
+        # outer guard only fires between trajectories. Together they make the
+        # accepted-design count exactly --target_success.
+        while passed < success_target:
             clear_mem()
+            mpnn_model.set_seed(None)  # clear_mem() deletes the hoisted mpnn_model's
+                                       # RNG key; re-seed it (see the --num_designs branch)
             i+=1
             name = f'traj_{i}' #@param {type:"string"}
             rm_aa = 'C' #@param {type:"string"}
@@ -333,8 +394,8 @@ def main():
             af_model = mk_afdesign_model(protocol="binder", loss_callback=cmap_loss_binder,
                                                  use_templates=True,)
             
-            af_model.opt['cond_cmap'] = np.load(f'{folder_name}/fold_cond_cmap.npy')
-            af_model.opt['cond_cmap_mask'] = np.load(f'{folder_name}/fold_cond_cmap_mask.npy')
+            af_model.opt['cond_cmap'] = cond_cmap.copy()
+            af_model.opt['cond_cmap_mask'] = cond_cmap_mask.copy()
             
             af_model.prep_inputs(pdb_filename=pdb_target_path,
                                          chain=chain_id, binder_len = binder_len,
@@ -362,8 +423,7 @@ def main():
                 else:
                     raise ValueError("Wrong redesign_method was selected. Options: 'full','non-interface'")
             
-                mpnn_model = mk_mpnn_model(model_name, backbone_noise=mpnn_backbone_noise,weights=mpnn_version)
-                mpnn_model.prep_inputs(pdb_filename=f"{folder_name}/traj/{name}.pdb", chain='A,B', 
+                mpnn_model.prep_inputs(pdb_filename=f"{folder_name}/traj/{name}.pdb", chain='A,B',
                                        fix_pos=sol_design_pos, rm_aa = "C", inverse=True)
             
                 samples = mpnn_model.sample_parallel(temperature=mpnn_sampling_temp, batch=mpnn_samples)
@@ -372,18 +432,22 @@ def main():
                         pickle.dump(samples, handle, protocol=pickle.HIGHEST_PROTOCOL)   
                     
                 #Predict Samples with AF2_ptm
-                print('Predicting sequences with AF2_ptm...')    
-                for num, seq in enumerate(samples['seq']):
-                    af_model = mk_afdesign_model(protocol="binder", loss_callback=cmap_loss_binder,
-                                                           use_templates=True,)
-                    af_model.opt['cond_cmap'] = np.load(f'{folder_name}/fold_cond_cmap.npy')
-                    af_model.opt['cond_cmap_mask'] = np.load(f'{folder_name}/fold_cond_cmap_mask.npy')
-            
-                    af_model.prep_inputs(pdb_filename=pdb_target_path,
-                                                   chain=chain_id, binder_len = binder_len,
-                                                   hotspot=target_hotspots,
-                                                   rm_aa=rm_aa, #fix_pos=fixed_positions,
-                                                   )
+                print('Predicting sequences with AF2_ptm...')
+                # Build the AF2-ptm prediction model once per trajectory and reuse it
+                # across the batch (only set_seq changes), as in the non-sample path.
+                af_model = mk_afdesign_model(protocol="binder", loss_callback=cmap_loss_binder,
+                                                       use_templates=True,)
+                af_model.opt['cond_cmap'] = cond_cmap.copy()
+                af_model.opt['cond_cmap_mask'] = cond_cmap_mask.copy()
+                af_model.prep_inputs(pdb_filename=pdb_target_path,
+                                               chain=chain_id, binder_len = binder_len,
+                                               hotspot=target_hotspots,
+                                               rm_aa=rm_aa, #fix_pos=fixed_positions,
+                                               )
+                # Cap the batch at the remaining global budget so it can't push
+                # `passed` past success_target (see iter_until_target); lambda reads
+                # the live `passed`, which is incremented on each accepted design.
+                for num, seq in iter_until_target(samples['seq'], lambda: passed, success_target):
                     af_model.set_seq(seq[-binder_len:])
                     af_model.predict(num_recycles=3, verbose=False, models=["model_1_ptm","model_2_ptm"])
                     print(f"predict: {name}_{num} plddt: {af_model.aux['log']['plddt']:.3f}, i_pae: {(af_model.aux['log']['i_pae']):.3f}, i_ptm: {af_model.aux['log']['i_ptm']:.3f}, cmap_loss: {af_model.aux['log']['cmap_loss_binder']:.3f}")
@@ -398,15 +462,11 @@ def main():
                         iptms.append(af_model.aux['log']['i_ptm'])
                         cmap_loss.append(af_model.aux['log']['cmap_loss_binder'])
                         passed+=1
+                        write_results()   # checkpoint after each design
     
-    df = pd.DataFrame({'name':names,
-                               'sequence':sequences,
-                               'plddt':plddts,
-                               'ipae':ipaes,
-                               'iptm':iptms,
-                               'cmap_loss':cmap_loss})
-    
-    df.to_csv(f"{folder_name}/results.csv")
+    # Final flush + atomic promote: results.csv now exists, signalling the chunk
+    # completed (also writes an empty table if no designs passed, as before).
+    write_results(finalize=True)
 
 if __name__ == '__main__':
     main()

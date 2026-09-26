@@ -1,3 +1,16 @@
+# =============================================================================
+# EXPERIMENTAL — not part of the validated FoldCraft pipeline.
+#
+# FoldCraft_binder.py implements length-variable de novo binder design
+# (exploratory linear / miniprotein binder runs, e.g. Nipah, KEAP1). It is
+# provided as-is, is NOT covered by the paper's benchmarks, and its CLI /
+# behaviour may change or break. For the published results use FoldCraft.py
+# (fold-conditioned and VHH design).
+#
+# Note: imports `biopython_utils` from the repo root — run from the repository
+# root (e.g. `python test/FoldCraft_binder.py ...`) so it resolves.
+# =============================================================================
+
 import argparse
 import jax
 import jax.numpy as jnp
@@ -30,8 +43,22 @@ from colabdesign.mpnn import mk_mpnn_model
 from biopython_utils import *
 import warnings
 
-from BindCraft.functions import *
-pr.init(f'-ignore_unrecognized_res -ignore_zero_occupancy -mute all -holes:dalphaball "./DAlphaBall.gcc" -corrections::beta_nov16 true -relax:default_repeats 1')
+# BindCraft provides the PyRosetta relax + interface-scoring helpers reused
+# below. It is not pip-installable, so locate the checkout (created by
+# test/install_foldcraft_binder.sh or pointed to via $BINDCRAFT_PATH), put it on
+# sys.path, and import only what we use -- avoiding the previous `import *`,
+# which both failed when BindCraft was absent and shadowed FoldCraft's own
+# biopython_utils helpers. This script and bindcraft_deps.py both live in test/;
+# the repo root is added so `biopython_utils` (above) also resolves.
+import sys as _sys
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))            # test/ -> bindcraft_deps
+_sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root -> biopython_utils
+from bindcraft_deps import ensure_bindcraft_importable, dalphaball_path
+ensure_bindcraft_importable()
+import pyrosetta as pr
+from BindCraft.functions.pyrosetta_utils import pr_relax, score_interface
+
+pr.init(f'-ignore_unrecognized_res -ignore_zero_occupancy -mute all -holes:dalphaball "{dalphaball_path()}" -corrections::beta_nov16 true -relax:default_repeats 1')
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run fold-conditioned binder design")
@@ -138,7 +165,10 @@ def main():
         passed = 0
         #success_target = success_target
         i=start_with
-        while passed <= success_target:
+        # `< target` (not `<=`) and the iter_until_target cap on the inner batch
+        # loop below make the accepted count exactly --target_success (was `<=`
+        # plus an uncapped batch loop -> overshoot by up to mpnn_samples).
+        while passed < success_target:
             clear_mem()
             if binder_lengths != False:
             	binder_len = random.randint(binder_lengths[0], binder_lengths[1]+1)
@@ -195,8 +225,9 @@ def main():
                         pickle.dump(samples, handle, protocol=pickle.HIGHEST_PROTOCOL)   
                     
                 #Predict Samples with AF2_ptm
-                print('Predicting sequences with AF2_ptm...')    
-                for num, seq in enumerate(samples['seq']):
+                print('Predicting sequences with AF2_ptm...')
+                # cap the batch at the remaining global budget (see iter_until_target)
+                for num, seq in iter_until_target(samples['seq'], lambda: passed, success_target):
                     af_model = mk_afdesign_model(protocol="binder", loss_callback=rg_loss,
                                                            use_templates=True,)
            
