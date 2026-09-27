@@ -16,6 +16,9 @@ benchmark, and apply prespecified promotion criteria. See
 [performance results](../../PERFORMANCE_RESULTS.md) and
 [expanded results](../../EXPANDED_BENCHMARK_RESULTS.md). This completes that
 bounded study, not every future hypothesis in I1–I5 or assay validation.
+A further performance pass completed three paired Boltz throughput rounds:
+reusable CLI workers preserve predictions exactly and reduce median batch wall
+time by 15.2%. See [Boltz throughput results](../../BOLTZ_THROUGHPUT_RESULTS.md).
 The plan below preserves the original ordering; its historical “Immediate next PR”
 section is superseded by the current closure status and benchmark reports.
 

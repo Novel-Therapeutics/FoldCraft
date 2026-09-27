@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/scripts/benchmark_boltz_workers.py", line 104, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/scripts/benchmark_boltz_workers.py", line 81, in main
+    with ThreadPoolExecutor(max_workers=protocol['workers']) as executor:results=list(executor.map(run,tasks))
+                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/concurrent/futures/_base.py", line 451, in result
+    self._condition.wait(timeout)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/threading.py", line 334, in wait
+    waiter.acquire()
+KeyboardInterrupt

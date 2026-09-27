@@ -1,0 +1,2 @@
+{"round": 0, "mode": "subprocess", "seconds": 66.52496101893485, "peak_gpu_mib": 4951}
+{"round": 0, "mode": "persistent", "seconds": 71.04561167396605, "peak_gpu_mib": 4711}

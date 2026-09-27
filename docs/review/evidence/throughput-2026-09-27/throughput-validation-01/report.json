@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "runs": [
+    {
+      "cli": "single",
+      "receipts": 2,
+      "seconds": 62.023997507058084,
+      "cache_resume_seconds": 1.805368334054947,
+      "cache_hit_exact": true,
+      "command": [
+        "/home/bizon/projects/foldcraft-gpu-20260927/oracle-venv/bin/python",
+        "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/baseline/score_boltz2.py",
+        "/home/bizon/projects/foldcraft-gpu-20260927/throughput-validation-01/single",
+        "--workdir",
+        "/home/bizon/projects/foldcraft-gpu-20260927/throughput-validation-01/single-outputs",
+        "--no-msa",
+        "--no-kernels",
+        "--execution-backend",
+        "persistent"
+      ]
+    },
+    {
+      "cli": "paired",
+      "receipts": 4,
+      "seconds": 69.2930080043152,
+      "cache_resume_seconds": 1.8090857453644276,
+      "cache_hit_exact": true,
+      "command": [
+        "/home/bizon/projects/foldcraft-gpu-20260927/oracle-venv/bin/python",
+        "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/scripts/score_boltz_paired.py",
+        "/home/bizon/projects/foldcraft-gpu-20260927/throughput-validation-01/paired",
+        "--workdir",
+        "/home/bizon/projects/foldcraft-gpu-20260927/throughput-validation-01/paired-outputs"
+      ]
+    }
+  ]
+}

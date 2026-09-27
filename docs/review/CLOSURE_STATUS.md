@@ -58,8 +58,11 @@ or are excluded from the supported workflow. “Partial” identifies remaining 
 - **Performance:** cold/warm runtime, host/device memory and storage were measured
   on three complex sizes. Exact replay passed and compact storage became the main
   CLI default, reducing candidate pickles by 98.7–98.9%. See
-  [performance results](../../PERFORMANCE_RESULTS.md). Additional model reuse and
-  deduplication remain future optimization hypotheses; no speedup is claimed.
+  [performance results](../../PERFORMANCE_RESULTS.md). A subsequent [Boltz process-reuse benchmark](../../BOLTZ_THROUGHPUT_RESULTS.md)
+  passed exact parity across 36 predictions and reduced median six-request batch
+  wall time by 15.2%. The paired scorer uses it by default; standalone scoring can
+  opt in for the validated local/portable-kernel configuration. Model/checkpoint
+  reuse and deduplication remain untested hypotheses; no AF2 speedup is claimed.
 - **Runtime limits:** the main CLI, its scheduler chunks and the experimental
   binder are supervised. Standalone scorers and historical A/B scripts are not
   automatically covered. The benchmark runners retain their own external limits.

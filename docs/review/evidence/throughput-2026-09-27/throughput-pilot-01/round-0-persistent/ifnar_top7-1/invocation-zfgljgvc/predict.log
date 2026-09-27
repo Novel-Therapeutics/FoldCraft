@@ -1,0 +1,313 @@
+--- Logging error ---
+Traceback (most recent call last):
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/logging/__init__.py", line 1163, in emit
+    stream.write(msg + self.terminator)
+ValueError: I/O operation on closed file.
+Call stack:
+  File "<string>", line 1, in <module>
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/concurrent/futures/process.py", line 258, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/baseline/boltz_worker.py", line 23, in _predict
+    cli.main(args=args, standalone_mode=False)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1445, in main
+    rv = self.invoke(ctx)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1912, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+    return callback(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/main.py", line 1193, in predict
+    seed_everything(seed)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_fabric/utilities/seed.py", line 57, in seed_everything
+    log.info(rank_prefixed_message(f"Seed set to {seed}", _get_rank()))
+Message: 'Seed set to 20261022'
+Arguments: ()
+Checking input data.
+Processing 1 inputs with 1 threads.
+  0%|          | 0/1 [00:00<?, ?it/s]Found explicit empty MSA for some proteins, will run these in single sequence mode. Keep in mind that the model predictions will be suboptimal without an MSA.
+Found explicit empty MSA for some proteins, will run these in single sequence mode. Keep in mind that the model predictions will be suboptimal without an MSA.
+100%|██████████| 1/1 [00:00<00:00,  4.06it/s]100%|██████████| 1/1 [00:00<00:00,  4.06it/s]
+--- Logging error ---
+Traceback (most recent call last):
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/logging/__init__.py", line 1163, in emit
+    stream.write(msg + self.terminator)
+ValueError: I/O operation on closed file.
+Call stack:
+  File "<string>", line 1, in <module>
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/concurrent/futures/process.py", line 258, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/baseline/boltz_worker.py", line 23, in _predict
+    cli.main(args=args, standalone_mode=False)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1445, in main
+    rv = self.invoke(ctx)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1912, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+    return callback(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/main.py", line 1369, in predict
+    trainer = Trainer(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/argparse.py", line 70, in insert_env_defaults
+    return fn(self, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 417, in __init__
+    self._accelerator_connector = _AcceleratorConnector(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/accelerator_connector.py", line 158, in __init__
+    self.precision_plugin = self._check_and_init_precision()
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/accelerator_connector.py", line 486, in _check_and_init_precision
+    rank_zero_info(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 42, in wrapped_fn
+    return fn(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 67, in rank_zero_info
+    _info(*args, stacklevel=stacklevel, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 61, in _info
+    log.info(*args, **kwargs)
+Message: 'Using bfloat16 Automatic Mixed Precision (AMP)'
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/logging/__init__.py", line 1163, in emit
+    stream.write(msg + self.terminator)
+ValueError: I/O operation on closed file.
+Call stack:
+  File "<string>", line 1, in <module>
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/concurrent/futures/process.py", line 258, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/baseline/boltz_worker.py", line 23, in _predict
+    cli.main(args=args, standalone_mode=False)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1445, in main
+    rv = self.invoke(ctx)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1912, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+    return callback(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/main.py", line 1369, in predict
+    trainer = Trainer(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/argparse.py", line 70, in insert_env_defaults
+    return fn(self, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 488, in __init__
+    setup._log_device_info(self)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/setup.py", line 164, in _log_device_info
+    rank_zero_info(f"GPU available: {gpu_available}{gpu_type}, used: {gpu_used}")
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 42, in wrapped_fn
+    return fn(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 67, in rank_zero_info
+    _info(*args, stacklevel=stacklevel, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 61, in _info
+    log.info(*args, **kwargs)
+Message: 'GPU available: True (cuda), used: True'
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/logging/__init__.py", line 1163, in emit
+    stream.write(msg + self.terminator)
+ValueError: I/O operation on closed file.
+Call stack:
+  File "<string>", line 1, in <module>
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/concurrent/futures/process.py", line 258, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/baseline/boltz_worker.py", line 23, in _predict
+    cli.main(args=args, standalone_mode=False)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1445, in main
+    rv = self.invoke(ctx)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1912, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+    return callback(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/main.py", line 1369, in predict
+    trainer = Trainer(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/argparse.py", line 70, in insert_env_defaults
+    return fn(self, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 488, in __init__
+    setup._log_device_info(self)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/setup.py", line 167, in _log_device_info
+    rank_zero_info(f"TPU available: {XLAAccelerator.is_available()}, using: {num_tpu_cores} TPU cores")
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 42, in wrapped_fn
+    return fn(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 67, in rank_zero_info
+    _info(*args, stacklevel=stacklevel, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 61, in _info
+    log.info(*args, **kwargs)
+Message: 'TPU available: False, using: 0 TPU cores'
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/logging/__init__.py", line 1163, in emit
+    stream.write(msg + self.terminator)
+ValueError: I/O operation on closed file.
+Call stack:
+  File "<string>", line 1, in <module>
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/concurrent/futures/process.py", line 258, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/baseline/boltz_worker.py", line 23, in _predict
+    cli.main(args=args, standalone_mode=False)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1445, in main
+    rv = self.invoke(ctx)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1912, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+    return callback(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/main.py", line 1369, in predict
+    trainer = Trainer(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/argparse.py", line 70, in insert_env_defaults
+    return fn(self, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 498, in __init__
+    self._logger_connector.on_trainer_init(logger, log_every_n_steps)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/logger_connector/logger_connector.py", line 47, in on_trainer_init
+    self.configure_logger(logger)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/logger_connector/logger_connector.py", line 91, in configure_logger
+    rank_zero_info(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 42, in wrapped_fn
+    return fn(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 67, in rank_zero_info
+    _info(*args, stacklevel=stacklevel, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 61, in _info
+    log.info(*args, **kwargs)
+Message: '💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.'
+Arguments: ()
+Running structure prediction for 1 input.
+--- Logging error ---
+Traceback (most recent call last):
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/logging/__init__.py", line 1163, in emit
+    stream.write(msg + self.terminator)
+ValueError: I/O operation on closed file.
+Call stack:
+  File "<string>", line 1, in <module>
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/concurrent/futures/process.py", line 258, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/baseline/boltz_worker.py", line 23, in _predict
+    cli.main(args=args, standalone_mode=False)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1445, in main
+    rv = self.invoke(ctx)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1912, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+    return callback(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/main.py", line 1453, in predict
+    trainer.predict(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 941, in predict
+    return call._call_and_handle_interrupt(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/call.py", line 49, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 990, in _predict_impl
+    results = self._run(model, ckpt_path=ckpt_path, weights_only=weights_only)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 1024, in _run
+    self._callback_connector._attach_model_callbacks()
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/callback_connector.py", line 206, in _attach_model_callbacks
+    self._maybe_show_litmodels_tip()
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/callback_connector.py", line 190, in _maybe_show_litmodels_tip
+    rank_zero_info(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 42, in wrapped_fn
+    return fn(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 67, in rank_zero_info
+    _info(*args, stacklevel=stacklevel, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/lightning_utilities/core/rank_zero.py", line 61, in _info
+    log.info(*args, **kwargs)
+Message: '💡 Tip: For seamless cloud uploads and versioning, try installing [litmodels](https://pypi.org/project/litmodels/) to enable LitModelCheckpoint, which syncs automatically with the Lightning model registry.'
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/logging/__init__.py", line 1163, in emit
+    stream.write(msg + self.terminator)
+ValueError: I/O operation on closed file.
+Call stack:
+  File "<string>", line 1, in <module>
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/concurrent/futures/process.py", line 258, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/home/bizon/projects/foldcraft-gpu-20260927/throughput-repo/baseline/boltz_worker.py", line 23, in _predict
+    cli.main(args=args, standalone_mode=False)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1445, in main
+    rv = self.invoke(ctx)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1912, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+    return callback(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/main.py", line 1453, in predict
+    trainer.predict(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 941, in predict
+    return call._call_and_handle_interrupt(
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/call.py", line 49, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 990, in _predict_impl
+    results = self._run(model, ckpt_path=ckpt_path, weights_only=weights_only)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 1053, in _run
+    self.strategy.setup(self)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/strategies/strategy.py", line 149, in setup
+    self.accelerator.setup(trainer)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/accelerators/cuda.py", line 52, in setup
+    self.set_nvidia_flags(trainer.local_rank)
+  File "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/accelerators/cuda.py", line 61, in set_nvidia_flags
+    _log.info(f"LOCAL_RANK: {local_rank} - CUDA_VISIBLE_DEVICES: [{devices}]")
+Message: 'LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]'
+Arguments: ()
+/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/data_connector.py:429: Consider setting `persistent_workers=True` in 'predict_dataloader' to speed up the dataloader worker initialization.
+Number of failed examples: 0
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1/1 0:00:03 • 0:00:00 0.00it/s 

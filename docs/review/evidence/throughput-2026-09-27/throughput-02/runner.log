@@ -1,0 +1,6 @@
+{"round": 0, "mode": "subprocess", "seconds": 115.72096654213965, "peak_gpu_mib": 8425}
+{"round": 0, "mode": "persistent", "seconds": 98.08571649808437, "peak_gpu_mib": 8425}
+{"round": 1, "mode": "persistent", "seconds": 98.93290811311454, "peak_gpu_mib": 8957}
+{"round": 1, "mode": "subprocess", "seconds": 114.88994969148189, "peak_gpu_mib": 8447}
+{"round": 2, "mode": "subprocess", "seconds": 116.48839870840311, "peak_gpu_mib": 8825}
+{"round": 2, "mode": "persistent", "seconds": 97.6221629800275, "peak_gpu_mib": 8425}

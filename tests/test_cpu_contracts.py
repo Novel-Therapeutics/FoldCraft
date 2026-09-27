@@ -175,7 +175,7 @@ def test_boltz_cannot_select_stale_confidence(tmp_path, monkeypatch):
         output = Path(cmd[cmd.index('--out_dir')+1])
         (output/'new.cif').write_text('new structure')
         (output/'confidence_new.json').write_text(json.dumps({'confidence_score':.2,'iptm':.2}))
-        return SimpleNamespace(returncode=0)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
     monkeypatch.setattr(boltz.subprocess, 'run', predict)
     assert boltz.run_boltz2('AAA','AAA',str(tmp_path),use_msa=False)[0] == .2
 

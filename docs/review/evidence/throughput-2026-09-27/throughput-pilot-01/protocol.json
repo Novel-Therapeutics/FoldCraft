@@ -1,0 +1,44 @@
+{
+  "tasks": [
+    {
+      "name": "ifnar_top7-0",
+      "target": "TDESCTFKISLRNFRSILSWELKNHSIVPTHYTLLYTIMSKPEDLKVVKNCANTTRSFCDLTDEWRSTHEAYVTVLEGFSGNTTLFSCSHNFWLAIDMSFEPP",
+      "binder": "MITITVKYTVNGKTYTETYQVNSMSQLSQPLCSLHRKLIENNAEKVEITVTEEDPYNLKYLAVMLARFAERLGLKNIKVTYDGNSATVTATK",
+      "seed": 20261021
+    },
+    {
+      "name": "ifnar_top7-1",
+      "target": "TDESCTFKISLRNFRSILSWELKNHSIVPTHYTLLYTIMSKPEDLKVVKNCANTTRSFCDLTDEWRSTHEAYVTVLEGFSGNTTLFSCSHNFWLAIDMSFEPP",
+      "binder": "MITITVKYTVNGKTYTETYQVNSMSQLSQPLCSLHRKLIENNAEKVEITVTEEDPYNLKYLAVMLARFAERLGLKNIKVTYDGNSATVTATK",
+      "seed": 20261022
+    }
+  ],
+  "workers": 1,
+  "rounds": 1,
+  "orders": [
+    [
+      "subprocess",
+      "persistent"
+    ],
+    [
+      "persistent",
+      "subprocess"
+    ],
+    [
+      "subprocess",
+      "persistent"
+    ]
+  ],
+  "model": {
+    "msa": false,
+    "kernels": false,
+    "diffusion_samples": 1,
+    "checkpoint": "/home/bizon/.boltz/boltz2_conf.ckpt"
+  },
+  "gates": {
+    "exact_artifact_parity": true,
+    "minimum_median_wall_reduction": 0.1,
+    "max_round_slowdown": 0.05
+  },
+  "scope": "Identical seeded requests, full startup/teardown included; OS disk caches warm; no model reuse"
+}

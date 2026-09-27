@@ -73,7 +73,7 @@ def test_boltz_receives_explicit_weights_and_seed(tmp_path,monkeypatch):
         out=Path(command[command.index('--out_dir')+1])
         (out/'0.cif').write_text('selected structure')
         (out/'confidence_0.json').write_text(json.dumps({'iptm':.5}))
-        return type('Result',(),{'returncode':0})()
+        return type('Result',(),{'returncode':0, 'stdout':'', 'stderr':''})()
     monkeypatch.setattr(boltz.subprocess,'run',run)
     assert boltz.run_boltz2('AAA','AAA',str(tmp_path),use_msa=False,flash_attn=False,
                            checkpoint='chosen.ckpt',cache='chosen-cache',seed=42)[0]==.5

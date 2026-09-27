@@ -1,0 +1,896 @@
+{
+  "total_seconds": 45.431008445000394,
+  "command": [
+    "/home/bizon/projects/foldcraft-gpu-20260927/oracle-venv/bin/python",
+    "-m",
+    "cProfile",
+    "-o",
+    "/home/bizon/projects/foldcraft-gpu-20260927/throughput-validation-01/startup.pstats",
+    "-m",
+    "boltz.main",
+    "predict",
+    "/home/bizon/projects/foldcraft-gpu-20260927/throughput-validation-01/single-outputs/ifnar_top7_20261001_baseline_traj_1_0/invocation-pcin0qr9/complex.yaml",
+    "--out_dir",
+    "/home/bizon/projects/foldcraft-gpu-20260927/throughput-validation-01/profile-output",
+    "--override",
+    "--diffusion_samples",
+    "1",
+    "--model",
+    "boltz2",
+    "--seed",
+    "20261021",
+    "--checkpoint",
+    "/home/bizon/.boltz/boltz2_conf.ckpt",
+    "--cache",
+    "/home/bizon/.boltz",
+    "--no_kernels"
+  ],
+  "top_cumulative": [
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/core/saving.py",
+      "line": 119,
+      "function": "_load_state",
+      "calls": 1,
+      "self_seconds": 0.000169369,
+      "cumulative_seconds": 19.168804656000002
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/models/boltz2.py",
+      "line": 44,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 0.0030225,
+      "cumulative_seconds": 18.796566784
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/layers/initialize.py",
+      "line": 61,
+      "function": "lecun_normal_init_",
+      "calls": 472,
+      "self_seconds": 0.001168276,
+      "cumulative_seconds": 16.584018745
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/layers/initialize.py",
+      "line": 47,
+      "function": "trunc_normal_init_",
+      "calls": 472,
+      "self_seconds": 0.013039716000000002,
+      "cumulative_seconds": 16.582850469
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/layers/pairformer.py",
+      "line": 115,
+      "function": "__init__",
+      "calls": 2,
+      "self_seconds": 0.000518751,
+      "cumulative_seconds": 16.548876336
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/layers/pairformer.py",
+      "line": 24,
+      "function": "__init__",
+      "calls": 72,
+      "self_seconds": 0.003210521,
+      "cumulative_seconds": 16.546846201
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/layers/transition.py",
+      "line": 11,
+      "function": "__init__",
+      "calls": 158,
+      "self_seconds": 0.0045871440000000005,
+      "cumulative_seconds": 16.315780221
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/scipy/stats/_distn_infrastructure.py",
+      "line": 1079,
+      "function": "rvs",
+      "calls": 472,
+      "self_seconds": 0.26742396500000004,
+      "cumulative_seconds": 16.052137094000003
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/scipy/stats/_distn_infrastructure.py",
+      "line": 1049,
+      "function": "_rvs",
+      "calls": 472,
+      "self_seconds": 0.052008359000000004,
+      "cumulative_seconds": 15.678842461
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/scipy/stats/_continuous_distns.py",
+      "line": 10336,
+      "function": "_ppf",
+      "calls": 472,
+      "self_seconds": 1.015165453,
+      "cumulative_seconds": 15.12775111
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/scipy/stats/_continuous_distns.py",
+      "line": 10342,
+      "function": "ppf_left",
+      "calls": 472,
+      "self_seconds": 2.041338589,
+      "cumulative_seconds": 14.095028130000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method time.sleep>",
+      "calls": 702,
+      "self_seconds": 1.001088162,
+      "cumulative_seconds": 11.152238537
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/pickle.py",
+      "line": 1244,
+      "function": "load_binpersid",
+      "calls": 7,
+      "self_seconds": 0.000299669,
+      "cumulative_seconds": 10.05979694
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/torch/_library/custom_ops.py",
+      "line": 607,
+      "function": "_register_to_dispatcher",
+      "calls": 126,
+      "self_seconds": 8.971118121,
+      "cumulative_seconds": 8.982444024000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/call.py",
+      "line": 203,
+      "function": "_call_callback_hooks",
+      "calls": 8,
+      "self_seconds": 0.000321322,
+      "cumulative_seconds": 7.716011749000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py",
+      "line": 952,
+      "function": "_predict_impl",
+      "calls": 1,
+      "self_seconds": 3.4221e-05,
+      "cumulative_seconds": 7.545386691
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py",
+      "line": 997,
+      "function": "_run",
+      "calls": 1,
+      "self_seconds": 1.1202e-05,
+      "cumulative_seconds": 7.545325952000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/call.py",
+      "line": 132,
+      "function": "_call_teardown_hook",
+      "calls": 1,
+      "self_seconds": 4.9464000000000006e-05,
+      "cumulative_seconds": 7.545313775
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/progress/rich_progress.py",
+      "line": 699,
+      "function": "teardown",
+      "calls": 1,
+      "self_seconds": 2.0338e-05,
+      "cumulative_seconds": 7.298684326
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/progress/rich_progress.py",
+      "line": 666,
+      "function": "_stop_progress",
+      "calls": 1,
+      "self_seconds": 1.5952000000000002e-05,
+      "cumulative_seconds": 7.278227871
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'extend' of 'list' objects>",
+      "calls": 49859,
+      "self_seconds": 0.007729641000000001,
+      "cumulative_seconds": 7.2768239900000005
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/rich/live.py",
+      "line": 244,
+      "function": "refresh",
+      "calls": 5,
+      "self_seconds": 4.2592e-05,
+      "cumulative_seconds": 7.2746959890000005
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/progress/rich_progress.py",
+      "line": 104,
+      "function": "stop",
+      "calls": 1,
+      "self_seconds": 1.4874e-05,
+      "cumulative_seconds": 7.26769817
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/rich/progress.py",
+      "line": 1173,
+      "function": "stop",
+      "calls": 1,
+      "self_seconds": 8.557000000000001e-06,
+      "cumulative_seconds": 7.267534319
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/rich/console.py",
+      "line": 1652,
+      "function": "print",
+      "calls": 2,
+      "self_seconds": 2.3426000000000002e-05,
+      "cumulative_seconds": 7.2674230170000005
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/rich/live.py",
+      "line": 145,
+      "function": "stop",
+      "calls": 1,
+      "self_seconds": 1.1010000000000001e-05,
+      "cumulative_seconds": 7.2673813460000005
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/rich/console.py",
+      "line": 1294,
+      "function": "render",
+      "calls": 76,
+      "self_seconds": 0.000136289,
+      "cumulative_seconds": 7.267186880000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py",
+      "line": 1099,
+      "function": "_teardown",
+      "calls": 1,
+      "self_seconds": 4.2581000000000004e-05,
+      "cumulative_seconds": 7.262575268000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/prediction_loop.py",
+      "line": 208,
+      "function": "teardown",
+      "calls": 1,
+      "self_seconds": 7.252e-06,
+      "cumulative_seconds": 7.2613737050000005
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/fetchers.py",
+      "line": 79,
+      "function": "teardown",
+      "calls": 1,
+      "self_seconds": 1.0681e-05,
+      "cumulative_seconds": 7.261366391
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/combined_loader.py",
+      "line": 361,
+      "function": "reset",
+      "calls": 1,
+      "self_seconds": 2.0732e-05,
+      "cumulative_seconds": 7.26135571
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/combined_loader.py",
+      "line": 165,
+      "function": "reset",
+      "calls": 1,
+      "self_seconds": 3.3267000000000005e-05,
+      "cumulative_seconds": 7.261296815000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/combined_loader.py",
+      "line": 50,
+      "function": "reset",
+      "calls": 1,
+      "self_seconds": 0.000287621,
+      "cumulative_seconds": 7.261253636
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/util.py",
+      "line": 205,
+      "function": "__call__",
+      "calls": 5,
+      "self_seconds": 8.262300000000001e-05,
+      "cumulative_seconds": 7.172756069
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/multiprocessing/util.py",
+      "line": 463,
+      "function": "close_fds",
+      "calls": 2,
+      "self_seconds": 2.2751000000000003e-05,
+      "cumulative_seconds": 7.172530382000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/scipy/stats/_continuous_distns.py",
+      "line": 10168,
+      "function": "_log_sum",
+      "calls": 472,
+      "self_seconds": 0.119290566,
+      "cumulative_seconds": 6.122250618000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/scipy/special/_logsumexp.py",
+      "line": 15,
+      "function": "logsumexp",
+      "calls": 472,
+      "self_seconds": 0.6174360560000001,
+      "cumulative_seconds": 6.002960052000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py",
+      "line": 1110,
+      "function": "_run_stage",
+      "calls": 1,
+      "self_seconds": 2.0466e-05,
+      "cumulative_seconds": 5.930598526000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/utilities.py",
+      "line": 158,
+      "function": "_decorator",
+      "calls": 1,
+      "self_seconds": 2.8912e-05,
+      "cumulative_seconds": 5.885449309
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/prediction_loop.py",
+      "line": 103,
+      "function": "run",
+      "calls": 1,
+      "self_seconds": 6.588400000000001e-05,
+      "cumulative_seconds": 5.885240512
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/prediction_loop.py",
+      "line": 213,
+      "function": "_predict_step",
+      "calls": 1,
+      "self_seconds": 0.000106643,
+      "cumulative_seconds": 5.5078679600000005
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/torch/_jit_internal.py",
+      "line": 1023,
+      "function": "_overload",
+      "calls": 20,
+      "self_seconds": 0.00031070100000000003,
+      "cumulative_seconds": 5.359067898
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/call.py",
+      "line": 312,
+      "function": "_call_strategy_hook",
+      "calls": 4,
+      "self_seconds": 5.042e-05,
+      "cumulative_seconds": 5.337123894
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/strategies/strategy.py",
+      "line": 427,
+      "function": "predict_step",
+      "calls": 1,
+      "self_seconds": 2.8324000000000002e-05,
+      "cumulative_seconds": 5.3352504220000005
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/models/boltz2.py",
+      "line": 1060,
+      "function": "predict_step",
+      "calls": 1,
+      "self_seconds": 3.7338e-05,
+      "cumulative_seconds": 5.334925722
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "line": 1772,
+      "function": "_wrapped_call_impl",
+      "calls": 211029,
+      "self_seconds": 0.116732818,
+      "cumulative_seconds": 5.334661169
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/torch/nn/modules/module.py",
+      "line": 1780,
+      "function": "_call_impl",
+      "calls": 211029,
+      "self_seconds": 0.221026202,
+      "cumulative_seconds": 5.334651632
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/models/boltz2.py",
+      "line": 402,
+      "function": "forward",
+      "calls": 1,
+      "self_seconds": 0.0006110660000000001,
+      "cumulative_seconds": 5.334584775000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/scipy/special/_logsumexp.py",
+      "line": 201,
+      "function": "_logsumexp",
+      "calls": 472,
+      "self_seconds": 3.0083632450000004,
+      "cumulative_seconds": 4.991993871
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/scipy/stats/_continuous_distns.py",
+      "line": 10177,
+      "function": "_log_gauss_mass",
+      "calls": 944,
+      "self_seconds": 1.231163993,
+      "cumulative_seconds": 4.746818371000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/modules/diffusionv2.py",
+      "line": 252,
+      "function": "preconditioned_network_forward",
+      "calls": 200,
+      "self_seconds": 0.0060988050000000005,
+      "cumulative_seconds": 3.5338018420000004
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/modules/diffusionv2.py",
+      "line": 116,
+      "function": "forward",
+      "calls": 200,
+      "self_seconds": 0.005069463000000001,
+      "cumulative_seconds": 3.487960229
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/modules/transformersv2.py",
+      "line": 97,
+      "function": "forward",
+      "calls": 601,
+      "self_seconds": 0.036732058000000005,
+      "cumulative_seconds": 3.3379887050000003
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/modules/transformersv2.py",
+      "line": 175,
+      "function": "forward",
+      "calls": 6003,
+      "self_seconds": 0.10984473,
+      "cumulative_seconds": 3.293959522
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/scipy/stats/_continuous_distns.py",
+      "line": 10193,
+      "function": "mass_case_central",
+      "calls": 944,
+      "self_seconds": 0.79930946,
+      "cumulative_seconds": 3.2200675160000003
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/scipy/stats/_continuous_distns.py",
+      "line": 370,
+      "function": "_norm_cdf",
+      "calls": 1888,
+      "self_seconds": 2.420758056,
+      "cumulative_seconds": 2.420758056
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/torch/_dynamo/variables/__init__.py",
+      "line": 1,
+      "function": "<module>",
+      "calls": 1,
+      "self_seconds": 3.223e-05,
+      "cumulative_seconds": 2.2016572180000002
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/torch/_dynamo/variables/base.py",
+      "line": 1,
+      "function": "<module>",
+      "calls": 1,
+      "self_seconds": 4.583e-06,
+      "cumulative_seconds": 2.201515269
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/torch/_dynamo/variables/builder.py",
+      "line": 1,
+      "function": "<module>",
+      "calls": 1,
+      "self_seconds": 7.5907e-05,
+      "cumulative_seconds": 2.201284449
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/torch/_dynamo/variables/builtin.py",
+      "line": 1,
+      "function": "<module>",
+      "calls": 1,
+      "self_seconds": 2.7237e-05,
+      "cumulative_seconds": 2.195647906
+    }
+  ],
+  "lifecycle": [
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/model_checkpoint.py",
+      "line": 263,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 2.1040000000000002e-05,
+      "cumulative_seconds": 0.0009107270000000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/core/saving.py",
+      "line": 119,
+      "function": "_load_state",
+      "calls": 1,
+      "self_seconds": 0.000169369,
+      "cumulative_seconds": 19.168804656000002
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py",
+      "line": 90,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 9.9123e-05,
+      "cumulative_seconds": 0.042258238000000004
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/evaluation_loop.py",
+      "line": 61,
+      "function": "__init__",
+      "calls": 4,
+      "self_seconds": 3.4773e-05,
+      "cumulative_seconds": 6.5739e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/plugins/precision/amp.py",
+      "line": 40,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 3.6120000000000003e-06,
+      "cumulative_seconds": 3.6120000000000003e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py",
+      "line": 997,
+      "function": "_run",
+      "calls": 1,
+      "self_seconds": 1.1202e-05,
+      "cumulative_seconds": 7.545325952000001
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/fit_loop.py",
+      "line": 87,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 1.6762e-05,
+      "cumulative_seconds": 0.00013404
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/training_epoch_loop.py",
+      "line": 73,
+      "function": "__init__",
+      "calls": 2,
+      "self_seconds": 3.8993000000000004e-05,
+      "cumulative_seconds": 0.000149025
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/accelerator_connector.py",
+      "line": 75,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 5.7721000000000005e-05,
+      "cumulative_seconds": 0.021057333
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/boltz/model/models/boltz2.py",
+      "line": 44,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 0.0030225,
+      "cumulative_seconds": 18.796566784
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/checkpoint_connector.py",
+      "line": 47,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 1.243e-06,
+      "cumulative_seconds": 1.243e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/optimization/automatic.py",
+      "line": 158,
+      "function": "__init__",
+      "calls": 2,
+      "self_seconds": 5.813e-06,
+      "cumulative_seconds": 3.7927000000000005e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/rich_model_summary.py",
+      "line": 60,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 2.593e-06,
+      "cumulative_seconds": 3.8090000000000003e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/callback_connector.py",
+      "line": 49,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 5.250000000000001e-07,
+      "cumulative_seconds": 5.250000000000001e-07
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/prediction_loop.py",
+      "line": 50,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 6.261000000000001e-06,
+      "cumulative_seconds": 9.192000000000001e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/logger_connector/logger_connector.py",
+      "line": 33,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 1.7180000000000001e-06,
+      "cumulative_seconds": 1.7180000000000001e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/logger_connector/result.py",
+      "line": 328,
+      "function": "__init__",
+      "calls": 6,
+      "self_seconds": 8.185e-06,
+      "cumulative_seconds": 8.185e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/profilers/profiler.py",
+      "line": 33,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 1.911e-06,
+      "cumulative_seconds": 1.911e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/data_connector.py",
+      "line": 48,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 6.970000000000001e-07,
+      "cumulative_seconds": 6.970000000000001e-07
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/optimization/manual.py",
+      "line": 84,
+      "function": "__init__",
+      "calls": 2,
+      "self_seconds": 3.588e-06,
+      "cumulative_seconds": 9.186e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/core/datamodule.py",
+      "line": 83,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 2.386e-06,
+      "cumulative_seconds": 7.018e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/core/mixins/hparams_mixin.py",
+      "line": 47,
+      "function": "__init__",
+      "calls": 2,
+      "self_seconds": 3.092e-06,
+      "cumulative_seconds": 8.2416e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/core/hooks.py",
+      "line": 351,
+      "function": "__init__",
+      "calls": 2,
+      "self_seconds": 1.7429000000000002e-05,
+      "cumulative_seconds": 7.9125e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loggers/csv_logs.py",
+      "line": 53,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 3.5620000000000004e-06,
+      "cumulative_seconds": 0.000130058
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/loop.py",
+      "line": 23,
+      "function": "__init__",
+      "calls": 12,
+      "self_seconds": 8.171e-06,
+      "cumulative_seconds": 8.171e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/fetchers.py",
+      "line": 96,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 3.8520000000000006e-06,
+      "cumulative_seconds": 6.668e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/strategies/single_device.py",
+      "line": 35,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 6.3100000000000006e-06,
+      "cumulative_seconds": 1.4632000000000002e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loops/fetchers.py",
+      "line": 30,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 2.8160000000000002e-06,
+      "cumulative_seconds": 2.8160000000000002e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/signal_connector.py",
+      "line": 40,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 9.160000000000001e-07,
+      "cumulative_seconds": 9.160000000000001e-07
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/overrides/distributed.py",
+      "line": 238,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 3.866e-06,
+      "cumulative_seconds": 4.1730000000000005e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/strategies/strategy.py",
+      "line": 50,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 7.769e-06,
+      "cumulative_seconds": 8.224000000000001e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/signal_connector.py",
+      "line": 26,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 8.74e-07,
+      "cumulative_seconds": 9.93e-07
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/model_helpers.py",
+      "line": 67,
+      "function": "__init__",
+      "calls": 5,
+      "self_seconds": 1.2030000000000002e-06,
+      "cumulative_seconds": 1.2030000000000002e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/progress/rich_progress.py",
+      "line": 153,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 5.77e-07,
+      "cumulative_seconds": 1.252e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/progress/rich_progress.py",
+      "line": 165,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 8.87e-07,
+      "cumulative_seconds": 1.3800000000000001e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/progress/rich_progress.py",
+      "line": 174,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 7.170000000000001e-07,
+      "cumulative_seconds": 1.1860000000000002e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/model_helpers.py",
+      "line": 113,
+      "function": "__init__",
+      "calls": 2,
+      "self_seconds": 5.6270000000000005e-06,
+      "cumulative_seconds": 5.6270000000000005e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/progress/rich_progress.py",
+      "line": 73,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 5.034e-06,
+      "cumulative_seconds": 2.7675000000000002e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/prediction_writer.py",
+      "line": 110,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 8.235e-06,
+      "cumulative_seconds": 1.9318e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/model_summary.py",
+      "line": 55,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 7.22e-07,
+      "cumulative_seconds": 7.22e-07
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/progress/progress_bar.py",
+      "line": 50,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 1.215e-06,
+      "cumulative_seconds": 1.215e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/progress/rich_progress.py",
+      "line": 185,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 1.2995e-05,
+      "cumulative_seconds": 1.3906e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/callbacks/progress/rich_progress.py",
+      "line": 302,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 8.284e-06,
+      "cumulative_seconds": 1.1358e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/loggers/csv_logs.py",
+      "line": 88,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 4.6e-06,
+      "cumulative_seconds": 6.906700000000001e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/combined_loader.py",
+      "line": 124,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 2.463e-06,
+      "cumulative_seconds": 4.5450000000000005e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/combined_loader.py",
+      "line": 29,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 1.901e-06,
+      "cumulative_seconds": 2.082e-06
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/utilities/combined_loader.py",
+      "line": 284,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 6.187e-06,
+      "cumulative_seconds": 9.3793e-05
+    },
+    {
+      "file": "/home/bizon/miniconda3/envs/phyra-dock/lib/python3.12/site-packages/pytorch_lightning/core/module.py",
+      "line": 133,
+      "function": "__init__",
+      "calls": 1,
+      "self_seconds": 8.116e-06,
+      "cumulative_seconds": 0.00018004900000000002
+    }
+  ]
+}

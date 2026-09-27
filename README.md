@@ -176,3 +176,11 @@ temperatures and fixed-quota ranking across four targets and three scaffolds.
 Scientific defaults remain unchanged under the prespecified promotion criteria.
 Independent model agreement is a structural proxy; binding accuracy requires
 assay-defined labels and broader untouched target-family validation.
+
+The follow-up [Boltz throughput benchmark](BOLTZ_THROUGHPUT_RESULTS.md) reduced
+six-prediction batch wall time by a median 15.2% (about 18% higher throughput), with
+exact confidence, structure and prediction-array parity. The paired scorer now
+uses reusable processes by default; `--execution-backend subprocess` restores
+fresh processes. The standalone Boltz scorer supports the optimized path with
+`--execution-backend persistent --no-msa --no-kernels`. This accelerates independent
+Boltz evaluation; it does not change AF2 generation or scientific predictions.
