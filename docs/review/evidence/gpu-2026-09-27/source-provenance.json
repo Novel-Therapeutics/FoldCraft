@@ -1,0 +1,29 @@
+{
+  "base_commit": "6b77a430004fccb500b98f9b3c66bdaae23bcd84",
+  "branch": "codex/correctness-and-validation",
+  "tested_execution_code": {
+    "FoldCraft.py": "36814f7f00974cfcfd24e711526afb0d86b70c61721ee8eb540d0fcf8b8a528f",
+    "input_validation.py": "54d15e5cd51d2696796207eb89085dc360b320c335c6cedac5409ca4fc9a6e20",
+    "sequence_design.py": "7f2c890144b32e4a5ee488a0c1966c4a77b9bc159580566c7b8820d8a3a9db5f",
+    "cmap_utils.py": "29e990f8e8b303ef6075f669ab8f88ffea9f96969e4712976ccf30cfe2264ad1",
+    "biopython_utils.py": "3665ab5b2184f9f7337724a93855f85be7e9b00c3b388cd52d7cdb5b36a0f526",
+    "run_state.py": "db356a0e0a35464c45f6514f4cd57b73e3335963e9525b0bce66ac4a89ba0500",
+    "model_validation.py": "349d9abf5d86676dbabb28f3e6ff8da5718ccf2c4597ac2b7e2d6aed3abc0b08"
+  },
+  "final_execution_code": {
+    "FoldCraft.py": "11265a62c89aaab7ed596bb722d855c86a9c26804726483646a2b4f90741e856",
+    "input_validation.py": "54d15e5cd51d2696796207eb89085dc360b320c335c6cedac5409ca4fc9a6e20",
+    "sequence_design.py": "7f2c890144b32e4a5ee488a0c1966c4a77b9bc159580566c7b8820d8a3a9db5f",
+    "cmap_utils.py": "29e990f8e8b303ef6075f669ab8f88ffea9f96969e4712976ccf30cfe2264ad1",
+    "biopython_utils.py": "3665ab5b2184f9f7337724a93855f85be7e9b00c3b388cd52d7cdb5b36a0f526",
+    "run_state.py": "db356a0e0a35464c45f6514f4cd57b73e3335963e9525b0bce66ac4a89ba0500",
+    "model_validation.py": "349d9abf5d86676dbabb28f3e6ff8da5718ccf2c4597ac2b7e2d6aed3abc0b08"
+  },
+  "post_execution_changes": "CLI help text and documentation updated after tests; model execution unchanged.",
+  "test_tools": {
+    "foldcraft-full-run.py": "8068226109a44e6ad6a8c2787f06e6ae15828c82352d07879db6de3af9960768",
+    "foldcraft-bizon-run.sh": "4bf0d3d558a395bba151c32f6b78d6158ac04af5570e281253426cf5f98f5f5f",
+    "foldcraft-inspect-gpu.py": "eb6e57a92b4bd039710e23d113553e9ac0e706abccef030576dfdf6371abf3b0"
+  },
+  "remote_root": "/home/bizon/projects/foldcraft-gpu-20260927"
+}

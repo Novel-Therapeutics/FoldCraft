@@ -83,7 +83,7 @@ def chunk_signature(chunk):
     root = Path(__file__).resolve().parents[1]
     code = {name: sha256(root / name) for name in (
         'FoldCraft.py', 'input_validation.py', 'cmap_utils.py', 'biopython_utils.py',
-        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py')}
+        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py', 'model_validation.py')}
     return dict(schema=1, seed=stage_seed(0, chunk.fold, chunk.idx), fold=chunk.fold, index=chunk.idx, trajectories=chunk.chunk_traj,
                 spec=spec, code=code)
 
@@ -161,18 +161,19 @@ def _merge_chunks(fold, chunk_dirs, out_dir, template):
         df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
         for old in df["name"]:
             new = remap_name(old, idx)
-            for ext in (".pdb", ".pickle"):
-                src = os.path.join(cdir, "designs", f"{old}{ext}")
-                if not os.path.exists(src):
-                    raise FileNotFoundError(
-                        f"merge {fold}: design PDB missing: {src}")
-                if os.path.exists(src):
-                    shutil.copy2(src, os.path.join(designs_out, f"{new}{ext}"))
+            from model_validation import candidate_files
+            for relative in candidate_files(cdir, old, require_receipt='validation_pass' in df):
+                src = Path(cdir) / relative
+                suffix = src.name[len(old):]
+                if not src.is_file():
+                    raise FileNotFoundError(f'merge {fold}: missing artifact {src}')
+                shutil.copy2(src, Path(designs_out) / (new + suffix))
         df["name"] = df["name"].map(lambda n: remap_name(n, idx))
         frames.append(df)
     merged = pd.concat(frames, ignore_index=True)
     atomic_write(os.path.join(out_dir, "results.csv"), lambda p: merged.to_csv(p, index=False))
-    finish_run(out_dir, {"schema": 1, "chunks": [str(Path(d).resolve()) for d in chunk_dirs]})
+    finish_run(out_dir, {"schema": 1, "validation_artifacts": "per-model-v1" if "validation_pass" in merged else None,
+                         "chunks": [str(Path(d).resolve()) for d in chunk_dirs]})
     return len(merged)
 
 

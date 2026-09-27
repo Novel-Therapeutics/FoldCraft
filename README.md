@@ -108,3 +108,8 @@ reference data. GPU scorers use provenance sidecars and recompute legacy CSV-onl
 scores when invoked, so score copies of historical tables when preserving them.
 The notebooks now call this checkout's CLI and require a prepared environment
 for their inference cell.
+
+GPU-dependent model-identity fixes are documented in [GPU_FIXES.md](GPU_FIXES.md).
+The optional two-model path saves each model separately and requires both models
+to pass; GPU integration is verified on Bizon, while accuracy gains remain unproven. The smoke-test runner
+prints a plan by default and does not access a GPU until explicitly executed.

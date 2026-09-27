@@ -28,6 +28,10 @@ except ImportError:
     from score_cache import ScoreSession
 
 import pandas as pd
+try:
+    from .gates import af2_mask
+except ImportError:
+    from gates import af2_mask
 from Bio.PDB import PDBParser, Superimposer
 from Bio.SeqUtils import seq1
 try:
@@ -120,9 +124,7 @@ def main():
         session.publish(df)  # publish invalidation before expensive inference
         todo = df[df["esmfold_plddt"].isna()]
         if args.af2_pass_only:
-            p, i, e = (("plddt", "iptm", "ipae") if "iptm" in df.columns
-                       else ("af2_plddt", "af2_iptm", "af2_ipae"))
-            todo = todo[(todo[p] > 0.8) & (todo[i] > 0.5) & (todo[e] < 0.35)]
+            todo = todo[af2_mask(todo)]
         if args.sample and len(todo) > args.sample:
             todo = todo.sample(args.sample, random_state=0)
         print(f"{args.design_dir}: {len(todo)} to score "

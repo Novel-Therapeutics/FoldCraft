@@ -42,6 +42,10 @@ except ImportError:
     from score_cache import ScoreSession
 
 import pandas as pd
+try:
+    from .gates import af2_mask
+except ImportError:
+    from gates import af2_mask
 from openmm import (LangevinIntegrator, Context, Platform, OpenMMException,
                     LocalEnergyMinimizer)
 from openmm.app import ForceField, Modeller, NoCutoff, HBonds
@@ -128,12 +132,6 @@ def interface_dE(pdb, min_iters, target_chain="A", binder_chain="B"):
     return round(e_ab - e_a - e_b, 2), round(e_ab, 1)
 
 
-def _af2_mask(df):
-    p, i, e = (("plddt", "iptm", "ipae") if "iptm" in df.columns
-               else ("af2_plddt", "af2_iptm", "af2_ipae"))
-    return (df[p] > 0.8) & (df[i] > 0.5) & (df[e] < 0.35)
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("design_dir", help="dir with results.csv + designs/<name>.pdb")
@@ -167,7 +165,7 @@ def main():
         session.publish(df)  # publish invalidation before expensive inference
         todo = df[df["openmm_dE"].isna()]
         if args.af2_pass_only:
-            todo = todo[_af2_mask(todo)]
+            todo = todo[af2_mask(todo)]
         if args.sample and len(todo) > args.sample:
             todo = todo.sample(args.sample, random_state=0)
         print(f"{args.design_dir}: {len(todo)} to score "

@@ -356,7 +356,8 @@ def test_vhh_probability_roundoff_preserves_historical_values():
 
 
 @pytest.mark.parametrize('sample,successful', [(False,True),(True,False),(True,True)])
-def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successful):
+@pytest.mark.parametrize('validation_models', ['model_1_ptm','model_1_ptm,model_2_ptm'])
+def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successful,validation_models):
     """Exercise real loop control, artifact publication and quota termination."""
     import types
     import FoldCraft
@@ -364,17 +365,21 @@ def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successfu
     out = tmp_path/'out'
     args = ['FoldCraft.py','--output_folder',str(out),'--target_template',str(target),
             '--binder_template',str(target),'--target_hotspots','1','--num_designs','2',
-            '--mpnn_samples','2','--max_trajectories','2','--target_success','1']
+            '--mpnn_samples','2','--max_trajectories','2','--target_success','1',
+            '--validation_models',validation_models]
     if sample: args += ['--sample']
     monkeypatch.setattr(sys,'argv',args)
     predict_calls=[]; design_calls=[]
     class AF:
         def __init__(self, **kwargs):
+            self._model_names=['model_1_ptm','model_2_ptm']
             self.opt={'weights':{}}; self._len=3; self._wt_aatype=np.zeros(3,dtype=int)
             self.aux={'cmap':np.eye(3), 'log':{'plddt':.9 if successful else .1,'i_pae':.1,'i_ptm':.9,'cmap_loss_binder':.2},'all':{'pae':np.zeros((1,6,6))}}
         def prep_inputs(self, **kwargs): pass
         def set_seq(self, seq): pass
-        def predict(self, **kwargs): predict_calls.append(kwargs)
+        def predict(self, **kwargs):
+            predict_calls.append(kwargs)
+            self.aux['log'].update(models=[self._model_names.index(kwargs.get('models',['model_1_ptm'])[0])],recycles=kwargs['num_recycles'])
         def restart(self,**kwargs): pass
         def design_3stage(self,*args): design_calls.append(args)
         def save_pdb(self,path,**kwargs): Path(path).write_text(pdb_text()+pdb_text(chain='B'))
@@ -411,8 +416,10 @@ def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successfu
         results=pd.read_csv(out/'results.csv')
         assert len(results)==(1 if sample else 4)
         validations=[c for c in predict_calls if 'models' in c]
-        assert len(validations)==len(results)
-        assert all(c['models']==['model_1_ptm'] and c['num_models']==1 for c in validations)
+        expected_models=validation_models.split(',')
+        assert len(validations)==len(results)*len(expected_models)
+        assert [c['models'][0] for c in validations]==expected_models*len(results)
+        assert all(c['num_models']==1 for c in validations)
     assert len(design_calls)==(1 if sample and successful else 2)
 
 

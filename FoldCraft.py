@@ -30,6 +30,8 @@ def parse_args(argv=None):
     parser.add_argument('--mpnn_sampling_temp', type=float, default=0.1, help="Sampling temperature for amino acids 0.0-1.0 (default: 0.1)")
     parser.add_argument('--mpnn_save', action='store_true', help='Whether to save MPNN sampled sequences')
       
+    parser.add_argument('--validation_models', default='model_1_ptm', help='Comma-separated validation models; two-model acceptance remains experimental pending accuracy benchmarks')
+    parser.add_argument('--validation_recycles', type=int, default=3)
     parser.add_argument('--seed', type=int, default=None, help='Replay seed (default: generate and record a random seed)')
     parser.add_argument('--data_dir', default=os.path.dirname(os.path.abspath(__file__)), help='AlphaFold weight directory, or its parent containing params/')
     parser.add_argument('--max_trajectories', type=int, default=1000,
@@ -82,6 +84,7 @@ def execute(args, prepared, state):
     from biopython_utils import hotspot_residues, iter_until_target, write_atomic
     from cmap_utils import assemble_fold_conditioned_cmap, binarize_cmap
     from sequence_design import redesign
+    from model_validation import validate_candidate
     target_input, binder_input, mapped_target, mapped_binder, mapped_mask = prepared
 
     #Prepare fold conditioned binder
@@ -267,6 +270,8 @@ def execute(args, prepared, state):
     ipaes = []
     iptms = []
     cmap_loss = []
+    validation_pass = []
+    model_disagreement = []
 
     # Publish recoverable checkpoints; run.json authenticates final completion.
     from baseline.result_io import write_json
@@ -283,7 +288,10 @@ def execute(args, prepared, state):
                            'plddt':plddts,
                            'ipae':ipaes,
                            'iptm':iptms,
-                           'cmap_loss':cmap_loss})
+                           'cmap_loss':cmap_loss,
+                           'primary_model':[args.validation_models.split(',')[0]]*len(names),
+                           'validation_pass':validation_pass,
+                           'model_disagreement':model_disagreement})
         write_atomic(results_csv, lambda p: df.to_csv(p, index=False), finalize=finalize)
 
     # Create folders to save outputs
@@ -358,19 +366,19 @@ def execute(args, prepared, state):
                                            rm_aa=rm_aa, #fix_pos=fixed_positions,
                                            )
             for num, seq in enumerate(samples['seq']):
-                af_model.set_seq(seq[-binder_len:])
-                af_model.predict(num_recycles=3, verbose=False, models=["model_1_ptm"], num_models=1, seed=stage_seed(args.seed, "validation", i, num))
-                print(f"predict: {name}_{num} plddt: {af_model.aux['log']['plddt']:.3f}, i_pae: {(af_model.aux['log']['i_pae']):.3f}, i_ptm: {af_model.aux['log']['i_ptm']:.3f}, cmap_loss: {af_model.aux['log']['cmap_loss_binder']:.3f}")
-                record_attempt(name, f'{name}_{num}', af_model.aux['log'], True)
-                af_model.save_pdb(f"{folder_name}/designs/{name}_{num}.pdb", get_best=False)
-                with open(f'{folder_name}/designs/{name}_{num}.pickle', 'wb') as handle:
-                    pickle.dump(af_model.aux['all'], handle, protocol=pickle.HIGHEST_PROTOCOL)
+                report = validate_candidate(af_model, seq, binder_len, folder_name, f'{name}_{num}',
+                                            args.validation_models, args.validation_recycles, stage_seed(args.seed, 'validation', i, num))
+                log = report['models'][report['primary_model']]['metrics']
+                print(f"predict: {name}_{num} plddt: {log['plddt']:.3f}, i_pae: {(log['i_pae']):.3f}, i_ptm: {log['i_ptm']:.3f}, cmap_loss: {log['cmap_loss_binder']:.3f}")
+                record_attempt(name, f'{name}_{num}', log, True)
                 names.append(f'{name}_{num}')
                 sequences.append(seq)
-                plddts.append(af_model.aux['log']['plddt'])
-                ipaes.append(af_model.aux['log']['i_pae'])
-                iptms.append(af_model.aux['log']['i_ptm'])
-                cmap_loss.append(af_model.aux['log']['cmap_loss_binder'])
+                plddts.append(log['plddt'])
+                ipaes.append(log['i_pae'])
+                iptms.append(log['i_ptm'])
+                cmap_loss.append(log['cmap_loss_binder'])
+                validation_pass.append(report['all_models_pass'])
+                model_disagreement.append(report['model_disagreement'])
                 write_results()   # checkpoint after each design
 
     else:
@@ -443,21 +451,21 @@ def execute(args, prepared, state):
                 # `passed` past success_target (see iter_until_target); lambda reads
                 # the live `passed`, which is incremented on each accepted design.
                 for num, seq in iter_until_target(samples['seq'], lambda: passed, success_target):
-                    af_model.set_seq(seq[-binder_len:])
-                    af_model.predict(num_recycles=3, verbose=False, models=["model_1_ptm"], num_models=1, seed=stage_seed(args.seed, "validation", i, num))
-                    print(f"predict: {name}_{num} plddt: {af_model.aux['log']['plddt']:.3f}, i_pae: {(af_model.aux['log']['i_pae']):.3f}, i_ptm: {af_model.aux['log']['i_ptm']:.3f}, cmap_loss: {af_model.aux['log']['cmap_loss_binder']:.3f}")
-                    accepted = af_model.aux['log']['i_pae']<0.35 and af_model.aux['log']['plddt']>.8 and af_model.aux['log']['i_ptm']>0.5
-                    record_attempt(name, f'{name}_{num}', af_model.aux['log'], bool(accepted))
-                    if af_model.aux['log']['i_pae']<0.35 and af_model.aux['log']['plddt']>.8 and af_model.aux['log']['i_ptm']>0.5:
-                        af_model.save_pdb(f"{folder_name}/designs/{name}_{num}.pdb", get_best=False)
-                        with open(f'{folder_name}/designs/{name}_{num}.pickle', 'wb') as handle:
-                            pickle.dump(af_model.aux['all'], handle, protocol=pickle.HIGHEST_PROTOCOL)
+                    report = validate_candidate(af_model, seq, binder_len, folder_name, f'{name}_{num}',
+                                                args.validation_models, args.validation_recycles, stage_seed(args.seed, 'validation', i, num))
+                    log = report['models'][report['primary_model']]['metrics']
+                    print(f"predict: {name}_{num} plddt: {log['plddt']:.3f}, i_pae: {(log['i_pae']):.3f}, i_ptm: {log['i_ptm']:.3f}, cmap_loss: {log['cmap_loss_binder']:.3f}")
+                    accepted = report['all_models_pass']
+                    record_attempt(name, f'{name}_{num}', log, bool(accepted))
+                    if accepted:
                         names.append(f'{name}_{num}')
                         sequences.append(seq)
-                        plddts.append(af_model.aux['log']['plddt'])
-                        ipaes.append(af_model.aux['log']['i_pae'])
-                        iptms.append(af_model.aux['log']['i_ptm'])
-                        cmap_loss.append(af_model.aux['log']['cmap_loss_binder'])
+                        plddts.append(log['plddt'])
+                        ipaes.append(log['i_pae'])
+                        iptms.append(log['i_ptm'])
+                        cmap_loss.append(log['cmap_loss_binder'])
+                        validation_pass.append(report['all_models_pass'])
+                        model_disagreement.append(report['model_disagreement'])
                         passed+=1
                         write_results()   # checkpoint after each design
     

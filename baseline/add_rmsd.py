@@ -17,6 +17,10 @@ Usage:  python baseline/add_rmsd.py [runs_dir]     (default: baseline/runs)
 import os
 import sys
 import warnings
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from model_validation import model_artifacts
+from run_state import sha256
 
 warnings.filterwarnings("ignore")
 from Bio.PDB import PDBParser, Superimposer
@@ -25,9 +29,9 @@ try:
 except ImportError:
     from structure_checks import chain_ca, matching_ca
 try:
-    from .result_io import publish_columns
+    from .result_io import publish_columns, write_json
 except ImportError:
-    from result_io import publish_columns
+    from result_io import publish_columns, write_json
 
 import pandas as pd
 
@@ -72,12 +76,14 @@ def main():
         df = pd.read_csv(csvf)
         df = df.loc[:, ~df.columns.str.startswith("Unnamed")]  # drop stale index col
         templ = template_ca_atoms(tmpl)  # parse the template once per fold
-        rmsds = []
-        for name in df["name"]:
-            dp = os.path.join(RUNS, fold, "designs", f"{name}.pdb")
-            if not os.path.exists(dp):
-                sys.exit(f"design PDB missing, cannot compute rmsd: {dp}")
-            rmsds.append(rmsd_to_template(dp, templ))
+        rmsds, model_scores = [], {}
+        for name in df['name']:
+            records = {}
+            for model, pdb, _ in model_artifacts(Path(RUNS)/fold, name):
+                records[model] = dict(rmsd=rmsd_to_template(str(pdb), templ), pdb_sha256=sha256(pdb))
+            rmsds.append(next(iter(records.values()))['rmsd'])
+            model_scores[name] = records
+        write_json(Path(RUNS)/fold/'rmsd.models.json', dict(template_sha256=sha256(tmpl), candidates=model_scores))
         df["rmsd"] = rmsds
         publish_columns(csvf, df, ['rmsd'])
         print(f"{fold}: wrote rmsd for {len(rmsds)} designs -> {csvf}")

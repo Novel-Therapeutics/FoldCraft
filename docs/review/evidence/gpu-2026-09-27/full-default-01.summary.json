@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/home/bizon/projects/foldcraft-gpu-20260927/repo/../venv/bin/python",
+    "FoldCraft.py",
+    "--output_folder",
+    "/home/bizon/projects/foldcraft-gpu-20260927/full-default-01",
+    "--data_dir",
+    "/home/bizon/projects/foldcraft-gpu-20260927/weights",
+    "--seed",
+    "20260927",
+    "--num_designs",
+    "2",
+    "--mpnn_samples",
+    "2",
+    "--target_template",
+    "examples/targets/pd-l1-1.pdb",
+    "--target_hotspots",
+    "30-34,50-54,69-76",
+    "--binder_template",
+    "examples/templates/1qys1.pdb",
+    "--binder_hotspots",
+    "26-40,58-71"
+  ],
+  "seconds": 214.60164264868945,
+  "returncode": 0,
+  "completed": true
+}

@@ -18,13 +18,17 @@ import os
 import pickle
 import sys
 import warnings
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from model_validation import model_artifacts
+from run_state import sha256
 
 warnings.filterwarnings("ignore")
 import numpy as np
 try:
-    from .result_io import publish_columns
+    from .result_io import publish_columns, write_json
 except ImportError:
-    from result_io import publish_columns
+    from result_io import publish_columns, write_json
 
 import pandas as pd
 from Bio.PDB import PDBParser
@@ -73,21 +77,18 @@ def main():
             continue
         df = pd.read_csv(csvf)
         df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
-        vals = []
-        for name in df["name"]:
-            base = os.path.join(RUNS, fold, "designs", name)
-            pdb, pk = base + ".pdb", base + ".pickle"
-            if not os.path.exists(pk):
-                sys.exit(f"design pickle missing, cannot compute ipsae: {pk}")
-            if not os.path.exists(pdb):
-                sys.exit(f"design PDB missing, cannot determine chain split: {pdb}")
-            tlen, blen = complex_chain_lens(pdb)
-            with open(pk, "rb") as fh:
-                pae = single_model_pae(pickle.load(fh)["pae"])
-            if tlen + blen != pae.shape[0]:
-                sys.exit(f"{pdb}: chain lengths {tlen}+{blen} != PAE dim "
-                         f"{pae.shape[0]} -- target/binder split is inconsistent")
-            vals.append(round(ipsae(pae, tlen, blen, PAE_CUTOFF), 4))
+        vals, model_scores = [], {}
+        for name in df['name']:
+            records = {}
+            for model, pdb, pk in model_artifacts(Path(RUNS)/fold, name):
+                tlen, blen = complex_chain_lens(str(pdb))
+                with open(pk, 'rb') as stream:
+                    pae = single_model_pae(pickle.load(stream)['pae'])
+                value = round(ipsae(pae, tlen, blen, PAE_CUTOFF), 4)
+                records[model] = dict(ipsae=value, pdb_sha256=sha256(pdb), pickle_sha256=sha256(pk))
+            vals.append(next(iter(records.values()))['ipsae'])
+            model_scores[name] = records
+        write_json(Path(RUNS)/fold/'ipsae.models.json', dict(pae_cutoff=PAE_CUTOFF, candidates=model_scores))
         df["ipsae"] = vals
         publish_columns(csvf, df, ['ipsae'])
         print(f"{fold}: ipsae for {len(vals)} designs (pae_cutoff={PAE_CUTOFF}) -> {csvf}")

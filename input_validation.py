@@ -131,6 +131,10 @@ def read_chain(filename, chain):
 
 
 def validate_controls(args):
+    from model_validation import model_names
+    model_names(args.validation_models)
+    if args.validation_recycles < 0:
+        raise ValueError("--validation_recycles must be nonnegative")
     if args.seed is not None and not 0 <= args.seed < 2**32:
         raise ValueError('--seed must be a 32-bit nonnegative integer')
     for name in ('num_designs', 'target_success', 'mpnn_samples', 'max_trajectories'):

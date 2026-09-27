@@ -31,10 +31,10 @@ def wilson(k, n):
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def af2_mask(d):
-    p, i, e = (("plddt", "iptm", "ipae") if "iptm" in d.columns
-               else ("af2_plddt", "af2_iptm", "af2_ipae"))
-    return (d[p] > 0.8) & (d[i] > 0.5) & (d[e] < 0.35)
+try:
+    from .gates import af2_mask, validation_status
+except ImportError:
+    from gates import af2_mask, validation_status
 
 
 def consensus_counts(d):
@@ -51,6 +51,9 @@ def consensus_counts(d):
         passed = gate(values)
         known_fail |= present & ~passed
         known_pass &= present & passed
+    status = validation_status(d)
+    known_fail |= status.eq(False).fillna(False)
+    known_pass &= status.fillna(False)
     n_pass = int(known_pass.sum())
     unknown = int((~known_fail & ~known_pass).sum())
     return dict(n=len(d), known_pass=n_pass, unknown=unknown, lower=n_pass, upper=n_pass+unknown)

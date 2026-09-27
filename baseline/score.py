@@ -13,6 +13,10 @@ import os
 import sys
 
 import pandas as pd
+try:
+    from .gates import af2_mask, validation_status
+except ImportError:
+    from gates import af2_mask, validation_status
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RUNS = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "runs")
@@ -71,7 +75,9 @@ def main():
         recs = df.to_dict("records")
         n = len(recs)
         counts = [sum(1 for r in recs if fn(r)) for _, fn in disp]
-        npass = sum(1 for r in recs if all(fn(r) for _, fn in GATE))  # success = GATE only
+        if validation_status(df).isna().any():
+            sys.exit(f'{csvf}: unknown ensemble decisions; cannot report an exact success rate')
+        npass = int((af2_mask(df) & (df['rmsd'] < 3.5)).sum())
         sr, lo, hi = wilson(npass, n)
         print(f"{fold:9} {n:>3} " + " ".join(f"{c:>8}" for c in counts)
               + f" {npass:>4} {f'{sr}% [{lo}-{hi}]':>20}")
