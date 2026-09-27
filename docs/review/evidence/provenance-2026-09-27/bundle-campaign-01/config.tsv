@@ -1,0 +1,2 @@
+fold	template	target	target_hotspots	binder_hotspots	total_traj	mem_gb
+audit	/home/bizon/projects/foldcraft-gpu-20260927/bundle-repo/examples/templates/1qys1.pdb	/home/bizon/projects/foldcraft-gpu-20260927/bundle-repo/examples/targets/pd-l1-1.pdb	30-34,50-54,69-76	26-40,58-71	1	12

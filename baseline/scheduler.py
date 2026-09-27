@@ -15,6 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from run_watchdog import DEFAULT_TIMEOUT_MINUTES
+from inference_bundle import validate_snapshot
 from run_state import completed_run, finish_run, sha256, stage_seed
 from baseline.result_io import atomic_write, write_json
 
@@ -34,6 +35,7 @@ class Chunk:
         self.mem_gb = mem_gb
         self.spec = spec  # dict: template, target, target_hotspots, binder_hotspots
         self.tag = f"{fold}__c{idx}"
+        self.runtime_bundle = None
         self.solo = False  # set on a failed chunk so its retry runs on an empty GPU
 
     def out_dir(self, repro):
@@ -43,7 +45,7 @@ class Chunk:
         return f"Chunk({self.tag}, traj={self.chunk_traj}, mem={self.mem_gb}GB)"
 
 
-def plan_chunks(folds, chunk_traj):
+def plan_chunks(folds, chunk_traj, runtime_bundle=None):
     """Split each fold's trajectories into chunks of at most ``chunk_traj``.
 
     ``folds`` is a list of dicts with keys: fold, template, target,
@@ -73,6 +75,8 @@ def plan_chunks(folds, chunk_traj):
                                                    "target_hotspots", "binder_hotspots")}))
             remaining -= n
             idx += 1
+    for chunk in chunks:
+        chunk.runtime_bundle = runtime_bundle
     chunks.sort(key=lambda c: c.mem_gb, reverse=True)
     return chunks
 
@@ -81,19 +85,23 @@ def chunk_signature(chunk):
     spec = dict(chunk.spec)
     for name in ('target', 'template'):
         spec[name] = dict(path=os.path.abspath(spec[name]), sha256=sha256(spec[name]))
-    root = Path(__file__).resolve().parents[1]
+    root = Path(chunk.runtime_bundle['identity']['request']['repo_root']) if chunk.runtime_bundle else Path(__file__).resolve().parents[1]
     code = {name: sha256(root / name) for name in (
         'FoldCraft.py', 'input_validation.py', 'cmap_utils.py', 'biopython_utils.py',
-        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py', 'model_validation.py', 'design_objective.py', 'run_watchdog.py')}
-    return dict(schema=1, seed=stage_seed(0, chunk.fold, chunk.idx), fold=chunk.fold, index=chunk.idx, trajectories=chunk.chunk_traj,
+        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py', 'model_validation.py', 'design_objective.py', 'run_watchdog.py', 'inference_bundle.py', 'baseline/checkpoint_files.py')}
+    return dict(schema=2, inference_bundle=chunk.runtime_bundle['identity'] if chunk.runtime_bundle else None, seed=stage_seed(0, chunk.fold, chunk.idx), fold=chunk.fold, index=chunk.idx, trajectories=chunk.chunk_traj,
                 spec=spec, code=code)
 
 
 def chunk_done(chunk, repro):
     path = Path(chunk.out_dir(repro))
-    if not completed_run(path):
+    if not completed_run(path) or chunk.runtime_bundle is None:
         return False
     try:
+        validate_snapshot(chunk.runtime_bundle)
+        state = json.loads((path/'run.json').read_text())
+        if (state.get('inference_bundle') or {}).get('identity') != chunk.runtime_bundle['identity']:
+            return False
         return json.loads(Path(str(path) + '.job.json').read_text()) == chunk_signature(chunk)
     except (OSError, ValueError):
         return False
@@ -154,7 +162,11 @@ def _merge_chunks(fold, chunk_dirs, out_dir, template):
     os.makedirs(designs_out, exist_ok=True)
     shutil.copy2(template, os.path.join(out_dir, "template.pdb"))
     frames = []
+    source_bundles = {}
     for idx, cdir in enumerate(chunk_dirs):
+        manifest = Path(cdir)/'run.json'
+        source = json.loads(manifest.read_text()) if manifest.exists() else {}
+        source_bundles[str(Path(cdir).resolve())] = (source.get('inference_bundle') or {}).get('identity')
         csv = os.path.join(cdir, "results.csv")
         if not os.path.exists(csv):
             raise FileNotFoundError(f"merge {fold}: chunk missing results.csv: {csv}")
@@ -174,7 +186,8 @@ def _merge_chunks(fold, chunk_dirs, out_dir, template):
     merged = pd.concat(frames, ignore_index=True)
     atomic_write(os.path.join(out_dir, "results.csv"), lambda p: merged.to_csv(p, index=False))
     finish_run(out_dir, {"schema": 1, "validation_artifacts": "per-model-v1" if "validation_pass" in merged else None,
-                         "chunks": [str(Path(d).resolve()) for d in chunk_dirs]})
+                         "chunks": [str(Path(d).resolve()) for d in chunk_dirs],
+                         "chunk_inference_bundles": source_bundles})
     return len(merged)
 
 
@@ -241,6 +254,9 @@ def gpu_mem_gb(smi, gpu):
 
 
 def launch(chunk, repro, gpu, repo, python, timeout_minutes=DEFAULT_TIMEOUT_MINUTES):
+    if chunk.runtime_bundle is None:
+        raise ValueError('Launching requires a verified worker inference bundle')
+    validate_snapshot(chunk.runtime_bundle)
     out = chunk.out_dir(repro)
     if os.path.exists(out):
         if completed_run(out):
@@ -260,6 +276,9 @@ def launch(chunk, repro, gpu, repo, python, timeout_minutes=DEFAULT_TIMEOUT_MINU
            "--target_hotspots", chunk.spec["target_hotspots"],
            "--binder_hotspots", chunk.spec["binder_hotspots"],
            "--num_designs", str(chunk.chunk_traj), "--timeout_minutes", str(timeout_minutes)]
+    request = chunk.runtime_bundle['identity']['request']
+    cmd += ['--data_dir', request['data_dir'], '--mpnn_weight', request['mpnn_weight'],
+            '--expected_bundle', out+'.job.json']
     try:
         return subprocess.Popen(cmd, cwd=repo, env=env, stdout=log,
                                 stderr=subprocess.STDOUT, start_new_session=True), log
@@ -269,7 +288,7 @@ def launch(chunk, repro, gpu, repo, python, timeout_minutes=DEFAULT_TIMEOUT_MINU
 
 
 def _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
-        poll_s=15, log=print, timeout_minutes=DEFAULT_TIMEOUT_MINUTES):
+        poll_s=15, log=print, timeout_minutes=DEFAULT_TIMEOUT_MINUTES, runtime_bundle=None):
     """Schedule all folds' chunks across ``gpus`` with memory gating, then merge."""
     # absolute paths so makedirs/exists checks here and FoldCraft's cwd=repo child
     # resolve to the same directories regardless of the scheduler's own cwd.
@@ -279,8 +298,8 @@ def _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
     committed = {g: 0.0 for g in gpus}          # GB reserved by running jobs
     running = {}                                  # pid -> (proc, log, chunk, gpu)
 
-    queue = filter_todo(plan_chunks(folds, chunk_traj), repro)
-    total = len(plan_chunks(folds, chunk_traj))
+    queue = filter_todo(plan_chunks(folds, chunk_traj, runtime_bundle), repro)
+    total = len(plan_chunks(folds, chunk_traj, runtime_bundle))
 
     # preflight: a chunk bigger than the largest GPU can never be placed -- fail
     # now rather than spin forever waiting for room that will never exist.
@@ -372,10 +391,10 @@ def _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
     # Publish only folds whose chunks all completed.
     merged = []
     for f in folds:
-        if fold_done(f["fold"], repro) and all(chunk_done(c, repro) for c in plan_chunks([f], chunk_traj)):
+        if fold_done(f["fold"], repro) and all(chunk_done(c, repro) for c in plan_chunks([f], chunk_traj, runtime_bundle)):
             continue
         fold_dir = os.path.join(repro, f["fold"])
-        planned = sorted(plan_chunks([f], chunk_traj), key=lambda c: c.idx)
+        planned = sorted(plan_chunks([f], chunk_traj, runtime_bundle), key=lambda c: c.idx)
         cdirs = [d.out_dir(repro) for d in planned]
         if all(chunk_done(d, repro) for d in planned):
             n = merge_chunks(f["fold"], cdirs, fold_dir, f["template"])
@@ -391,7 +410,20 @@ def _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
 
 
 
-def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s=15, log=print, timeout_minutes=DEFAULT_TIMEOUT_MINUTES):
+def capture_runtime(python, repo, data_dir=None, mpnn_weight='soluble'):
+    root = Path(repo).resolve()
+    data = Path(data_dir).expanduser() if data_dir else root
+    if not data.is_absolute():
+        data = root/data
+    output = subprocess.check_output([python, str(root/'inference_bundle.py'),
+        '--data-dir', str(data.resolve()), '--mpnn-weight', mpnn_weight], text=True,
+        cwd=root, env=dict(os.environ, CUDA_VISIBLE_DEVICES=''), timeout=120)
+    bundle = json.loads(output)
+    validate_snapshot(bundle)
+    return bundle
+
+
+def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s=15, log=print, timeout_minutes=DEFAULT_TIMEOUT_MINUTES, data_dir=None, mpnn_weight='soluble'):
     if not math.isfinite(timeout_minutes) or timeout_minutes <= 0:
         raise ValueError("Timeout must be finite and positive")
     folds, repo, repro = resolve_paths(folds, repo, repro)
@@ -409,19 +441,22 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s=15, lo
             folder = os.path.join(repro, f['fold'])
             if os.path.exists(folder) and not fold_done(f['fold'], repro):
                 raise ValueError(f'Unverified/archive merged folder {folder}; choose a fresh output root')
+        runtime_bundle = capture_runtime(python, repo, data_dir, mpnn_weight)
+        for f in folds:
+            folder = os.path.join(repro, f['fold'])
             if os.path.exists(folder):
-                planned = sorted(plan_chunks([f], chunk_traj), key=lambda c:c.idx)
+                planned = sorted(plan_chunks([f], chunk_traj, runtime_bundle), key=lambda c:c.idx)
                 recorded = json.loads((Path(folder) / 'run.json').read_text()).get('chunks')
                 if recorded != [str(Path(c.out_dir(repro)).resolve()) for c in planned] or not all(chunk_done(c, repro) for c in planned):
                     raise ValueError('Merged fold does not match this plan; choose a fresh output root')
-            for c in plan_chunks([f], chunk_traj):
+            for c in plan_chunks([f], chunk_traj, runtime_bundle):
                 if completed_run(c.out_dir(repro)) and not chunk_done(c, repro):
                     raise ValueError('Completed chunk configuration changed; choose a new output root')
         from input_validation import read_chain
         for f in folds:
             read_chain(f['target'], 'A').selection(f['target_hotspots'])
             read_chain(f['template'], 'A').selection(f['binder_hotspots'], allow_empty=True)
-        return _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s, log, timeout_minutes)
+        return _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s, log, timeout_minutes, runtime_bundle)
 
 
 # ---------------------------------------------------------------------------
@@ -448,6 +483,9 @@ def main(argv=None):
     p.add_argument("--repro", default="runs/repro", help="live output root (separate from archived baseline tables)")
     p.add_argument("--repo", default=os.getcwd(), help="FoldCraft repo root")
     p.add_argument("--python", default=sys.executable)
+    p.add_argument('--data-dir', help='AF2 weights (relative paths resolve against --repo; default: --repo)')
+    p.add_argument('--mpnn-weight', choices=['original','soluble'], default='soluble')
+    p.add_argument('--verify-runtime', action='store_true', help='During --dry-run, hash weights using --python to verify resume compatibility; no GPU access')
     p.add_argument("--gpus", default="auto",
                    help="comma list of GPU indices, or 'auto'")
     p.add_argument("--chunk-traj", type=int, default=10,
@@ -465,7 +503,10 @@ def main(argv=None):
     if args.dry_run:
         # resolve paths so the done/todo split reflects the real repro dir
         folds, _, repro = resolve_paths(folds, args.repo, args.repro)
-        chunks = plan_chunks(folds, args.chunk_traj)
+        runtime_bundle = capture_runtime(args.python, args.repo, args.data_dir, args.mpnn_weight) if args.verify_runtime else None
+        chunks = plan_chunks(folds, args.chunk_traj, runtime_bundle)
+        if runtime_bundle is None:
+            print('Runtime unverified: all chunks require verification; use --verify-runtime for a resume check.')
         todo = filter_todo(chunks, repro)
         print(f"folds={len(folds)} chunks={len(chunks)} todo={len(todo)} "
               f"(done={len(chunks) - len(todo)})")
@@ -476,7 +517,7 @@ def main(argv=None):
     smi = _nvidia_smi()
     gpus = discover_gpus(smi) if args.gpus == "auto" else args.gpus.split(",")
     run(folds, args.repro, args.repo, gpus, args.chunk_traj,
-        args.headroom_gb, args.python, timeout_minutes=args.timeout_minutes)
+        args.headroom_gb, args.python, timeout_minutes=args.timeout_minutes, data_dir=args.data_dir, mpnn_weight=args.mpnn_weight)
 
 
 if __name__ == "__main__":

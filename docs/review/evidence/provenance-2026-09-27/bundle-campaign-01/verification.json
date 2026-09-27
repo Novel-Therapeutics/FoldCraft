@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "command": [
+    "/home/bizon/projects/foldcraft-gpu-20260927/bundle-repo/../runtime-clean-01/bin/python",
+    "/home/bizon/projects/foldcraft-gpu-20260927/bundle-repo/baseline/scheduler.py",
+    "/home/bizon/projects/foldcraft-gpu-20260927/bundle-campaign-01/config.tsv",
+    "--repo",
+    "/home/bizon/projects/foldcraft-gpu-20260927/bundle-repo",
+    "--repro",
+    "/home/bizon/projects/foldcraft-gpu-20260927/bundle-campaign-01/runs",
+    "--python",
+    "/home/bizon/projects/foldcraft-gpu-20260927/bundle-repo/../runtime-clean-01/bin/python",
+    "--data-dir",
+    "/home/bizon/projects/foldcraft-gpu-20260927/weights",
+    "--gpus",
+    "0",
+    "--chunk-traj",
+    "1",
+    "--timeout-minutes",
+    "10"
+  ],
+  "prior_runtime_parity": {
+    "status": "passed",
+    "absolute_tolerance": 1e-05,
+    "max_pae_delta": 0.0,
+    "max_coordinate_delta": 0.0
+  },
+  "generation_seconds": 136.73021635506302,
+  "unchanged_resume": "folds=1 chunks=1 todo=0 (done=1)\n",
+  "changed_resume": "folds=1 chunks=1 todo=1 (done=0)\n  Chunk(audit__c0, traj=1, mem=12.0GB)\n",
+  "changed_execution_rejected": true,
+  "existing_artifacts_unchanged": true,
+  "restored_resume": "folds=1 chunks=1 todo=0 (done=1)\n",
+  "gpu_processes_after": ""
+}

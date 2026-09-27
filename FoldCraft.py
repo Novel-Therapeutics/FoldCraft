@@ -40,6 +40,7 @@ def parse_args(argv=None):
                         help='Maximum attempted trajectories in --sample mode (default: 1000)')
     parser.add_argument('--timeout_minutes', type=float, default=DEFAULT_TIMEOUT_MINUTES,
                         help='Wall-time limit for inference including model loading (default: 360 minutes)')
+    parser.add_argument('--expected_bundle', help=argparse.SUPPRESS)
     parser.add_argument('--preflight_only', action='store_true', help='Validate inputs on CPU without loading model weights')
     args = parser.parse_args(argv)
     try:
@@ -58,7 +59,19 @@ def main(*, supervised=True):
         return
     if os.path.exists(args.output_folder):
         raise SystemExit('Output folder already exists; choose a new directory to prevent stale-run reuse.')
-    state = start_run(args.output_folder, args, prepared)
+    bundle = None
+    if supervised:
+        import json
+        from pathlib import Path
+        from inference_bundle import capture_bundle
+        bundle = capture_bundle(args.data_dir, mpnn_weight=args.mpnn_weight,
+                                vhh=args.vhh, validation_models=args.validation_models)
+        args.data_dir = bundle['identity']['request']['data_dir']
+        if args.expected_bundle:
+            expected = json.loads(Path(args.expected_bundle).read_text())
+            if expected.get('inference_bundle') != bundle['identity']:
+                raise ValueError('Worker inference bundle differs from the scheduler plan')
+    state = start_run(args.output_folder, args, prepared, inference_bundle=bundle)
     try:
         if supervised:
             from run_watchdog import supervise
@@ -86,14 +99,20 @@ def execute(args, prepared, state):
     import pickle
     import warnings
     from colabdesign.af.alphafold.common import residue_constants
-    from colabdesign import mk_afdesign_model, clear_mem
+    from colabdesign import mk_afdesign_model as af_factory, clear_mem
     from colabdesign.af.loss import get_contact_map
-    from colabdesign.mpnn import mk_mpnn_model
+    from colabdesign.mpnn import mk_mpnn_model as mpnn_factory
     from biopython_utils import hotspot_residues, iter_until_target, write_atomic
     from cmap_utils import assemble_fold_conditioned_cmap, binarize_cmap
     from sequence_design import redesign
     from model_validation import validate_candidate
     from design_objective import contact_objective
+    from functools import partial
+    from inference_bundle import guarded_load, AF2_TEMPLATE_MODELS, MPNN_MODEL_NAME
+    bundle = state.get('inference_bundle')
+    available = [m for m in AF2_TEMPLATE_MODELS if not bundle or 'af2:'+m in bundle['identity']['files']]
+    mk_afdesign_model = partial(guarded_load, bundle, af_factory, model_names=available)
+    mk_mpnn_model = partial(guarded_load, bundle, mpnn_factory)
     target_input, binder_input, mapped_target, mapped_binder, mapped_mask = prepared
 
     #Prepare fold conditioned binder
@@ -130,7 +149,7 @@ def execute(args, prepared, state):
 
     mpnn_save = args.mpnn_save
 
-    model_name = 'v_48_010'
+    model_name = MPNN_MODEL_NAME
     os.makedirs(folder_name, exist_ok=True)
 
     if vhh:

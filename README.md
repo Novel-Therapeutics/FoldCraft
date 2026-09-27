@@ -141,3 +141,10 @@ the owned worker group, and preserves partial artifacts with `timed_out` status.
 A retry starts fresh; mid-trajectory resume is not implemented. See
 [RELIABILITY_FIXES.md](RELIABILITY_FIXES.md) and the item-by-item
 [review status](docs/review/CLOSURE_STATUS.md) for remaining restrictions and work.
+
+Design manifests and scheduler resume signatures now fingerprint the actual AF2
+and MPNN checkpoints and VHH conditioning file. In-place replacement invalidates
+reuse; completed results are preserved. Scheduler `--data-dir` selects AF2 weights,
+`--mpnn-weight` selects the variant, and `--dry-run --verify-runtime` checks resume
+compatibility with the selected `--python` on CPU. See
+[INFERENCE_PROVENANCE.md](INFERENCE_PROVENANCE.md) for checks and evidence.

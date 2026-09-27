@@ -22,11 +22,11 @@ or are excluded from the supported workflow. “Partial” identifies remaining 
 | ID | Status | Evidence and remaining scope |
 | --- | --- | --- |
 | R1 | Fixed | Live output defaults and manifest/artifact completion; archived CSVs cannot masquerade as executable runs. |
-| R2 | Fixed for recorded inputs/configuration | Signature-checked chunks, atomic merge, tamper tests. Weight replacement is the remaining R6 limitation below. |
+| R2 | Fixed on supported main path | Signature-checked chunks, atomic merge, tamper tests and checkpoint-aware resume; see R6. |
 | R3 | Fixed for supported CLI | Atomic checkpoints, exclusive output, attempt budgets and external wall-time limit. Timeout/cancellation terminate owned processes and cannot publish completion. Recovery retains artifacts but restarts the interrupted trajectory. |
 | R4 | Fixed | Solo retry holds its reservation for its full lifetime; scheduling regression tests. |
 | R5 | Fixed | Campaign failures return nonzero; shell subprocess tests. |
-| R6 | **Partial — priority before broader campaigns** | Inputs, effective settings, source hashes, seeds and per-model identities are recorded. Scorer caches hash actual checkpoints; controlled GPU runs also record checkpoint/runtime probes. However, the general design manifest and scheduler resume signature do not yet fingerprint the complete AF2/MPNN weight bundle and VHH conditioning file. Replacing those files in place can evade resume compatibility checks. Use a fresh output root after any weight/map change; the next correctness patch must enforce this automatically. |
+| R6 | Fixed on supported main path | Design manifests and scheduler signatures fingerprint actual AF2/MPNN checkpoints, relevant loader sources and VHH conditioning. Selected-worker discovery, load/completion guards and in-place replacement tests enforce compatibility. Historical runs remain readable but cannot resume without matching provenance. See [inference provenance](../../INFERENCE_PROVENANCE.md). |
 
 ## Scoring and interpretation
 
@@ -72,9 +72,10 @@ were also corrected in this pass.
 
 ## Next gate
 
-Complete **R6's general-run weight/map identity and resume invalidation** before
-the broader accuracy campaign. Then resolve the VHH convention fixtures if VHHs
-enter that campaign, freeze the expanded protocol, and use the paired analyzer.
+R6's general-run weight/map identity and resume invalidation is implemented.
+Resolve the VHH convention fixtures if VHHs enter the broader accuracy campaign,
+then freeze the expanded protocol and use the paired analyzer.
 Do not reopen historical data as if it had the new provenance or paired design.
 
-Validation and commands: [RELIABILITY_FIXES.md](../../RELIABILITY_FIXES.md).
+Validation and commands: [RELIABILITY_FIXES.md](../../RELIABILITY_FIXES.md) and
+[INFERENCE_PROVENANCE.md](../../INFERENCE_PROVENANCE.md).

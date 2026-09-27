@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/bizon/projects/foldcraft-gpu-20260927/bundle-repo/baseline/scheduler.py", line 524, in <module>
+    main()
+  File "/home/bizon/projects/foldcraft-gpu-20260927/bundle-repo/baseline/scheduler.py", line 519, in main
+    run(folds, args.repro, args.repo, gpus, args.chunk_traj,
+  File "/home/bizon/projects/foldcraft-gpu-20260927/bundle-repo/baseline/scheduler.py", line 451, in run
+    raise ValueError('Merged fold does not match this plan; choose a fresh output root')
+ValueError: Merged fold does not match this plan; choose a fresh output root

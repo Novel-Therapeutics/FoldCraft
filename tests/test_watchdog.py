@@ -96,12 +96,14 @@ def test_installer_help_from_foreign_directory(tmp_path):
     assert p.returncode==0 and '--data-dir' in p.stdout and '--env' in p.stdout
 
 
-def test_scheduler_passes_timeout_to_driver(tmp_path,monkeypatch):
+def test_scheduler_passes_timeout_to_driver(tmp_path,monkeypatch,inference_files):
     from baseline import scheduler as s
     monkeypatch.setattr(s,'chunk_signature',lambda c:{})
     commands=[]
     monkeypatch.setattr(s.subprocess,'Popen',lambda command,**kw:commands.append(command))
     c=s.Chunk('fold',0,1,1.,dict(template='binder',target='target',target_hotspots='1',binder_hotspots='1'))
+    from inference_bundle import capture_bundle
+    c.runtime_bundle=capture_bundle(inference_files['data'],repo_root=inference_files['repo'])
     _,log=s.launch(c,str(tmp_path),0,str(ROOT),sys.executable,12.5);log.close()
     command=commands[0];assert command[command.index('--timeout_minutes')+1]=='12.5'
 

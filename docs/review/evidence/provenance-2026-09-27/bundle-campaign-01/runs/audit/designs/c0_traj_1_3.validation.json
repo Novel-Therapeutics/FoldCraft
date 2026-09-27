@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sequence": "TVTVPKDLYVVEYGSNMTIECKFPVEKQLDLAALIVYWEMEDKNIIQFVHGEEDLKVQHSSYRQRARLLKDQLSLGNAALQITDVKLQDAGVYRCMISYGGADYKRITVKVN/MIRLVVELERGGERYRYEREFEEEGELYRELIRLFLRIRELEPDRVLVRLELPDPELARRYVPVLESALRAAGIKEIRVELRGNEVLLRGER",
+  "primary_model": "model_1_ptm",
+  "model_order": [
+    "model_1_ptm"
+  ],
+  "policy": "all_models_pass",
+  "models": {
+    "model_1_ptm": {
+      "metrics": {
+        "plddt": 0.8780392557382584,
+        "i_pae": 0.3914429843425751,
+        "i_ptm": 0.5063018798828125,
+        "cmap_loss_binder": 1.7003369331359863
+      },
+      "seed": 641669542,
+      "prediction_seconds": 0.4346366384997964,
+      "requested_recycles": 3,
+      "actual_recycles": 3,
+      "executed_models": [
+        "model_1_ptm"
+      ],
+      "passed": false,
+      "pdb_sha256": "b3b5b9fd840670025c3440b60c475e69abb848e94f353620a6315d328d81f354",
+      "pickle_sha256": "c33cf0cf06fb09e720663ae46d280e993b89ae60220aeaa90d83a3db916e8358"
+    }
+  },
+  "all_models_pass": false,
+  "model_disagreement": false
+}

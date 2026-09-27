@@ -123,6 +123,10 @@ def worker(folder):
     # original source paths are never reopened by the worker.
     prepared = (None, None, mapped['target'], mapped['binder'], mapped['binder_mask'])
     try:
+        from inference_bundle import validate_snapshot
+        if not state.get('inference_bundle'):
+            raise ValueError('Production worker requires an inference bundle')
+        validate_snapshot(state['inference_bundle'], full=True, worker_environment=True)
         execute(args, prepared, state)
     except BaseException as exc:
         current = json.loads((Path(folder)/'run.json').read_text())

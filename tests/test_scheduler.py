@@ -141,7 +141,7 @@ class TestResume:
         chunks = sch.plan_chunks([_fold('a', 20)], 10)
         assert sch.filter_todo(chunks, str(tmp_path)) == chunks
 
-    def test_manifest_artifacts_and_config_required(self, tmp_path):
+    def test_manifest_artifacts_and_config_required(self, tmp_path, inference_files):
         from pathlib import Path
         from run_state import finish_run
         from baseline.result_io import write_json
@@ -149,13 +149,15 @@ class TestResume:
         for key in ('template', 'target'):
             p = tmp_path / (key + '.pdb'); p.write_text('input')
             f[key] = str(p)
-        c = sch.plan_chunks([f], 10)[0]
+        from inference_bundle import capture_bundle
+        bundle = capture_bundle(inference_files['data'], repo_root=inference_files['repo'])
+        c = sch.plan_chunks([f], 10, bundle)[0]
         out = Path(c.out_dir(str(tmp_path))); (out / 'designs').mkdir(parents=True)
         (out / 'results.csv').write_text('name\nx\n')
         for ext in ('.pdb', '.pickle'):
             (out / 'designs' / ('x'+ext)).write_text('artifact')
         assert not sch.chunk_done(c, str(tmp_path))
-        finish_run(out, {'schema': 1})
+        finish_run(out, {'schema': 1, 'inference_bundle': bundle})
         write_json(str(out)+'.job.json', sch.chunk_signature(c))
         assert sch.chunk_done(c, str(tmp_path))
         c.spec['binder_hotspots'] = '2'

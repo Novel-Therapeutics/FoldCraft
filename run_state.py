@@ -24,7 +24,7 @@ def stage_seed(seed, *identity):
     return int.from_bytes(hashlib.sha256(payload).digest()[:4], 'big')
 
 
-def start_run(folder, args, prepared):
+def start_run(folder, args, prepared, *, inference_bundle=None):
     folder = Path(folder)
     # Exclusive creation; refuse existing directories, including stale/partial runs.
     folder.mkdir(parents=True, exist_ok=False)
@@ -39,14 +39,14 @@ def start_run(folder, args, prepared):
     from input_validation import VHH_CONVENTION
     root = Path(__file__).resolve().parent
     code = {name:sha256(root / name) for name in ('FoldCraft.py','input_validation.py',
-        'sequence_design.py','cmap_utils.py','biopython_utils.py','run_state.py','model_validation.py','design_objective.py','run_watchdog.py')}
+        'sequence_design.py','cmap_utils.py','biopython_utils.py','run_state.py','model_validation.py','design_objective.py','run_watchdog.py','inference_bundle.py','baseline/checkpoint_files.py')}
     packages = {}
     for package in ('colabdesign','jax','jaxlib','numpy','biopython'):
         try:
             packages[package] = version(package)
         except PackageNotFoundError:
             pass
-    manifest = dict(packages=packages, seed_protocol='sha256-stage-v1', created_at=datetime.now(timezone.utc).isoformat(), code=code,
+    manifest = dict(inference_bundle=inference_bundle, packages=packages, seed_protocol='sha256-stage-v1', created_at=datetime.now(timezone.utc).isoformat(), code=code,
                     vhh_convention=VHH_CONVENTION if args.vhh else None, schema=1, status='running', config=vars(args).copy(),
                     target=target.manifest(), binder=binder.manifest() if binder else None,
                     mapped_hotspots=dict(target=thot, binder=bhot, binder_mask=mask),
@@ -59,6 +59,13 @@ def start_run(folder, args, prepared):
 def finish_run(folder, state, *, status='complete'):
     folder = Path(folder)
     state = dict(state, status=status, updated_at=datetime.now(timezone.utc).isoformat())
+    if status in ('complete', 'exhausted') and state.get('inference_bundle'):
+        from inference_bundle import validate_snapshot
+        try:
+            validate_snapshot(state['inference_bundle'], full=True, worker_environment=True)
+        except (OSError, ValueError) as exc:
+            write_json(folder/'run.json', dict(state, status='failed', error=f'Inference bundle verification failed: {exc}'))
+            raise
     if status == 'complete':
         with open(folder / 'results.csv', newline='') as f:
             rows = list(csv.DictReader(f))

@@ -91,3 +91,28 @@ def two_chain_complex(tmp_path):
     io.set_structure(structure)
     io.save(str(out))
     return str(out)
+
+@pytest.fixture
+def inference_files(tmp_path, monkeypatch):
+    """Tiny fake weight files with the real supported loader layout; no inference."""
+    from pathlib import Path
+    import shutil
+    import inference_bundle as b
+    data=tmp_path/'weights';data.mkdir()
+    for model in ('model_1_ptm','model_2_ptm'):
+        (data/f'params_{model}.npz').write_bytes(b'original-weight')
+    package=tmp_path/'package/colabdesign'
+    names=['__init__.py','af/model.py','af/alphafold/model/data.py','mpnn/model.py']
+    names += [f'mpnn/{weights}/{file}' for weights in ('weights','weights_soluble') for file in ('__init__.py','v_48_010.pkl')]
+    for name in names:
+        path=package/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(b'initial')
+    (package/'__init__.py').write_text('raise RuntimeError("ColabDesign must not be imported during discovery")\n')
+    repo=tmp_path/'repo';repo.mkdir()
+    sources=['FoldCraft.py','input_validation.py','cmap_utils.py','biopython_utils.py','sequence_design.py','run_state.py',
+             'baseline/result_io.py','baseline/scheduler.py','model_validation.py','design_objective.py','run_watchdog.py',
+             'inference_bundle.py','baseline/checkpoint_files.py']
+    for name in sources:
+        path=repo/name;path.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(Path(REPO_ROOT)/name,path)
+    (repo/'framework').mkdir();(repo/'framework/vhh.npy').write_bytes(b'conditioning')
+    monkeypatch.setattr(b,'colabdesign_root',lambda:package.resolve())
+    return dict(data=data,package=package,repo=repo)

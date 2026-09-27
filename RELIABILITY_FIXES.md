@@ -82,10 +82,9 @@ Evidence: [reliability-2026-09-27](docs/review/evidence/reliability-2026-09-27/)
 The complete isolated runtime and raw outputs remain on Bizon. No new accuracy
 campaign was started and no scientific defaults were changed.
 
-## Next correctness task
+## Follow-up completed
 
-Finish R6: fingerprint the complete inference weight/conditioning bundle in
-ordinary design manifests and scheduler resume signatures, and invalidate reuse
-after in-place replacement. Controlled benchmarks and scorer caches already
-record hashes, but that protection is not yet general to every design invocation.
-Address this before expanding the accuracy benchmark.
+R6's general-run checkpoint/conditioning fingerprint and scheduler resume
+invalidation are now implemented. See [INFERENCE_PROVENANCE.md](INFERENCE_PROVENANCE.md)
+for the protocol and subsequent CPU/GPU verification. The results above describe
+the earlier reliability patch.

@@ -1,0 +1,4 @@
+[sched] 1/1 chunks to run on GPUs ['0'] (rest already complete)
+[sched] launch audit__c0 -> gpu0 (free 94.5GB, committed 12.0GB)
+[sched] DONE audit__c0 (gpu0, rc=0)
+[sched] merged audit: 5 designs
