@@ -113,3 +113,10 @@ GPU-dependent model-identity fixes are documented in [GPU_FIXES.md](GPU_FIXES.md
 The optional two-model path saves each model separately and requires both models
 to pass; GPU integration is verified on Bizon, while accuracy gains remain unproven. The smoke-test runner
 prints a plan by default and does not access a GPU until explicitly executed.
+
+Checkpoint-aware scorer caching, ESMFold confidence units and OpenMM convergence
+checks are documented in [SCORING_FIXES.md](SCORING_FIXES.md). The corrected
+baseline is tagged `corrected-baseline-2026-09-27`. See the
+[paired pilot results](PILOT_RESULTS.md) for completed tests of two-model
+selection, contact-loss normalization and MPNN temperature. No experimental
+setting was promoted to a default, and binding-accuracy gains remain unproven.

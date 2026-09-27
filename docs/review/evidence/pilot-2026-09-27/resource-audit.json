@@ -1,0 +1,89 @@
+{
+  "status": "passed",
+  "source_and_inputs_unchanged": true,
+  "backbone_replay": [
+    {
+      "case": "pdl1_top7",
+      "seed": 20260927,
+      "backbone_sha256": "f3215719e3db86910ea2c611c25da9470d6475a62b0956a4a5f4e2b1c8a960e6"
+    },
+    {
+      "case": "pdl1_top7",
+      "seed": 20260928,
+      "backbone_sha256": "38fbc666de4cfd7d891cc4809d4a0283659adbbc8a533c4d9f76952629928be1"
+    },
+    {
+      "case": "egfr_top7",
+      "seed": 20260927,
+      "backbone_sha256": "9a6a1a1869f31c5c432cd9ee174f5ecb862a30c46f737f937a2c155ef28a4fc7"
+    },
+    {
+      "case": "egfr_top7",
+      "seed": 20260928,
+      "backbone_sha256": "cc13d6a0a217abf5b8af22b24ede125b8bd793c5ebe0960f03eb2ff16e9cf2ae"
+    }
+  ],
+  "gpu_telemetry": [
+    {
+      "name": "pdl1_top7_20260927_normalized_pairs",
+      "peak_gpu_mib": 5250,
+      "samples": 96
+    },
+    {
+      "name": "pdl1_top7_20260927_mpnn_temp_02",
+      "peak_gpu_mib": 5252,
+      "samples": 57
+    },
+    {
+      "name": "pdl1_top7_20260927_baseline",
+      "peak_gpu_mib": 5252,
+      "samples": 56
+    },
+    {
+      "name": "pdl1_top7_20260928_baseline",
+      "peak_gpu_mib": 5252,
+      "samples": 59
+    },
+    {
+      "name": "pdl1_top7_20260928_mpnn_temp_02",
+      "peak_gpu_mib": 5252,
+      "samples": 54
+    },
+    {
+      "name": "pdl1_top7_20260928_normalized_pairs",
+      "peak_gpu_mib": 5250,
+      "samples": 54
+    },
+    {
+      "name": "egfr_top7_20260927_mpnn_temp_02",
+      "peak_gpu_mib": 7304,
+      "samples": 140
+    },
+    {
+      "name": "egfr_top7_20260927_baseline",
+      "peak_gpu_mib": 7304,
+      "samples": 99
+    },
+    {
+      "name": "egfr_top7_20260927_normalized_pairs",
+      "peak_gpu_mib": 7302,
+      "samples": 143
+    },
+    {
+      "name": "egfr_top7_20260928_mpnn_temp_02",
+      "peak_gpu_mib": 7304,
+      "samples": 99
+    },
+    {
+      "name": "egfr_top7_20260928_baseline",
+      "peak_gpu_mib": 7304,
+      "samples": 99
+    },
+    {
+      "name": "egfr_top7_20260928_normalized_pairs",
+      "peak_gpu_mib": 7302,
+      "samples": 103
+    }
+  ],
+  "peak_gpu_mib": 7304
+}

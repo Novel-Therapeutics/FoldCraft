@@ -62,3 +62,10 @@ protocol without inference. Add `--execute` to run it on an available GPU.
 creates `NEW/pool`; score that pool with the corrected scorers and rerun the
 analysis without `--build-pool`. The script reports paired trajectory results,
 metric completeness and selection differences in JSON, CSV and Markdown.
+
+## Execution outcome
+
+The 27 September pilot is complete: 12 valid generation runs, 24 independently
+scored candidates and 48 audited model-specific predictions. See
+[PILOT_RESULTS.md](PILOT_RESULTS.md) for findings, limits and the next experiments.
+The protocol above was frozen before execution; production defaults are unchanged.

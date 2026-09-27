@@ -4,6 +4,13 @@ Prepared 26 September 2026 for `codex/correctness-and-validation`, reviewed at
 `e485f3244e47464ae6083c193f234e91c099e0c5`. This is an implementation plan, not a
 record of completed fixes. See [the deep review](DEEP_REVIEW.md) for evidence.
 
+**Implementation update, 27 September:** the CPU and GPU correctness work,
+scorer validation and corrected-baseline tag are complete. See
+[CPU fixes](../../CPU_FIXES.md), [GPU checks](../../GPU_FIXES.md),
+[scorer fixes](../../SCORING_FIXES.md) and [pilot results](../../PILOT_RESULTS.md).
+The plan below is the original ordering; its historical “Immediate next PR”
+section is superseded by the next experiments in the pilot report.
+
 The objective is reliable fold-conditioned binder design and defensible candidate
 ranking. FoldCraft uses pretrained predictors; there is no foundation-model
 training pipeline here. Correct conditioning, evaluation and search come first.

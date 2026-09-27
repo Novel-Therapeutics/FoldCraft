@@ -1,0 +1,70 @@
+{
+  "status": "complete",
+  "stages": [
+    {
+      "name": "pool",
+      "command": [
+        "/home/bizon/projects/foldcraft-gpu-20260927/venv/bin/python",
+        "scripts/analyze_pilot.py",
+        "/home/bizon/projects/foldcraft-gpu-20260927/pilot-01",
+        "--build-pool"
+      ],
+      "returncode": 0,
+      "seconds": 2.321408089250326
+    },
+    {
+      "name": "esmfold",
+      "command": [
+        "/home/bizon/projects/foldcraft-gpu-20260927/oracle-venv/bin/python",
+        "baseline/score_esmfold.py",
+        "/home/bizon/projects/foldcraft-gpu-20260927/pilot-01/pool",
+        "--model-dir",
+        "/home/bizon/.cache/huggingface/hub/models--facebook--esmfold_v1/snapshots/75a3841ee059df2bf4d56688166c8fb459ddd97a"
+      ],
+      "returncode": 0,
+      "seconds": 25.351849944330752
+    },
+    {
+      "name": "boltz",
+      "command": [
+        "/home/bizon/projects/foldcraft-gpu-20260927/oracle-venv/bin/python",
+        "baseline/score_boltz2.py",
+        "/home/bizon/projects/foldcraft-gpu-20260927/pilot-01/pool",
+        "--no-msa",
+        "--no-kernels",
+        "--seed",
+        "20260927",
+        "--workdir",
+        "/home/bizon/projects/foldcraft-gpu-20260927/pilot-01/boltz-work"
+      ],
+      "returncode": 0,
+      "seconds": 783.3870940431952
+    },
+    {
+      "name": "openmm",
+      "command": [
+        "/home/bizon/projects/foldcraft-gpu-20260927/openmm-venv/bin/python",
+        "baseline/score_openmm.py",
+        "/home/bizon/projects/foldcraft-gpu-20260927/pilot-01/pool",
+        "--platform",
+        "CUDA",
+        "--min-iters",
+        "500",
+        "--seed",
+        "20260927"
+      ],
+      "returncode": 0,
+      "seconds": 115.53728034440428
+    },
+    {
+      "name": "analysis",
+      "command": [
+        "/home/bizon/projects/foldcraft-gpu-20260927/venv/bin/python",
+        "scripts/analyze_pilot.py",
+        "/home/bizon/projects/foldcraft-gpu-20260927/pilot-01"
+      ],
+      "returncode": 0,
+      "seconds": 0.5168488472700119
+    }
+  ]
+}

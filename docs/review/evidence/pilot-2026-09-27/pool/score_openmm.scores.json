@@ -1,0 +1,633 @@
+{
+  "protocol": {
+    "settings": {
+      "min_iters": 500,
+      "tolerance": 10.0,
+      "seed": 20260927,
+      "platform": "CUDA",
+      "platform_properties": {
+        "DeviceIndex": "",
+        "DeviceName": "",
+        "UseBlockingSync": "false",
+        "Precision": "mixed",
+        "UseCpuPme": "false",
+        "CudaCompiler": "",
+        "TempDirectory": "/tmp",
+        "CudaHostCompiler": "",
+        "DisablePmeStream": "false",
+        "DeterministicForces": "true"
+      },
+      "constraints": "none",
+      "forcefield": "amber14/protein.ff14SB+implicit/gbn2"
+    },
+    "source": "2f8683b2ea63f52281ddff0878ab1a169af4b9e668b6980afa3b6fcdf8dc5b54",
+    "cache_code": "22ae0448a553a8de79fac7ac888c7ff4f638f012c71f46a40585f24aa12046f9",
+    "helper_code": {
+      "structure_checks.py": "53cb35279b381e93708cee97bd6d2772f34ac8d70fa3a1d412cba66e3fb1c7a5",
+      "checkpoint_files.py": "172d364f2c8045b4558c17baa226378fbab15162e01d2560e8959d23c1e7e9f8",
+      "gates.py": "f7da053aea152c53037bf786ef53bd20c86cc4dc33a1a731f0b81f5a40624c77"
+    },
+    "python": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]",
+    "packages": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "biopython": "1.88",
+      "openmm": "8.3.1",
+      "pdbfixer": "1.12.0",
+      "scipy": "1.18.1"
+    },
+    "extra_inputs": {},
+    "model_inputs": {
+      "protein_ff": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/openmm-venv/lib/python3.12/site-packages/openmm/app/data/amber14/protein.ff14SB.xml",
+        "files": {
+          "protein.ff14SB.xml": "d9f9779c09d67cd5f8bc657692f174ffab14c469dfd06d560ac1899fa7e976b8"
+        }
+      },
+      "solvent_ff": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/openmm-venv/lib/python3.12/site-packages/openmm/app/data/implicit/gbn2.xml",
+        "files": {
+          "gbn2.xml": "d12c14820a413146eb008758c405b8690898811b4e08827b00a75a163395bde3"
+        }
+      }
+    }
+  },
+  "records": {
+    "pdl1_top7_20260927_normalized_pairs_traj_1_0": {
+      "signature": "0981b1d6d1ac9ccdb5b3b3910c83f6ec55747e887c599d51a3f5be63a6be3f86",
+      "values": {
+        "openmm_dE": -68.97,
+        "openmm_e_complex": -6763.0
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.445949600612914,
+        "max_force_kj_mol_nm": 92.85087348914709,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 13324.375292283825,
+        "final_energy_kcal_mol": -6762.995080004398,
+        "max_iterations": 500,
+        "iterations": 368,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4285.926256421794,
+        "binder_energy_kcal_mol": -2408.0989186090933
+      }
+    },
+    "pdl1_top7_20260927_normalized_pairs_traj_1_1": {
+      "signature": "178f23c61695d6aeac833fefbb7381d1f225c481bafd57b31816c2208f4a9c89",
+      "values": {
+        "openmm_dE": -75.35,
+        "openmm_e_complex": -6552.7
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.687577793513644,
+        "max_force_kj_mol_nm": 129.84343360663573,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 11785.293412889701,
+        "final_energy_kcal_mol": -6552.652018824535,
+        "max_iterations": 500,
+        "iterations": 332,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4286.547793485386,
+        "binder_energy_kcal_mol": -2190.7578014422274
+      }
+    },
+    "pdl1_top7_20260927_mpnn_temp_02_traj_1_0": {
+      "signature": "d25a29f53b80cc32b285f69f4b7a4d113b419192281583cf09075b901c0bb062",
+      "values": {
+        "openmm_dE": -39.14,
+        "openmm_e_complex": -7173.3
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.056972340837824,
+        "max_force_kj_mol_nm": 84.30874508155273,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 635450.5605911342,
+        "final_energy_kcal_mol": -7173.321012091699,
+        "max_iterations": 500,
+        "iterations": 257,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4259.79305031281,
+        "binder_energy_kcal_mol": -2874.384038404782
+      }
+    },
+    "pdl1_top7_20260927_mpnn_temp_02_traj_1_1": {
+      "signature": "e091fe0c08a2c6788a6d54ec0219a6b08cc2e9203bb4eecc07f8c696b80bbee4",
+      "values": {
+        "openmm_dE": -13.73,
+        "openmm_e_complex": -7709.9
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.744414913573625,
+        "max_force_kj_mol_nm": 58.4358069273072,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 248692.61303558646,
+        "final_energy_kcal_mol": -7709.931022293607,
+        "max_iterations": 500,
+        "iterations": 261,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4273.25738375031,
+        "binder_energy_kcal_mol": -3422.942700118606
+      }
+    },
+    "pdl1_top7_20260927_baseline_traj_1_0": {
+      "signature": "bbc0c1b7762459740ba31265cf87ac7e7e3467cd279e6a3d693be10cfcf9636d",
+      "values": {
+        "openmm_dE": -39.19,
+        "openmm_e_complex": -9527.4
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.5868456498161985,
+        "max_force_kj_mol_nm": 76.97431040339679,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 14043.183530125874,
+        "final_energy_kcal_mol": -9527.425673998423,
+        "max_iterations": 500,
+        "iterations": 282,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4275.673972155395,
+        "binder_energy_kcal_mol": -5212.556941122165
+      }
+    },
+    "pdl1_top7_20260927_baseline_traj_1_1": {
+      "signature": "2aa2cfb23b1e01dd6136d16c8b0a781841fdeaeba3ccca5dcc40bd2b80732cd8",
+      "values": {
+        "openmm_dE": -18.13,
+        "openmm_e_complex": -7746.3
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.625032745592878,
+        "max_force_kj_mol_nm": 64.22023071460178,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 1902400.9510369818,
+        "final_energy_kcal_mol": -7746.298351276616,
+        "max_iterations": 500,
+        "iterations": 269,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4266.176787987363,
+        "binder_energy_kcal_mol": -3461.992364119657
+      }
+    },
+    "pdl1_top7_20260928_baseline_traj_1_0": {
+      "signature": "ba72b1c4970fc2ca0028119d8af49824476370179a228e5ec36f887c6708a9d3",
+      "values": {
+        "openmm_dE": -51.27,
+        "openmm_e_complex": -7518.8
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.092968697525656,
+        "max_force_kj_mol_nm": 50.75832895443051,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 19064.463190409755,
+        "final_energy_kcal_mol": -7518.805527500896,
+        "max_iterations": 500,
+        "iterations": 323,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4285.425102551131,
+        "binder_energy_kcal_mol": -3182.113187981416
+      }
+    },
+    "pdl1_top7_20260928_baseline_traj_1_1": {
+      "signature": "39210c9e96c98dbffd51c67568f1838eca08c055ef9bacc20100720ff00a533a",
+      "values": {
+        "openmm_dE": -35.4,
+        "openmm_e_complex": -7057.4
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.77657253605393,
+        "max_force_kj_mol_nm": 88.84191723560951,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 26355.282742079835,
+        "final_energy_kcal_mol": -7057.3998937484985,
+        "max_iterations": 500,
+        "iterations": 339,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4283.916639829291,
+        "binder_energy_kcal_mol": -2738.081401177315
+      }
+    },
+    "pdl1_top7_20260928_mpnn_temp_02_traj_1_0": {
+      "signature": "47304ebaa5a7fd8154732d10d81bbf44db67b48b08b4dd9b383978df7bbd2604",
+      "values": {
+        "openmm_dE": -40.09,
+        "openmm_e_complex": -7762.3
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.183097255302317,
+        "max_force_kj_mol_nm": 52.82412732559787,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 119594.88267543419,
+        "final_energy_kcal_mol": -7762.3063865875165,
+        "max_iterations": 500,
+        "iterations": 314,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4273.138987993685,
+        "binder_energy_kcal_mol": -3449.078328348373
+      }
+    },
+    "pdl1_top7_20260928_mpnn_temp_02_traj_1_1": {
+      "signature": "0495b1ac2d25dc41c79e822492b0a820d45ba8020863287c1baad33a6cfca4e1",
+      "values": {
+        "openmm_dE": -35.65,
+        "openmm_e_complex": -7086.9
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.452652266387878,
+        "max_force_kj_mol_nm": 117.8108131819939,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 13197.365382293576,
+        "final_energy_kcal_mol": -7086.865084378044,
+        "max_iterations": 500,
+        "iterations": 420,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4293.031663838147,
+        "binder_energy_kcal_mol": -2758.1835045417884
+      }
+    },
+    "pdl1_top7_20260928_normalized_pairs_traj_1_0": {
+      "signature": "1cb8a837e8fe041e03a1a2d1890b3bee1b7169ac1671f1d97de948f0233b02d1",
+      "values": {
+        "openmm_dE": -56.14,
+        "openmm_e_complex": -7882.6
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.269321829694252,
+        "max_force_kj_mol_nm": 65.52748403239046,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 10723.168102023388,
+        "final_energy_kcal_mol": -7882.63985880603,
+        "max_iterations": 500,
+        "iterations": 344,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4284.141885023837,
+        "binder_energy_kcal_mol": -3542.3534225098842
+      }
+    },
+    "pdl1_top7_20260928_normalized_pairs_traj_1_1": {
+      "signature": "4654724ce4a36e15dbd30bb5d1b2f426e086949972d4da0d6c28e2e36c80c1c3",
+      "values": {
+        "openmm_dE": -41.21,
+        "openmm_e_complex": -8014.5
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.530225655741801,
+        "max_force_kj_mol_nm": 84.23953230561277,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 11542.655369153781,
+        "final_energy_kcal_mol": -8014.471038715247,
+        "max_iterations": 500,
+        "iterations": 355,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4289.988911100522,
+        "binder_energy_kcal_mol": -3683.2683792627663
+      }
+    },
+    "egfr_top7_20260927_mpnn_temp_02_traj_1_0": {
+      "signature": "efefc4351e5dc84d7f78da929552b3f984443d0ba3067e629320addd86d23137",
+      "values": {
+        "openmm_dE": -37.47,
+        "openmm_e_complex": -8925.4
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.044339127398409,
+        "max_force_kj_mol_nm": 70.5832049485789,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 1873171.9591164768,
+        "final_energy_kcal_mol": -8925.353576930642,
+        "max_iterations": 500,
+        "iterations": 293,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -5919.579996659277,
+        "binder_energy_kcal_mol": -2968.3079024907656
+      }
+    },
+    "egfr_top7_20260927_mpnn_temp_02_traj_1_1": {
+      "signature": "17be8a1968ef3333227b4c838c958f4774d1148f034537bbf75d154a13582a6c",
+      "values": {
+        "openmm_dE": -18.47,
+        "openmm_e_complex": -9230.4
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.561942641270825,
+        "max_force_kj_mol_nm": 82.16961408633776,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 13692.307042134742,
+        "final_energy_kcal_mol": -9230.408485820846,
+        "max_iterations": 500,
+        "iterations": 237,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -5934.227126015854,
+        "binder_energy_kcal_mol": -3277.7065991091686
+      }
+    },
+    "egfr_top7_20260927_baseline_traj_1_0": {
+      "signature": "f4b0619736ee4b747a51985a9f41c55488fd0316b8f7e40bc4981be0f84a2c1e",
+      "values": {
+        "openmm_dE": -33.6,
+        "openmm_e_complex": -8977.5
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 4.532171131324583,
+        "max_force_kj_mol_nm": 54.0905272187342,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 26689.841479637264,
+        "final_energy_kcal_mol": -8977.47175720107,
+        "max_iterations": 500,
+        "iterations": 254,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -5936.6578938476605,
+        "binder_energy_kcal_mol": -3007.2184852252826
+      }
+    },
+    "egfr_top7_20260927_baseline_traj_1_1": {
+      "signature": "e0a3e09c91ea482d67c2262fa2f29eeec6a6bc63a27333b2eaa9e1e3e6dcaf3b",
+      "values": {
+        "openmm_dE": -31.62,
+        "openmm_e_complex": -9097.1
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.0921756392349256,
+        "max_force_kj_mol_nm": 87.6615306322403,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 20601527.44029321,
+        "final_energy_kcal_mol": -9097.136064413553,
+        "max_iterations": 500,
+        "iterations": 274,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -5938.680694996205,
+        "binder_energy_kcal_mol": -3126.8375085537564
+      }
+    },
+    "egfr_top7_20260927_normalized_pairs_traj_1_0": {
+      "signature": "63f91d6322329ac35ff83438ff0cd11b77e96ed241e52ebad727cf9ca808191a",
+      "values": {
+        "openmm_dE": 12.37,
+        "openmm_e_complex": -8375.2
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 4.9405187651517295,
+        "max_force_kj_mol_nm": 74.8636658481907,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 6631726.141401108,
+        "final_energy_kcal_mol": -8375.176650255211,
+        "max_iterations": 500,
+        "iterations": 419,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -6012.835503225061,
+        "binder_energy_kcal_mol": -2374.7109686532167
+      }
+    },
+    "egfr_top7_20260927_normalized_pairs_traj_1_1": {
+      "signature": "d2a7482628d14bd3ec19bff12c631f34c549a72a45cc9168931436d39ddbc346",
+      "values": {
+        "openmm_dE": 42.59,
+        "openmm_e_complex": -9464.4
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.223478712005237,
+        "max_force_kj_mol_nm": 59.83095783144307,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 4619395.914310836,
+        "final_energy_kcal_mol": -9464.38609793924,
+        "max_iterations": 500,
+        "iterations": 382,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -6015.411334156787,
+        "binder_energy_kcal_mol": -3491.562873805348
+      }
+    },
+    "egfr_top7_20260928_mpnn_temp_02_traj_1_0": {
+      "signature": "740c8a3f87e057d1efeeb5e5bc5f6ca99e9ab36295b81ab7482f68c3f909bf31",
+      "values": {
+        "openmm_dE": -59.97,
+        "openmm_e_complex": -9248.1
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.090425658019775,
+        "max_force_kj_mol_nm": 73.47695108174862,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 15648.09965600801,
+        "final_energy_kcal_mol": -9248.061916149642,
+        "max_iterations": 500,
+        "iterations": 263,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -5926.119809757499,
+        "binder_energy_kcal_mol": -3261.9724042117227
+      }
+    },
+    "egfr_top7_20260928_mpnn_temp_02_traj_1_1": {
+      "signature": "beb3bfcc709669259990b3a26eeadce2ebee848a075d39cdc0d4dfb6dd69e9ea",
+      "values": {
+        "openmm_dE": -70.43,
+        "openmm_e_complex": -9134.7
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.606668177258192,
+        "max_force_kj_mol_nm": 78.68740366041541,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 25227.61162755803,
+        "final_energy_kcal_mol": -9134.703745685678,
+        "max_iterations": 500,
+        "iterations": 191,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -5906.712921046573,
+        "binder_energy_kcal_mol": -3157.5608801957555
+      }
+    },
+    "egfr_top7_20260928_baseline_traj_1_0": {
+      "signature": "b7c03a8b5e7f229846d7352b5f1d5e23b3c42678199012cfd56a0941cfa99344",
+      "values": {
+        "openmm_dE": -59.72,
+        "openmm_e_complex": -9431.4
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.746066207740077,
+        "max_force_kj_mol_nm": 92.84558207195356,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 13667.967038292225,
+        "final_energy_kcal_mol": -9431.362627859062,
+        "max_iterations": 500,
+        "iterations": 235,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -5912.952552759342,
+        "binder_energy_kcal_mol": -3458.6883417382737
+      }
+    },
+    "egfr_top7_20260928_baseline_traj_1_1": {
+      "signature": "bbffe3213a741ace5f95639454ccf1f23fde53d6ccd3b5dd9f23cb0137f3649f",
+      "values": {
+        "openmm_dE": -71.36,
+        "openmm_e_complex": -9165.0
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.763561081154276,
+        "max_force_kj_mol_nm": 107.28608230914989,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 38284.80053163844,
+        "final_energy_kcal_mol": -9164.965871129367,
+        "max_iterations": 500,
+        "iterations": 269,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -5925.978361876311,
+        "binder_energy_kcal_mol": -3167.629685910013
+      }
+    },
+    "egfr_top7_20260928_normalized_pairs_traj_1_0": {
+      "signature": "3ecf4b4b1935641b130c35a259ca8938593665264f3c57d36646e951c89b633f",
+      "values": {
+        "openmm_dE": -79.05,
+        "openmm_e_complex": -6882.7
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.4843204793836025,
+        "max_force_kj_mol_nm": 119.67112086783368,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 28914.616194791866,
+        "final_energy_kcal_mol": -6882.654437431387,
+        "max_iterations": 500,
+        "iterations": 436,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -5937.264455474775,
+        "binder_energy_kcal_mol": -866.3350196237509
+      }
+    },
+    "egfr_top7_20260928_normalized_pairs_traj_1_1": {
+      "signature": "a34ad8531f529d5a45589116b8da7ae7361fcad52a7b4cad6c5dcd1c357414d2",
+      "values": {
+        "openmm_dE": 29.68,
+        "openmm_e_complex": -7257.7
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.358617323387489,
+        "max_force_kj_mol_nm": 107.19637442807814,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 1065685.0986090926,
+        "final_energy_kcal_mol": -7257.676407500927,
+        "max_iterations": 500,
+        "iterations": 384,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -5982.065218826202,
+        "binder_energy_kcal_mol": -1305.2941472220537
+      }
+    }
+  }
+}

@@ -1,0 +1,227 @@
+CMAP of binder (monomer plddt: 0.908)
+Stage 1: running (logits → soft)
+1 models [1] recycles 0 hard 0 soft 0.01 temp 1 loss 1.50 plddt 0.49 ptm 0.52 i_ptm 0.06 cmap_loss_binder 1.50
+2 models [1] recycles 0 hard 0 soft 0.02 temp 1 loss 1.49 plddt 0.92 ptm 0.52 i_ptm 0.06 cmap_loss_binder 1.49
+3 models [0] recycles 0 hard 0 soft 0.03 temp 1 loss 1.47 plddt 0.75 ptm 0.53 i_ptm 0.09 cmap_loss_binder 1.47
+4 models [1] recycles 0 hard 0 soft 0.04 temp 1 loss 1.48 plddt 0.70 ptm 0.53 i_ptm 0.08 cmap_loss_binder 1.48
+5 models [0] recycles 0 hard 0 soft 0.05 temp 1 loss 1.47 plddt 0.81 ptm 0.53 i_ptm 0.09 cmap_loss_binder 1.47
+6 models [1] recycles 0 hard 0 soft 0.06 temp 1 loss 1.47 plddt 0.80 ptm 0.53 i_ptm 0.08 cmap_loss_binder 1.47
+7 models [0] recycles 0 hard 0 soft 0.07 temp 1 loss 1.46 plddt 0.74 ptm 0.53 i_ptm 0.10 cmap_loss_binder 1.46
+8 models [0] recycles 0 hard 0 soft 0.08 temp 1 loss 1.44 plddt 0.75 ptm 0.53 i_ptm 0.09 cmap_loss_binder 1.44
+9 models [1] recycles 0 hard 0 soft 0.09 temp 1 loss 1.46 plddt 0.82 ptm 0.53 i_ptm 0.07 cmap_loss_binder 1.46
+10 models [1] recycles 0 hard 0 soft 0.10 temp 1 loss 1.47 plddt 0.79 ptm 0.53 i_ptm 0.08 cmap_loss_binder 1.47
+11 models [0] recycles 0 hard 0 soft 0.11 temp 1 loss 1.43 plddt 0.82 ptm 0.53 i_ptm 0.11 cmap_loss_binder 1.43
+12 models [0] recycles 0 hard 0 soft 0.12 temp 1 loss 1.43 plddt 0.73 ptm 0.53 i_ptm 0.10 cmap_loss_binder 1.43
+13 models [1] recycles 0 hard 0 soft 0.13 temp 1 loss 1.46 plddt 0.73 ptm 0.53 i_ptm 0.08 cmap_loss_binder 1.46
+14 models [0] recycles 0 hard 0 soft 0.14 temp 1 loss 1.41 plddt 0.79 ptm 0.54 i_ptm 0.12 cmap_loss_binder 1.41
+15 models [1] recycles 0 hard 0 soft 0.15 temp 1 loss 1.43 plddt 0.73 ptm 0.54 i_ptm 0.10 cmap_loss_binder 1.43
+16 models [0] recycles 0 hard 0 soft 0.16 temp 1 loss 1.41 plddt 0.78 ptm 0.54 i_ptm 0.12 cmap_loss_binder 1.41
+17 models [1] recycles 0 hard 0 soft 0.17 temp 1 loss 1.42 plddt 0.76 ptm 0.54 i_ptm 0.11 cmap_loss_binder 1.42
+18 models [0] recycles 0 hard 0 soft 0.18 temp 1 loss 1.39 plddt 0.80 ptm 0.56 i_ptm 0.22 cmap_loss_binder 1.39
+19 models [0] recycles 0 hard 0 soft 0.19 temp 1 loss 1.36 plddt 0.75 ptm 0.58 i_ptm 0.25 cmap_loss_binder 1.36
+20 models [1] recycles 0 hard 0 soft 0.20 temp 1 loss 1.37 plddt 0.80 ptm 0.58 i_ptm 0.25 cmap_loss_binder 1.37
+21 models [0] recycles 0 hard 0 soft 0.21 temp 1 loss 1.30 plddt 0.68 ptm 0.57 i_ptm 0.19 cmap_loss_binder 1.30
+22 models [1] recycles 0 hard 0 soft 0.22 temp 1 loss 1.39 plddt 0.66 ptm 0.55 i_ptm 0.12 cmap_loss_binder 1.39
+23 models [1] recycles 0 hard 0 soft 0.23 temp 1 loss 1.34 plddt 0.69 ptm 0.56 i_ptm 0.18 cmap_loss_binder 1.34
+24 models [0] recycles 0 hard 0 soft 0.24 temp 1 loss 1.30 plddt 0.72 ptm 0.59 i_ptm 0.22 cmap_loss_binder 1.30
+25 models [1] recycles 0 hard 0 soft 0.25 temp 1 loss 1.34 plddt 0.70 ptm 0.56 i_ptm 0.17 cmap_loss_binder 1.34
+26 models [1] recycles 0 hard 0 soft 0.26 temp 1 loss 1.29 plddt 0.69 ptm 0.58 i_ptm 0.23 cmap_loss_binder 1.29
+27 models [0] recycles 0 hard 0 soft 0.27 temp 1 loss 1.24 plddt 0.71 ptm 0.61 i_ptm 0.26 cmap_loss_binder 1.24
+28 models [0] recycles 0 hard 0 soft 0.28 temp 1 loss 1.21 plddt 0.68 ptm 0.59 i_ptm 0.25 cmap_loss_binder 1.21
+29 models [0] recycles 0 hard 0 soft 0.29 temp 1 loss 1.18 plddt 0.68 ptm 0.59 i_ptm 0.34 cmap_loss_binder 1.18
+30 models [1] recycles 0 hard 0 soft 0.30 temp 1 loss 1.28 plddt 0.68 ptm 0.55 i_ptm 0.20 cmap_loss_binder 1.28
+31 models [1] recycles 0 hard 0 soft 0.31 temp 1 loss 1.23 plddt 0.68 ptm 0.58 i_ptm 0.27 cmap_loss_binder 1.23
+32 models [0] recycles 0 hard 0 soft 0.32 temp 1 loss 1.19 plddt 0.68 ptm 0.58 i_ptm 0.26 cmap_loss_binder 1.19
+33 models [1] recycles 0 hard 0 soft 0.33 temp 1 loss 1.22 plddt 0.68 ptm 0.58 i_ptm 0.27 cmap_loss_binder 1.22
+34 models [0] recycles 0 hard 0 soft 0.34 temp 1 loss 1.15 plddt 0.70 ptm 0.61 i_ptm 0.35 cmap_loss_binder 1.15
+35 models [0] recycles 0 hard 0 soft 0.35 temp 1 loss 1.14 plddt 0.65 ptm 0.58 i_ptm 0.31 cmap_loss_binder 1.14
+36 models [0] recycles 0 hard 0 soft 0.36 temp 1 loss 1.10 plddt 0.65 ptm 0.59 i_ptm 0.40 cmap_loss_binder 1.10
+37 models [0] recycles 0 hard 0 soft 0.37 temp 1 loss 1.10 plddt 0.66 ptm 0.59 i_ptm 0.44 cmap_loss_binder 1.10
+38 models [0] recycles 0 hard 0 soft 0.38 temp 1 loss 1.05 plddt 0.70 ptm 0.64 i_ptm 0.59 cmap_loss_binder 1.05
+39 models [1] recycles 0 hard 0 soft 0.39 temp 1 loss 1.17 plddt 0.68 ptm 0.61 i_ptm 0.55 cmap_loss_binder 1.17
+40 models [1] recycles 0 hard 0 soft 0.40 temp 1 loss 1.08 plddt 0.72 ptm 0.65 i_ptm 0.64 cmap_loss_binder 1.08
+41 models [0] recycles 0 hard 0 soft 0.41 temp 1 loss 1.04 plddt 0.71 ptm 0.63 i_ptm 0.55 cmap_loss_binder 1.04
+42 models [0] recycles 0 hard 0 soft 0.42 temp 1 loss 1.04 plddt 0.69 ptm 0.63 i_ptm 0.53 cmap_loss_binder 1.04
+43 models [1] recycles 0 hard 0 soft 0.43 temp 1 loss 1.03 plddt 0.74 ptm 0.68 i_ptm 0.67 cmap_loss_binder 1.03
+44 models [1] recycles 0 hard 0 soft 0.44 temp 1 loss 1.06 plddt 0.69 ptm 0.62 i_ptm 0.58 cmap_loss_binder 1.06
+45 models [1] recycles 0 hard 0 soft 0.45 temp 1 loss 1.03 plddt 0.73 ptm 0.67 i_ptm 0.68 cmap_loss_binder 1.03
+46 models [1] recycles 0 hard 0 soft 0.46 temp 1 loss 1.02 plddt 0.73 ptm 0.67 i_ptm 0.64 cmap_loss_binder 1.02
+47 models [0] recycles 0 hard 0 soft 0.47 temp 1 loss 1.04 plddt 0.68 ptm 0.63 i_ptm 0.54 cmap_loss_binder 1.04
+48 models [0] recycles 0 hard 0 soft 0.48 temp 1 loss 1.13 plddt 0.62 ptm 0.56 i_ptm 0.18 cmap_loss_binder 1.13
+49 models [0] recycles 0 hard 0 soft 0.49 temp 1 loss 1.02 plddt 0.69 ptm 0.64 i_ptm 0.57 cmap_loss_binder 1.02
+50 models [0] recycles 0 hard 0 soft 0.50 temp 1 loss 1.04 plddt 0.68 ptm 0.62 i_ptm 0.42 cmap_loss_binder 1.04
+51 models [0] recycles 0 hard 0 soft 0.51 temp 1 loss 1.01 plddt 0.69 ptm 0.64 i_ptm 0.50 cmap_loss_binder 1.01
+52 models [1] recycles 0 hard 0 soft 0.52 temp 1 loss 1.03 plddt 0.72 ptm 0.66 i_ptm 0.69 cmap_loss_binder 1.03
+53 models [1] recycles 0 hard 0 soft 0.53 temp 1 loss 1.01 plddt 0.73 ptm 0.69 i_ptm 0.72 cmap_loss_binder 1.01
+54 models [1] recycles 0 hard 0 soft 0.54 temp 1 loss 1.01 plddt 0.74 ptm 0.69 i_ptm 0.69 cmap_loss_binder 1.01
+55 models [0] recycles 0 hard 0 soft 0.55 temp 1 loss 1.02 plddt 0.74 ptm 0.67 i_ptm 0.62 cmap_loss_binder 1.02
+56 models [1] recycles 0 hard 0 soft 0.56 temp 1 loss 1.01 plddt 0.71 ptm 0.69 i_ptm 0.72 cmap_loss_binder 1.01
+57 models [0] recycles 0 hard 0 soft 0.57 temp 1 loss 1.00 plddt 0.72 ptm 0.66 i_ptm 0.52 cmap_loss_binder 1.00
+58 models [0] recycles 0 hard 0 soft 0.58 temp 1 loss 1.01 plddt 0.69 ptm 0.64 i_ptm 0.54 cmap_loss_binder 1.01
+59 models [1] recycles 0 hard 0 soft 0.59 temp 1 loss 1.20 plddt 0.61 ptm 0.56 i_ptm 0.24 cmap_loss_binder 1.20
+60 models [1] recycles 0 hard 0 soft 0.60 temp 1 loss 1.00 plddt 0.73 ptm 0.70 i_ptm 0.71 cmap_loss_binder 1.00
+61 models [1] recycles 0 hard 0 soft 0.61 temp 1 loss 1.01 plddt 0.72 ptm 0.68 i_ptm 0.71 cmap_loss_binder 1.01
+62 models [1] recycles 0 hard 0 soft 0.62 temp 1 loss 0.99 plddt 0.74 ptm 0.70 i_ptm 0.73 cmap_loss_binder 0.99
+63 models [1] recycles 0 hard 0 soft 0.63 temp 1 loss 0.99 plddt 0.73 ptm 0.70 i_ptm 0.70 cmap_loss_binder 0.99
+64 models [1] recycles 0 hard 0 soft 0.64 temp 1 loss 1.01 plddt 0.74 ptm 0.68 i_ptm 0.72 cmap_loss_binder 1.01
+65 models [1] recycles 0 hard 0 soft 0.65 temp 1 loss 1.01 plddt 0.75 ptm 0.70 i_ptm 0.72 cmap_loss_binder 1.01
+66 models [1] recycles 0 hard 0 soft 0.66 temp 1 loss 1.01 plddt 0.70 ptm 0.67 i_ptm 0.68 cmap_loss_binder 1.01
+67 models [0] recycles 0 hard 0 soft 0.67 temp 1 loss 1.03 plddt 0.71 ptm 0.65 i_ptm 0.61 cmap_loss_binder 1.03
+68 models [1] recycles 0 hard 0 soft 0.68 temp 1 loss 1.01 plddt 0.77 ptm 0.71 i_ptm 0.71 cmap_loss_binder 1.01
+69 models [1] recycles 0 hard 0 soft 0.69 temp 1 loss 1.00 plddt 0.75 ptm 0.70 i_ptm 0.72 cmap_loss_binder 1.00
+70 models [1] recycles 0 hard 0 soft 0.70 temp 1 loss 0.98 plddt 0.77 ptm 0.73 i_ptm 0.74 cmap_loss_binder 0.98
+71 models [0] recycles 0 hard 0 soft 0.71 temp 1 loss 1.00 plddt 0.73 ptm 0.67 i_ptm 0.64 cmap_loss_binder 1.00
+72 models [1] recycles 0 hard 0 soft 0.72 temp 1 loss 0.98 plddt 0.74 ptm 0.71 i_ptm 0.72 cmap_loss_binder 0.98
+73 models [1] recycles 0 hard 0 soft 0.73 temp 1 loss 0.99 plddt 0.76 ptm 0.71 i_ptm 0.73 cmap_loss_binder 0.99
+74 models [1] recycles 0 hard 0 soft 0.74 temp 1 loss 0.99 plddt 0.76 ptm 0.72 i_ptm 0.73 cmap_loss_binder 0.99
+75 models [0] recycles 0 hard 0 soft 0.75 temp 1 loss 1.02 plddt 0.71 ptm 0.65 i_ptm 0.65 cmap_loss_binder 1.02
+76 models [0] recycles 0 hard 0 soft 0.76 temp 1 loss 0.98 plddt 0.73 ptm 0.67 i_ptm 0.62 cmap_loss_binder 0.98
+77 models [1] recycles 0 hard 0 soft 0.77 temp 1 loss 0.99 plddt 0.74 ptm 0.70 i_ptm 0.71 cmap_loss_binder 0.99
+78 models [0] recycles 0 hard 0 soft 0.78 temp 1 loss 0.98 plddt 0.73 ptm 0.67 i_ptm 0.65 cmap_loss_binder 0.98
+79 models [1] recycles 0 hard 0 soft 0.79 temp 1 loss 1.01 plddt 0.72 ptm 0.68 i_ptm 0.71 cmap_loss_binder 1.01
+80 models [0] recycles 0 hard 0 soft 0.80 temp 1 loss 0.99 plddt 0.74 ptm 0.67 i_ptm 0.65 cmap_loss_binder 0.99
+81 models [0] recycles 0 hard 0 soft 0.81 temp 1 loss 0.97 plddt 0.71 ptm 0.66 i_ptm 0.64 cmap_loss_binder 0.97
+82 models [1] recycles 0 hard 0 soft 0.82 temp 1 loss 0.98 plddt 0.73 ptm 0.72 i_ptm 0.72 cmap_loss_binder 0.98
+83 models [0] recycles 0 hard 0 soft 0.83 temp 1 loss 0.99 plddt 0.66 ptm 0.64 i_ptm 0.60 cmap_loss_binder 0.99
+84 models [1] recycles 0 hard 0 soft 0.84 temp 1 loss 1.17 plddt 0.68 ptm 0.60 i_ptm 0.48 cmap_loss_binder 1.17
+85 models [0] recycles 0 hard 0 soft 0.85 temp 1 loss 0.98 plddt 0.73 ptm 0.67 i_ptm 0.64 cmap_loss_binder 0.98
+86 models [1] recycles 0 hard 0 soft 0.86 temp 1 loss 1.05 plddt 0.63 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.05
+87 models [0] recycles 0 hard 0 soft 0.87 temp 1 loss 1.00 plddt 0.71 ptm 0.65 i_ptm 0.63 cmap_loss_binder 1.00
+88 models [0] recycles 0 hard 0 soft 0.88 temp 1 loss 0.98 plddt 0.68 ptm 0.66 i_ptm 0.60 cmap_loss_binder 0.98
+89 models [0] recycles 0 hard 0 soft 0.89 temp 1 loss 0.98 plddt 0.66 ptm 0.65 i_ptm 0.63 cmap_loss_binder 0.98
+90 models [1] recycles 0 hard 0 soft 0.90 temp 1 loss 1.06 plddt 0.67 ptm 0.65 i_ptm 0.63 cmap_loss_binder 1.06
+91 models [0] recycles 0 hard 0 soft 0.91 temp 1 loss 0.97 plddt 0.67 ptm 0.68 i_ptm 0.65 cmap_loss_binder 0.97
+92 models [1] recycles 0 hard 0 soft 0.92 temp 1 loss 1.19 plddt 0.63 ptm 0.60 i_ptm 0.50 cmap_loss_binder 1.19
+93 models [1] recycles 0 hard 0 soft 0.93 temp 1 loss 1.14 plddt 0.60 ptm 0.61 i_ptm 0.55 cmap_loss_binder 1.14
+94 models [1] recycles 0 hard 0 soft 0.94 temp 1 loss 1.05 plddt 0.68 ptm 0.65 i_ptm 0.69 cmap_loss_binder 1.05
+95 models [1] recycles 0 hard 0 soft 0.95 temp 1 loss 1.31 plddt 0.59 ptm 0.56 i_ptm 0.36 cmap_loss_binder 1.31
+96 models [1] recycles 0 hard 0 soft 0.96 temp 1 loss 1.08 plddt 0.62 ptm 0.64 i_ptm 0.68 cmap_loss_binder 1.08
+97 models [1] recycles 0 hard 0 soft 0.97 temp 1 loss 1.05 plddt 0.65 ptm 0.64 i_ptm 0.65 cmap_loss_binder 1.05
+98 models [1] recycles 0 hard 0 soft 0.98 temp 1 loss 1.03 plddt 0.64 ptm 0.65 i_ptm 0.66 cmap_loss_binder 1.03
+99 models [0] recycles 0 hard 0 soft 0.99 temp 1 loss 1.10 plddt 0.60 ptm 0.62 i_ptm 0.61 cmap_loss_binder 1.10
+100 models [1] recycles 0 hard 0 soft 1 temp 1 loss 1.12 plddt 0.59 ptm 0.61 i_ptm 0.56 cmap_loss_binder 1.12
+Stage 2: running (soft → hard)
+101 models [0] recycles 0 hard 0 soft 1 temp 0.98 loss 1.07 plddt 0.61 ptm 0.63 i_ptm 0.63 cmap_loss_binder 1.07
+102 models [1] recycles 0 hard 0 soft 1 temp 0.96 loss 1.03 plddt 0.67 ptm 0.66 i_ptm 0.72 cmap_loss_binder 1.03
+103 models [0] recycles 0 hard 0 soft 1 temp 0.94 loss 1.02 plddt 0.61 ptm 0.64 i_ptm 0.61 cmap_loss_binder 1.02
+104 models [0] recycles 0 hard 0 soft 1 temp 0.92 loss 1.00 plddt 0.69 ptm 0.66 i_ptm 0.69 cmap_loss_binder 1.00
+105 models [1] recycles 0 hard 0 soft 1 temp 0.90 loss 1.05 plddt 0.69 ptm 0.66 i_ptm 0.67 cmap_loss_binder 1.05
+106 models [1] recycles 0 hard 0 soft 1 temp 0.88 loss 1.15 plddt 0.60 ptm 0.61 i_ptm 0.54 cmap_loss_binder 1.15
+107 models [1] recycles 0 hard 0 soft 1 temp 0.87 loss 1.01 plddt 0.68 ptm 0.68 i_ptm 0.74 cmap_loss_binder 1.01
+108 models [0] recycles 0 hard 0 soft 1 temp 0.85 loss 1.02 plddt 0.71 ptm 0.65 i_ptm 0.63 cmap_loss_binder 1.02
+109 models [1] recycles 0 hard 0 soft 1 temp 0.83 loss 1.03 plddt 0.73 ptm 0.67 i_ptm 0.69 cmap_loss_binder 1.03
+110 models [1] recycles 0 hard 0 soft 1 temp 0.81 loss 1.10 plddt 0.63 ptm 0.66 i_ptm 0.72 cmap_loss_binder 1.10
+111 models [1] recycles 0 hard 0 soft 1 temp 0.79 loss 1.01 plddt 0.67 ptm 0.68 i_ptm 0.74 cmap_loss_binder 1.01
+112 models [0] recycles 0 hard 0 soft 1 temp 0.78 loss 1.00 plddt 0.72 ptm 0.68 i_ptm 0.65 cmap_loss_binder 1.00
+113 models [1] recycles 0 hard 0 soft 1 temp 0.76 loss 1.00 plddt 0.69 ptm 0.69 i_ptm 0.75 cmap_loss_binder 1.00
+114 models [1] recycles 0 hard 0 soft 1 temp 0.74 loss 1.02 plddt 0.69 ptm 0.67 i_ptm 0.69 cmap_loss_binder 1.02
+115 models [0] recycles 0 hard 0 soft 1 temp 0.73 loss 1.00 plddt 0.61 ptm 0.65 i_ptm 0.61 cmap_loss_binder 1.00
+116 models [1] recycles 0 hard 0 soft 1 temp 0.71 loss 1.01 plddt 0.71 ptm 0.69 i_ptm 0.73 cmap_loss_binder 1.01
+117 models [1] recycles 0 hard 0 soft 1 temp 0.69 loss 1.01 plddt 0.72 ptm 0.69 i_ptm 0.73 cmap_loss_binder 1.01
+118 models [0] recycles 0 hard 0 soft 1 temp 0.68 loss 1.01 plddt 0.63 ptm 0.65 i_ptm 0.64 cmap_loss_binder 1.01
+119 models [0] recycles 0 hard 0 soft 1 temp 0.66 loss 1.08 plddt 0.63 ptm 0.62 i_ptm 0.47 cmap_loss_binder 1.08
+120 models [0] recycles 0 hard 0 soft 1 temp 0.64 loss 1.00 plddt 0.68 ptm 0.66 i_ptm 0.62 cmap_loss_binder 1.00
+121 models [1] recycles 0 hard 0 soft 1 temp 0.63 loss 1.02 plddt 0.69 ptm 0.67 i_ptm 0.72 cmap_loss_binder 1.02
+122 models [1] recycles 0 hard 0 soft 1 temp 0.61 loss 1.00 plddt 0.68 ptm 0.67 i_ptm 0.71 cmap_loss_binder 1.00
+123 models [0] recycles 0 hard 0 soft 1 temp 0.60 loss 1.01 plddt 0.66 ptm 0.67 i_ptm 0.69 cmap_loss_binder 1.01
+124 models [0] recycles 0 hard 0 soft 1 temp 0.58 loss 1.03 plddt 0.65 ptm 0.64 i_ptm 0.58 cmap_loss_binder 1.03
+125 models [1] recycles 0 hard 0 soft 1 temp 0.57 loss 1.00 plddt 0.71 ptm 0.69 i_ptm 0.72 cmap_loss_binder 1.00
+126 models [1] recycles 0 hard 0 soft 1 temp 0.55 loss 1.02 plddt 0.68 ptm 0.67 i_ptm 0.72 cmap_loss_binder 1.02
+127 models [1] recycles 0 hard 0 soft 1 temp 0.54 loss 0.99 plddt 0.69 ptm 0.70 i_ptm 0.76 cmap_loss_binder 0.99
+128 models [0] recycles 0 hard 0 soft 1 temp 0.52 loss 0.99 plddt 0.73 ptm 0.69 i_ptm 0.67 cmap_loss_binder 0.99
+129 models [0] recycles 0 hard 0 soft 1 temp 0.51 loss 0.97 plddt 0.69 ptm 0.68 i_ptm 0.66 cmap_loss_binder 0.97
+130 models [1] recycles 0 hard 0 soft 1 temp 0.50 loss 1.02 plddt 0.67 ptm 0.68 i_ptm 0.73 cmap_loss_binder 1.02
+131 models [1] recycles 0 hard 0 soft 1 temp 0.48 loss 0.99 plddt 0.68 ptm 0.70 i_ptm 0.76 cmap_loss_binder 0.99
+132 models [1] recycles 0 hard 0 soft 1 temp 0.47 loss 1.00 plddt 0.68 ptm 0.70 i_ptm 0.76 cmap_loss_binder 1.00
+133 models [0] recycles 0 hard 0 soft 1 temp 0.45 loss 0.99 plddt 0.69 ptm 0.67 i_ptm 0.62 cmap_loss_binder 0.99
+134 models [0] recycles 0 hard 0 soft 1 temp 0.44 loss 0.99 plddt 0.67 ptm 0.67 i_ptm 0.64 cmap_loss_binder 0.99
+135 models [1] recycles 0 hard 0 soft 1 temp 0.43 loss 0.98 plddt 0.65 ptm 0.68 i_ptm 0.74 cmap_loss_binder 0.98
+136 models [0] recycles 0 hard 0 soft 1 temp 0.42 loss 0.98 plddt 0.68 ptm 0.68 i_ptm 0.67 cmap_loss_binder 0.98
+137 models [1] recycles 0 hard 0 soft 1 temp 0.40 loss 1.00 plddt 0.63 ptm 0.68 i_ptm 0.72 cmap_loss_binder 1.00
+138 models [0] recycles 0 hard 0 soft 1 temp 0.39 loss 0.99 plddt 0.64 ptm 0.68 i_ptm 0.67 cmap_loss_binder 0.99
+139 models [0] recycles 0 hard 0 soft 1 temp 0.38 loss 0.97 plddt 0.66 ptm 0.69 i_ptm 0.69 cmap_loss_binder 0.97
+140 models [0] recycles 0 hard 0 soft 1 temp 0.37 loss 1.00 plddt 0.60 ptm 0.64 i_ptm 0.56 cmap_loss_binder 1.00
+141 models [0] recycles 0 hard 0 soft 1 temp 0.35 loss 1.00 plddt 0.57 ptm 0.64 i_ptm 0.63 cmap_loss_binder 1.00
+142 models [1] recycles 0 hard 0 soft 1 temp 0.34 loss 1.00 plddt 0.65 ptm 0.69 i_ptm 0.76 cmap_loss_binder 1.00
+143 models [1] recycles 0 hard 0 soft 1 temp 0.33 loss 1.03 plddt 0.58 ptm 0.67 i_ptm 0.76 cmap_loss_binder 1.03
+144 models [1] recycles 0 hard 0 soft 1 temp 0.32 loss 1.03 plddt 0.58 ptm 0.66 i_ptm 0.72 cmap_loss_binder 1.03
+145 models [1] recycles 0 hard 0 soft 1 temp 0.31 loss 1.05 plddt 0.59 ptm 0.68 i_ptm 0.76 cmap_loss_binder 1.05
+146 models [1] recycles 0 hard 0 soft 1 temp 0.30 loss 1.00 plddt 0.61 ptm 0.67 i_ptm 0.73 cmap_loss_binder 1.00
+147 models [1] recycles 0 hard 0 soft 1 temp 0.29 loss 0.98 plddt 0.62 ptm 0.69 i_ptm 0.77 cmap_loss_binder 0.98
+148 models [1] recycles 0 hard 0 soft 1 temp 0.28 loss 1.01 plddt 0.59 ptm 0.67 i_ptm 0.75 cmap_loss_binder 1.01
+149 models [0] recycles 0 hard 0 soft 1 temp 0.27 loss 1.00 plddt 0.59 ptm 0.67 i_ptm 0.68 cmap_loss_binder 1.00
+150 models [1] recycles 0 hard 0 soft 1 temp 0.26 loss 0.99 plddt 0.61 ptm 0.68 i_ptm 0.74 cmap_loss_binder 0.99
+151 models [0] recycles 0 hard 0 soft 1 temp 0.25 loss 1.00 plddt 0.56 ptm 0.66 i_ptm 0.63 cmap_loss_binder 1.00
+152 models [0] recycles 0 hard 0 soft 1 temp 0.24 loss 1.00 plddt 0.57 ptm 0.65 i_ptm 0.62 cmap_loss_binder 1.00
+153 models [1] recycles 0 hard 0 soft 1 temp 0.23 loss 1.00 plddt 0.61 ptm 0.67 i_ptm 0.71 cmap_loss_binder 1.00
+154 models [1] recycles 0 hard 0 soft 1 temp 0.22 loss 1.02 plddt 0.58 ptm 0.66 i_ptm 0.72 cmap_loss_binder 1.02
+155 models [0] recycles 0 hard 0 soft 1 temp 0.21 loss 1.00 plddt 0.57 ptm 0.65 i_ptm 0.55 cmap_loss_binder 1.00
+156 models [1] recycles 0 hard 0 soft 1 temp 0.20 loss 1.01 plddt 0.60 ptm 0.67 i_ptm 0.71 cmap_loss_binder 1.01
+157 models [1] recycles 0 hard 0 soft 1 temp 0.19 loss 1.00 plddt 0.59 ptm 0.66 i_ptm 0.69 cmap_loss_binder 1.00
+158 models [1] recycles 0 hard 0 soft 1 temp 0.18 loss 1.00 plddt 0.60 ptm 0.68 i_ptm 0.75 cmap_loss_binder 1.00
+159 models [1] recycles 0 hard 0 soft 1 temp 0.18 loss 1.03 plddt 0.55 ptm 0.63 i_ptm 0.56 cmap_loss_binder 1.03
+160 models [1] recycles 0 hard 0 soft 1 temp 0.17 loss 1.00 plddt 0.59 ptm 0.66 i_ptm 0.69 cmap_loss_binder 1.00
+161 models [0] recycles 0 hard 0 soft 1 temp 0.16 loss 0.98 plddt 0.60 ptm 0.67 i_ptm 0.58 cmap_loss_binder 0.98
+162 models [1] recycles 0 hard 0 soft 1 temp 0.15 loss 1.01 plddt 0.58 ptm 0.65 i_ptm 0.57 cmap_loss_binder 1.01
+163 models [0] recycles 0 hard 0 soft 1 temp 0.15 loss 1.01 plddt 0.52 ptm 0.63 i_ptm 0.50 cmap_loss_binder 1.01
+164 models [0] recycles 0 hard 0 soft 1 temp 0.14 loss 0.98 plddt 0.59 ptm 0.68 i_ptm 0.65 cmap_loss_binder 0.98
+165 models [0] recycles 0 hard 0 soft 1 temp 0.13 loss 0.99 plddt 0.55 ptm 0.64 i_ptm 0.33 cmap_loss_binder 0.99
+166 models [0] recycles 0 hard 0 soft 1 temp 0.12 loss 0.99 plddt 0.57 ptm 0.66 i_ptm 0.52 cmap_loss_binder 0.99
+167 models [0] recycles 0 hard 0 soft 1 temp 0.12 loss 1.03 plddt 0.55 ptm 0.63 i_ptm 0.60 cmap_loss_binder 1.03
+168 models [1] recycles 0 hard 0 soft 1 temp 0.11 loss 1.20 plddt 0.58 ptm 0.62 i_ptm 0.58 cmap_loss_binder 1.20
+169 models [0] recycles 0 hard 0 soft 1 temp 0.11 loss 1.02 plddt 0.53 ptm 0.64 i_ptm 0.51 cmap_loss_binder 1.02
+170 models [0] recycles 0 hard 0 soft 1 temp 0.10 loss 0.98 plddt 0.58 ptm 0.67 i_ptm 0.65 cmap_loss_binder 0.98
+171 models [0] recycles 0 hard 0 soft 1 temp 0.09 loss 1.00 plddt 0.54 ptm 0.65 i_ptm 0.62 cmap_loss_binder 1.00
+172 models [0] recycles 0 hard 0 soft 1 temp 0.09 loss 1.02 plddt 0.52 ptm 0.63 i_ptm 0.53 cmap_loss_binder 1.02
+173 models [0] recycles 0 hard 0 soft 1 temp 0.08 loss 1.06 plddt 0.51 ptm 0.62 i_ptm 0.47 cmap_loss_binder 1.06
+174 models [0] recycles 0 hard 0 soft 1 temp 0.08 loss 1.06 plddt 0.49 ptm 0.60 i_ptm 0.27 cmap_loss_binder 1.06
+175 models [0] recycles 0 hard 0 soft 1 temp 0.07 loss 0.97 plddt 0.56 ptm 0.66 i_ptm 0.65 cmap_loss_binder 0.97
+176 models [1] recycles 0 hard 0 soft 1 temp 0.07 loss 1.01 plddt 0.61 ptm 0.67 i_ptm 0.71 cmap_loss_binder 1.01
+177 models [1] recycles 0 hard 0 soft 1 temp 0.06 loss 1.00 plddt 0.60 ptm 0.67 i_ptm 0.73 cmap_loss_binder 1.00
+178 models [0] recycles 0 hard 0 soft 1 temp 0.06 loss 0.98 plddt 0.56 ptm 0.66 i_ptm 0.56 cmap_loss_binder 0.98
+179 models [0] recycles 0 hard 0 soft 1 temp 0.05 loss 0.98 plddt 0.55 ptm 0.66 i_ptm 0.63 cmap_loss_binder 0.98
+180 models [0] recycles 0 hard 0 soft 1 temp 0.05 loss 0.99 plddt 0.56 ptm 0.66 i_ptm 0.61 cmap_loss_binder 0.99
+181 models [1] recycles 0 hard 0 soft 1 temp 0.05 loss 1.02 plddt 0.55 ptm 0.65 i_ptm 0.65 cmap_loss_binder 1.02
+182 models [0] recycles 0 hard 0 soft 1 temp 0.04 loss 1.00 plddt 0.56 ptm 0.66 i_ptm 0.65 cmap_loss_binder 1.00
+183 models [1] recycles 0 hard 0 soft 1 temp 0.04 loss 1.01 plddt 0.57 ptm 0.66 i_ptm 0.70 cmap_loss_binder 1.01
+184 models [1] recycles 0 hard 0 soft 1 temp 0.04 loss 1.00 plddt 0.58 ptm 0.67 i_ptm 0.72 cmap_loss_binder 1.00
+185 models [0] recycles 0 hard 0 soft 1 temp 0.03 loss 0.99 plddt 0.56 ptm 0.66 i_ptm 0.65 cmap_loss_binder 0.99
+186 models [1] recycles 0 hard 0 soft 1 temp 0.03 loss 1.01 plddt 0.54 ptm 0.64 i_ptm 0.66 cmap_loss_binder 1.01
+187 models [0] recycles 0 hard 0 soft 1 temp 0.03 loss 0.99 plddt 0.52 ptm 0.64 i_ptm 0.46 cmap_loss_binder 0.99
+188 models [0] recycles 0 hard 0 soft 1 temp 0.02 loss 1.01 plddt 0.55 ptm 0.67 i_ptm 0.68 cmap_loss_binder 1.01
+189 models [1] recycles 0 hard 0 soft 1 temp 0.02 loss 1.01 plddt 0.57 ptm 0.65 i_ptm 0.61 cmap_loss_binder 1.01
+190 models [1] recycles 0 hard 0 soft 1 temp 0.02 loss 0.99 plddt 0.56 ptm 0.66 i_ptm 0.61 cmap_loss_binder 0.99
+191 models [1] recycles 0 hard 0 soft 1 temp 0.02 loss 1.01 plddt 0.56 ptm 0.65 i_ptm 0.65 cmap_loss_binder 1.01
+192 models [1] recycles 0 hard 0 soft 1 temp 0.02 loss 1.04 plddt 0.56 ptm 0.64 i_ptm 0.59 cmap_loss_binder 1.04
+193 models [0] recycles 0 hard 0 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.67 i_ptm 0.61 cmap_loss_binder 0.99
+194 models [0] recycles 0 hard 0 soft 1 temp 0.01 loss 1.00 plddt 0.56 ptm 0.66 i_ptm 0.63 cmap_loss_binder 1.00
+195 models [0] recycles 0 hard 0 soft 1 temp 0.01 loss 1.00 plddt 0.57 ptm 0.66 i_ptm 0.65 cmap_loss_binder 1.00
+196 models [0] recycles 0 hard 0 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.66 i_ptm 0.56 cmap_loss_binder 0.99
+197 models [1] recycles 0 hard 0 soft 1 temp 0.01 loss 1.00 plddt 0.57 ptm 0.66 i_ptm 0.70 cmap_loss_binder 1.00
+198 models [0] recycles 0 hard 0 soft 1 temp 0.01 loss 1.00 plddt 0.54 ptm 0.64 i_ptm 0.56 cmap_loss_binder 1.00
+199 models [0] recycles 0 hard 0 soft 1 temp 0.01 loss 1.00 plddt 0.55 ptm 0.67 i_ptm 0.65 cmap_loss_binder 1.00
+200 models [0] recycles 0 hard 0 soft 1 temp 0.01 loss 0.99 plddt 0.56 ptm 0.66 i_ptm 0.66 cmap_loss_binder 0.99
+Stage 3: running (hard)
+201 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.68 i_ptm 0.71 cmap_loss_binder 0.99
+202 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 1.01 plddt 0.51 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.01
+203 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.68 i_ptm 0.71 cmap_loss_binder 0.99
+204 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 1.01 plddt 0.51 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.01
+205 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.68 i_ptm 0.71 cmap_loss_binder 0.99
+206 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 1.01 plddt 0.51 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.01
+207 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.68 i_ptm 0.71 cmap_loss_binder 0.99
+208 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 1.01 plddt 0.51 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.01
+209 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.68 i_ptm 0.71 cmap_loss_binder 0.99
+210 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 1.01 plddt 0.51 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.01
+211 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.68 i_ptm 0.71 cmap_loss_binder 0.99
+212 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 1.01 plddt 0.51 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.01
+213 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.68 i_ptm 0.71 cmap_loss_binder 0.99
+214 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 1.01 plddt 0.51 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.01
+215 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.68 i_ptm 0.71 cmap_loss_binder 0.99
+216 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 1.01 plddt 0.51 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.01
+217 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.68 i_ptm 0.71 cmap_loss_binder 0.99
+218 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 1.01 plddt 0.51 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.01
+219 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 0.99 plddt 0.55 ptm 0.68 i_ptm 0.71 cmap_loss_binder 0.99
+220 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 1.01 plddt 0.51 ptm 0.66 i_ptm 0.71 cmap_loss_binder 1.01
+Predicting sequences with AF2_ptm...
+predict: traj_1_0 plddt: 0.562, i_pae: 0.566, i_ptm: 0.675, cmap_loss: 1.154
+predict: traj_1_1 plddt: 0.545, i_pae: 0.650, i_ptm: 0.540, cmap_loss: 1.209

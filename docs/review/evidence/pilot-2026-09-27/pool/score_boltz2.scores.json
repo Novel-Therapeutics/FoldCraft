@@ -1,0 +1,431 @@
+{
+  "protocol": {
+    "settings": {
+      "use_msa": false,
+      "diffusion_samples": 1,
+      "flash_attn": false,
+      "no_kernels": true,
+      "seed": 20260927
+    },
+    "source": "6bc3af28e99fb473c3bdbf1827a04c636623a998202c15a8ce1a547e9dea23ee",
+    "cache_code": "22ae0448a553a8de79fac7ac888c7ff4f638f012c71f46a40585f24aa12046f9",
+    "helper_code": {
+      "structure_checks.py": "53cb35279b381e93708cee97bd6d2772f34ac8d70fa3a1d412cba66e3fb1c7a5",
+      "checkpoint_files.py": "172d364f2c8045b4558c17baa226378fbab15162e01d2560e8959d23c1e7e9f8",
+      "gates.py": "f7da053aea152c53037bf786ef53bd20c86cc4dc33a1a731f0b81f5a40624c77"
+    },
+    "python": "3.12.0 | packaged by conda-forge | (main, Oct  3 2023, 08:43:22) [GCC 12.3.0]",
+    "packages": {
+      "numpy": "1.26.4",
+      "pandas": "2.3.3",
+      "biopython": "1.86",
+      "torch": "2.10.0",
+      "transformers": "5.9.0",
+      "rdkit": "2025.9.6",
+      "scipy": "1.17.1",
+      "huggingface-hub": "1.17.0",
+      "pytorch-lightning": "2.6.1"
+    },
+    "extra_inputs": {},
+    "model_inputs": {
+      "checkpoint": {
+        "path": "/home/bizon/.boltz/boltz2_conf.ckpt",
+        "files": {
+          "boltz2_conf.ckpt": "090e82ac8c92f5e943fa1b39e7410a44027bea7243c0bbb3caa67a77fc1428e1"
+        }
+      },
+      "molecule:ALA": {
+        "path": "/home/bizon/.boltz/mols/ALA.pkl",
+        "files": {
+          "ALA.pkl": "00c247b6c8e5e3c2d248ab59560219bb35fe801ba8a8b52a5d76dc198a8d984b"
+        }
+      },
+      "molecule:ARG": {
+        "path": "/home/bizon/.boltz/mols/ARG.pkl",
+        "files": {
+          "ARG.pkl": "f5b6709c78c45aded92301387af6a47a5b41ebf99ba0b7e3ca6fac10875b483a"
+        }
+      },
+      "molecule:ASN": {
+        "path": "/home/bizon/.boltz/mols/ASN.pkl",
+        "files": {
+          "ASN.pkl": "842794255f93b21292d4bbb2b0da8ef9f00470b754c10a4b1f3a97da175ede54"
+        }
+      },
+      "molecule:ASP": {
+        "path": "/home/bizon/.boltz/mols/ASP.pkl",
+        "files": {
+          "ASP.pkl": "366917880f9a8fb0f510790f49d1c123eae566c4d212253d0722c7be59202415"
+        }
+      },
+      "molecule:CYS": {
+        "path": "/home/bizon/.boltz/mols/CYS.pkl",
+        "files": {
+          "CYS.pkl": "3f69156437a2ad239121ed999cd3271f66fb641e5db1ad63a635ea430c97da8e"
+        }
+      },
+      "molecule:GLN": {
+        "path": "/home/bizon/.boltz/mols/GLN.pkl",
+        "files": {
+          "GLN.pkl": "6d3f7b214783f4618e882e9ad5eac823065d4b783d15c8d2e396dd6bf1c01605"
+        }
+      },
+      "molecule:GLU": {
+        "path": "/home/bizon/.boltz/mols/GLU.pkl",
+        "files": {
+          "GLU.pkl": "5ffee2c2a291e7dd9537e47da745086a2806e0054a08e7d8a4e6de6876d9321c"
+        }
+      },
+      "molecule:GLY": {
+        "path": "/home/bizon/.boltz/mols/GLY.pkl",
+        "files": {
+          "GLY.pkl": "6b301ceb14bc07fcda588364a190805473258a67819e0a6fe7b92b00c515b8f2"
+        }
+      },
+      "molecule:HIS": {
+        "path": "/home/bizon/.boltz/mols/HIS.pkl",
+        "files": {
+          "HIS.pkl": "b41c77e00e94cd23058f9c77866f4ea9cb83537012717530cee9a40b8d6475df"
+        }
+      },
+      "molecule:ILE": {
+        "path": "/home/bizon/.boltz/mols/ILE.pkl",
+        "files": {
+          "ILE.pkl": "613fd4278b8a09ee821bdbc9d6fb81dce9b7346915fe268c4d3c01e2cd8cce2a"
+        }
+      },
+      "molecule:LEU": {
+        "path": "/home/bizon/.boltz/mols/LEU.pkl",
+        "files": {
+          "LEU.pkl": "b56d50e78cd2edce0850472d7af9e45a9eac87f5a5897b3ad2574194ee843f88"
+        }
+      },
+      "molecule:LYS": {
+        "path": "/home/bizon/.boltz/mols/LYS.pkl",
+        "files": {
+          "LYS.pkl": "1dcd1968a1e9288ded8cd28ad5395ce01d7b46169a7114a22303690a1daf0e75"
+        }
+      },
+      "molecule:MET": {
+        "path": "/home/bizon/.boltz/mols/MET.pkl",
+        "files": {
+          "MET.pkl": "99140e3ba316e237891731deea085ac8bb16d91a2720cc4e5d0420c0242d0df6"
+        }
+      },
+      "molecule:PHE": {
+        "path": "/home/bizon/.boltz/mols/PHE.pkl",
+        "files": {
+          "PHE.pkl": "d308f4d9a70c156a95bd0e8361b1fa2181bbdb22d32c55753cc528a8b8fce6f3"
+        }
+      },
+      "molecule:PRO": {
+        "path": "/home/bizon/.boltz/mols/PRO.pkl",
+        "files": {
+          "PRO.pkl": "2629e05d5381616322bc7c5ec4f05eea882398fd236873e4c79d19a6d69baebb"
+        }
+      },
+      "molecule:SER": {
+        "path": "/home/bizon/.boltz/mols/SER.pkl",
+        "files": {
+          "SER.pkl": "14195904d6e2daff524fb57c4919b8eb4ea407178458189ea896f2d39746c5b5"
+        }
+      },
+      "molecule:THR": {
+        "path": "/home/bizon/.boltz/mols/THR.pkl",
+        "files": {
+          "THR.pkl": "53fe1335ca71705d8095fb62a4ef7b63b7af975325fecfe364f2feb4da5713e5"
+        }
+      },
+      "molecule:TRP": {
+        "path": "/home/bizon/.boltz/mols/TRP.pkl",
+        "files": {
+          "TRP.pkl": "03e700fd6cdc4809000e23679b90c7b5f0269dd5dad7b53591ce1c9f6cf4e0c0"
+        }
+      },
+      "molecule:TYR": {
+        "path": "/home/bizon/.boltz/mols/TYR.pkl",
+        "files": {
+          "TYR.pkl": "93dcb841be8edb3cc25b00baa6fdac66df58a2436912eee079900b7f675655a9"
+        }
+      },
+      "molecule:UNK": {
+        "path": "/home/bizon/.boltz/mols/UNK.pkl",
+        "files": {
+          "UNK.pkl": "c8ab424930c66da4635ec039a3b27da042754f9477e7868f235997bbb991c60f"
+        }
+      },
+      "molecule:VAL": {
+        "path": "/home/bizon/.boltz/mols/VAL.pkl",
+        "files": {
+          "VAL.pkl": "4f25210694b98a64cbcef225b036d8ef1a1e8d66054359eceeb3562ffc02bc85"
+        }
+      }
+    }
+  },
+  "records": {
+    "pdl1_top7_20260927_normalized_pairs_traj_1_0": {
+      "signature": "5500e7ff100b03878651cab00d35bb81b451e1763836161d162659413563b776",
+      "values": {
+        "boltz2_iptm": 0.7763262391090393,
+        "boltz2_pair_iptm": 0.7763262391090393,
+        "boltz2_plddt": 0.8582337498664856,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260927_normalized_pairs_traj_1_1": {
+      "signature": "617c36e3b6da4700764d7a97a2b2e146c554737bf9b22de1a205362333b813f8",
+      "values": {
+        "boltz2_iptm": 0.8602050542831421,
+        "boltz2_pair_iptm": 0.8602050542831421,
+        "boltz2_plddt": 0.8773260712623596,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260927_mpnn_temp_02_traj_1_0": {
+      "signature": "9b9470d0fca65d9245a9a23a74ee25265fcc4079567b7f1e2e7f8652cb023658",
+      "values": {
+        "boltz2_iptm": 0.41631802916526794,
+        "boltz2_pair_iptm": 0.3894786536693573,
+        "boltz2_plddt": 0.8758607506752014,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260927_mpnn_temp_02_traj_1_1": {
+      "signature": "5ff920949eb859e8e021028bc71adf4a93fb778da28506cf5b7c53cb17f0ec88",
+      "values": {
+        "boltz2_iptm": 0.7089259624481201,
+        "boltz2_pair_iptm": 0.6787190437316895,
+        "boltz2_plddt": 0.864778995513916,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260927_baseline_traj_1_0": {
+      "signature": "db17a2cf8810c955b2bcd028d92911023d9962034e8b9f639f083cc557112340",
+      "values": {
+        "boltz2_iptm": 0.47561052441596985,
+        "boltz2_pair_iptm": 0.45725077390670776,
+        "boltz2_plddt": 0.8719470500946045,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260927_baseline_traj_1_1": {
+      "signature": "20921f9b6b452d7ef3a20c0795ae6ad6c5b0991586cb95b391c04955f23cbe88",
+      "values": {
+        "boltz2_iptm": 0.24304798245429993,
+        "boltz2_pair_iptm": 0.24304798245429993,
+        "boltz2_plddt": 0.8788972496986389,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260928_baseline_traj_1_0": {
+      "signature": "6274e92388a55222a42c9e764de94d47ef1662bf122c0497ab9419dda1a28446",
+      "values": {
+        "boltz2_iptm": 0.28862234950065613,
+        "boltz2_pair_iptm": 0.24870160222053528,
+        "boltz2_plddt": 0.7586984634399414,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260928_baseline_traj_1_1": {
+      "signature": "52eb6f6b34ed01344e7b69029608b3ce73f5391d43b1286430bfe750e5de3000",
+      "values": {
+        "boltz2_iptm": 0.5957126021385193,
+        "boltz2_pair_iptm": 0.5957126021385193,
+        "boltz2_plddt": 0.7262996435165405,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260928_mpnn_temp_02_traj_1_0": {
+      "signature": "bcdd9a5554e492240f4376863d0b1d2228c6fefff195580151ba04a5ba19245d",
+      "values": {
+        "boltz2_iptm": 0.5673895478248596,
+        "boltz2_pair_iptm": 0.5673895478248596,
+        "boltz2_plddt": 0.7627493739128113,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260928_mpnn_temp_02_traj_1_1": {
+      "signature": "10d77f751d315fff7cf35909708120fdc9d1331dea0d6bb2f56d1f4595214569",
+      "values": {
+        "boltz2_iptm": 0.2977251410484314,
+        "boltz2_pair_iptm": 0.2821718156337738,
+        "boltz2_plddt": 0.7164441347122192,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260928_normalized_pairs_traj_1_0": {
+      "signature": "58f1edf4b812e43c8f70211316d09632a246f6666cb0d57a4c0f7b9a3a55cc95",
+      "values": {
+        "boltz2_iptm": 0.6426364779472351,
+        "boltz2_pair_iptm": 0.6426364779472351,
+        "boltz2_plddt": 0.7407205700874329,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20260928_normalized_pairs_traj_1_1": {
+      "signature": "8e9fc1c929bd9a99f52d769afe1a651ca47f084cfbd433eeac3fd8139e16c434",
+      "values": {
+        "boltz2_iptm": 0.8449137806892395,
+        "boltz2_pair_iptm": 0.8449137806892395,
+        "boltz2_plddt": 0.7346013188362122,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260927_mpnn_temp_02_traj_1_0": {
+      "signature": "b969e0c8108758e3c0c26222348c7896c6129d0b8b1ee3be0fcdf2961fb70050",
+      "values": {
+        "boltz2_iptm": 0.5743205547332764,
+        "boltz2_pair_iptm": 0.566624641418457,
+        "boltz2_plddt": 0.8701168298721313,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260927_mpnn_temp_02_traj_1_1": {
+      "signature": "651a6af9af450a77ce43d2d7d1df663e1760c2303cf3a9beb147ebc099a9d2f3",
+      "values": {
+        "boltz2_iptm": 0.5350794196128845,
+        "boltz2_pair_iptm": 0.5236709713935852,
+        "boltz2_plddt": 0.8729552626609802,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260927_baseline_traj_1_0": {
+      "signature": "45ab3d53fc06952433030a765b129ccb4de266f9a4b7015d1321924d8223d4be",
+      "values": {
+        "boltz2_iptm": 0.5081787705421448,
+        "boltz2_pair_iptm": 0.4690433740615845,
+        "boltz2_plddt": 0.8701921105384827,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260927_baseline_traj_1_1": {
+      "signature": "14c94f1505206dc60cdbf8b96c7ebfb1eaedcc2b4fc27dcaec4e928d7c769f13",
+      "values": {
+        "boltz2_iptm": 0.3799925446510315,
+        "boltz2_pair_iptm": 0.3262486159801483,
+        "boltz2_plddt": 0.8539868593215942,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260927_normalized_pairs_traj_1_0": {
+      "signature": "29ffcca59d67254aa3cdc803da3afce690211790f4af6ff2c48546b2df1a8b29",
+      "values": {
+        "boltz2_iptm": 0.850009024143219,
+        "boltz2_pair_iptm": 0.850009024143219,
+        "boltz2_plddt": 0.7355196475982666,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260927_normalized_pairs_traj_1_1": {
+      "signature": "ca8d13cf0a7c7e3b797310f275ae72d85a01dfb158fc9f604d01561ec665b575",
+      "values": {
+        "boltz2_iptm": 0.8248068690299988,
+        "boltz2_pair_iptm": 0.8248068690299988,
+        "boltz2_plddt": 0.7380490899085999,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260928_mpnn_temp_02_traj_1_0": {
+      "signature": "4b2b1fc7290f3a5a6e5236b161891b910b92ab2c6f93e1fd499752f80ab7e756",
+      "values": {
+        "boltz2_iptm": 0.884783148765564,
+        "boltz2_pair_iptm": 0.8417115807533264,
+        "boltz2_plddt": 0.9184907674789429,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260928_mpnn_temp_02_traj_1_1": {
+      "signature": "52446ac803690eec94f292ae6041ba787201c6532af1ffb93b0077ce2d35d326",
+      "values": {
+        "boltz2_iptm": 0.8789148926734924,
+        "boltz2_pair_iptm": 0.8335239887237549,
+        "boltz2_plddt": 0.9064980745315552,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260928_baseline_traj_1_0": {
+      "signature": "c8d7e17f1d702e4c40459863d2de804572f8489dd92f4c97da3e72d917405455",
+      "values": {
+        "boltz2_iptm": 0.8759761452674866,
+        "boltz2_pair_iptm": 0.8281208872795105,
+        "boltz2_plddt": 0.9254032969474792,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260928_baseline_traj_1_1": {
+      "signature": "41ff846960e0a01e725a55b273f0c9390912eaa45b014e2b2fa2a91d7fd8aae8",
+      "values": {
+        "boltz2_iptm": 0.8170214295387268,
+        "boltz2_pair_iptm": 0.7677404880523682,
+        "boltz2_plddt": 0.8925427794456482,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260928_normalized_pairs_traj_1_0": {
+      "signature": "20b60a56bec7df3eda0b46a78ce2fa23827b30398ee5b18c52624f3474376574",
+      "values": {
+        "boltz2_iptm": 0.8423901796340942,
+        "boltz2_pair_iptm": 0.8211893439292908,
+        "boltz2_plddt": 0.7060455083847046,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20260928_normalized_pairs_traj_1_1": {
+      "signature": "778ad1f68381094e36cf4c1b2f4f60db592d6fb43d5c82995c0f57e092b712a4",
+      "values": {
+        "boltz2_iptm": 0.7046260237693787,
+        "boltz2_pair_iptm": 0.7046260237693787,
+        "boltz2_plddt": 0.6990377306938171,
+        "boltz2_ipae": null
+      },
+      "status": "incomplete",
+      "diagnostics": {}
+    }
+  }
+}

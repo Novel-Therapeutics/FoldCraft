@@ -1,0 +1,114 @@
+{
+  "status": "passed",
+  "jobs": [
+    {
+      "name": "pdl1_top7_20260927_normalized_pairs",
+      "case": "pdl1_top7",
+      "seed": 20260927,
+      "arm": "normalized_pairs",
+      "seconds": 192.1948644099757,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "pdl1_top7_20260927_mpnn_temp_02",
+      "case": "pdl1_top7",
+      "seed": 20260927,
+      "arm": "mpnn_temp_02",
+      "seconds": 113.16422864142805,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "pdl1_top7_20260927_baseline",
+      "case": "pdl1_top7",
+      "seed": 20260927,
+      "arm": "baseline",
+      "seconds": 112.1946971109137,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "pdl1_top7_20260928_baseline",
+      "case": "pdl1_top7",
+      "seed": 20260928,
+      "arm": "baseline",
+      "seconds": 117.1575939161703,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "pdl1_top7_20260928_mpnn_temp_02",
+      "case": "pdl1_top7",
+      "seed": 20260928,
+      "arm": "mpnn_temp_02",
+      "seconds": 107.11595638468862,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "pdl1_top7_20260928_normalized_pairs",
+      "case": "pdl1_top7",
+      "seed": 20260928,
+      "arm": "normalized_pairs",
+      "seconds": 108.13841702789068,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "egfr_top7_20260927_mpnn_temp_02",
+      "case": "egfr_top7",
+      "seed": 20260927,
+      "arm": "mpnn_temp_02",
+      "seconds": 279.24601494707167,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "egfr_top7_20260927_baseline",
+      "case": "egfr_top7",
+      "seed": 20260927,
+      "arm": "baseline",
+      "seconds": 198.19338249973953,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "egfr_top7_20260927_normalized_pairs",
+      "case": "egfr_top7",
+      "seed": 20260927,
+      "arm": "normalized_pairs",
+      "seconds": 286.23080119118094,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "egfr_top7_20260928_mpnn_temp_02",
+      "case": "egfr_top7",
+      "seed": 20260928,
+      "arm": "mpnn_temp_02",
+      "seconds": 198.19661641214043,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "egfr_top7_20260928_baseline",
+      "case": "egfr_top7",
+      "seed": 20260928,
+      "arm": "baseline",
+      "seconds": 198.21369722206146,
+      "returncode": 0,
+      "valid": true
+    },
+    {
+      "name": "egfr_top7_20260928_normalized_pairs",
+      "case": "egfr_top7",
+      "seed": 20260928,
+      "arm": "normalized_pairs",
+      "seconds": 205.18597840424627,
+      "returncode": 0,
+      "valid": true
+    }
+  ],
+  "total_seconds": 2118.199044787325
+}

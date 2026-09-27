@@ -1,0 +1,345 @@
+{
+  "status": "exploratory",
+  "summaries": [
+    {
+      "arm": "baseline",
+      "candidates": 8,
+      "paired_blocks": 4,
+      "unique_sequences": 8,
+      "generation_seconds": 625.759370748885,
+      "second_model_prediction_seconds": 5.04440731741488,
+      "metrics": {
+        "single_model_pass": {
+          "mean": 0.25,
+          "measured": 8,
+          "missing": 0
+        },
+        "two_model_pass": {
+          "mean": 0.25,
+          "measured": 8,
+          "missing": 0
+        },
+        "rmsd": {
+          "mean": 4.2437499999999995,
+          "measured": 8,
+          "missing": 0
+        },
+        "ipsae": {
+          "mean": 0.18574080448841954,
+          "measured": 8,
+          "missing": 0
+        },
+        "epitope_coverage": {
+          "mean": 0.06881313131313127,
+          "measured": 8,
+          "missing": 0
+        },
+        "interchain_clashes": {
+          "mean": 2.375,
+          "measured": 8,
+          "missing": 0
+        },
+        "esmfold_plddt": {
+          "mean": 78.3625,
+          "measured": 8,
+          "missing": 0
+        },
+        "esmfold_rmsd": {
+          "mean": 3.34375,
+          "measured": 8,
+          "missing": 0
+        },
+        "boltz2_iptm": {
+          "mean": 0.5230202935636044,
+          "measured": 8,
+          "missing": 0
+        },
+        "openmm_dE": {
+          "mean": -42.536249999999995,
+          "measured": 8,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "arm": "mpnn_temp_02",
+      "candidates": 8,
+      "paired_blocks": 4,
+      "unique_sequences": 8,
+      "generation_seconds": 697.7228163853288,
+      "second_model_prediction_seconds": 5.081045880913734,
+      "metrics": {
+        "single_model_pass": {
+          "mean": 0.25,
+          "measured": 8,
+          "missing": 0
+        },
+        "two_model_pass": {
+          "mean": 0.25,
+          "measured": 8,
+          "missing": 0
+        },
+        "rmsd": {
+          "mean": 3.75875,
+          "measured": 8,
+          "missing": 0
+        },
+        "ipsae": {
+          "mean": 0.18661203378682675,
+          "measured": 8,
+          "missing": 0
+        },
+        "epitope_coverage": {
+          "mean": 0.08270202020202017,
+          "measured": 8,
+          "missing": 0
+        },
+        "interchain_clashes": {
+          "mean": 3.375,
+          "measured": 8,
+          "missing": 0
+        },
+        "esmfold_plddt": {
+          "mean": 77.62499999999999,
+          "measured": 8,
+          "missing": 0
+        },
+        "esmfold_rmsd": {
+          "mean": 2.33625,
+          "measured": 8,
+          "missing": 0
+        },
+        "boltz2_iptm": {
+          "mean": 0.607932087033987,
+          "measured": 8,
+          "missing": 0
+        },
+        "openmm_dE": {
+          "mean": -39.368750000000006,
+          "measured": 8,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "arm": "normalized_pairs",
+      "candidates": 8,
+      "paired_blocks": 4,
+      "unique_sequences": 8,
+      "generation_seconds": 791.7500610332936,
+      "second_model_prediction_seconds": 5.032903181388974,
+      "metrics": {
+        "single_model_pass": {
+          "mean": 0.0,
+          "measured": 8,
+          "missing": 0
+        },
+        "two_model_pass": {
+          "mean": 0.0,
+          "measured": 8,
+          "missing": 0
+        },
+        "rmsd": {
+          "mean": 27.295,
+          "measured": 8,
+          "missing": 0
+        },
+        "ipsae": {
+          "mean": 0.21846743413703226,
+          "measured": 8,
+          "missing": 0
+        },
+        "epitope_coverage": {
+          "mean": 0.23358585858585856,
+          "measured": 8,
+          "missing": 0
+        },
+        "interchain_clashes": {
+          "mean": 2.5,
+          "measured": 8,
+          "missing": 0
+        },
+        "esmfold_plddt": {
+          "mean": 61.1875,
+          "measured": 8,
+          "missing": 0
+        },
+        "esmfold_rmsd": {
+          "mean": 11.924999999999999,
+          "measured": 8,
+          "missing": 0
+        },
+        "boltz2_iptm": {
+          "mean": 0.7932392060756683,
+          "measured": 8,
+          "missing": 0
+        },
+        "openmm_dE": {
+          "mean": -29.509999999999998,
+          "measured": 8,
+          "missing": 0
+        }
+      }
+    }
+  ],
+  "paired_deltas": [
+    {
+      "case": "egfr_top7",
+      "seed": 20260927,
+      "arm": "mpnn_temp_02",
+      "delta": {
+        "single_model_pass": 0.0,
+        "two_model_pass": 0.0,
+        "rmsd": -0.4450000000000003,
+        "ipsae": -0.0034956382030475013,
+        "epitope_coverage": -0.0227272727272727,
+        "interchain_clashes": 1.5,
+        "esmfold_plddt": -1.25,
+        "esmfold_rmsd": -0.29000000000000026,
+        "boltz2_iptm": 0.11061432957649231,
+        "openmm_dE": 4.640000000000001
+      }
+    },
+    {
+      "case": "egfr_top7",
+      "seed": 20260927,
+      "arm": "normalized_pairs",
+      "delta": {
+        "single_model_pass": 0.0,
+        "two_model_pass": 0.0,
+        "rmsd": 25.415,
+        "ipsae": 0.1105105713856506,
+        "epitope_coverage": 0.2272727272727273,
+        "interchain_clashes": 4.5,
+        "esmfold_plddt": -31.400000000000006,
+        "esmfold_rmsd": 13.955,
+        "boltz2_iptm": 0.39332228899002075,
+        "openmm_dE": 60.09
+      }
+    },
+    {
+      "case": "egfr_top7",
+      "seed": 20260928,
+      "arm": "mpnn_temp_02",
+      "delta": {
+        "single_model_pass": 0.0,
+        "two_model_pass": 0.0,
+        "rmsd": 0.03499999999999992,
+        "ipsae": -0.004030907804766448,
+        "epitope_coverage": 0.022727272727272693,
+        "interchain_clashes": -0.5,
+        "esmfold_plddt": 0.29999999999999716,
+        "esmfold_rmsd": -0.010000000000000009,
+        "boltz2_iptm": 0.03535023331642151,
+        "openmm_dE": 0.3399999999999892
+      }
+    },
+    {
+      "case": "egfr_top7",
+      "seed": 20260928,
+      "arm": "normalized_pairs",
+      "delta": {
+        "single_model_pass": -1.0,
+        "two_model_pass": -1.0,
+        "rmsd": 28.490000000000002,
+        "ipsae": -0.6113668518435001,
+        "epitope_coverage": 0.18181818181818182,
+        "interchain_clashes": 1.5,
+        "esmfold_plddt": -42.5,
+        "esmfold_rmsd": 18.400000000000002,
+        "boltz2_iptm": -0.07299068570137024,
+        "openmm_dE": 40.85499999999999
+      }
+    },
+    {
+      "case": "pdl1_top7",
+      "seed": 20260927,
+      "arm": "mpnn_temp_02",
+      "delta": {
+        "single_model_pass": 0.0,
+        "two_model_pass": 0.0,
+        "rmsd": 0.040000000000000036,
+        "ipsae": 0.015704554536109146,
+        "epitope_coverage": 0.02777777777777775,
+        "interchain_clashes": 3.5,
+        "esmfold_plddt": -0.20000000000000284,
+        "esmfold_rmsd": -0.010000000000000009,
+        "boltz2_iptm": 0.2032927423715592,
+        "openmm_dE": 2.2249999999999943
+      }
+    },
+    {
+      "case": "pdl1_top7",
+      "seed": 20260927,
+      "arm": "normalized_pairs",
+      "delta": {
+        "single_model_pass": 0.0,
+        "two_model_pass": 0.0,
+        "rmsd": 23.475,
+        "ipsae": 0.3417124659912708,
+        "epitope_coverage": 0.22222222222222227,
+        "interchain_clashes": -3.0,
+        "esmfold_plddt": -1.2499999999999858,
+        "esmfold_rmsd": 2.49,
+        "boltz2_iptm": 0.45893639326095587,
+        "openmm_dE": -43.5
+      }
+    },
+    {
+      "case": "pdl1_top7",
+      "seed": 20260928,
+      "arm": "mpnn_temp_02",
+      "delta": {
+        "single_model_pass": 0.0,
+        "two_model_pass": 0.0,
+        "rmsd": -1.5699999999999985,
+        "ipsae": -0.004693091334666354,
+        "epitope_coverage": 0.02777777777777779,
+        "interchain_clashes": -0.5,
+        "esmfold_plddt": -1.7999999999999972,
+        "esmfold_rmsd": -3.7200000000000006,
+        "boltz2_iptm": -0.0096101313829422,
+        "openmm_dE": 5.464999999999996
+      }
+    },
+    {
+      "case": "pdl1_top7",
+      "seed": 20260928,
+      "arm": "normalized_pairs",
+      "delta": {
+        "single_model_pass": 0.0,
+        "two_model_pass": 0.0,
+        "rmsd": 14.825000000000003,
+        "ipsae": 0.2900503330610296,
+        "epitope_coverage": 0.02777777777777779,
+        "interchain_clashes": -2.5,
+        "esmfold_plddt": 6.450000000000003,
+        "esmfold_rmsd": -0.5200000000000014,
+        "boltz2_iptm": 0.3016076534986496,
+        "openmm_dE": -5.339999999999996
+      }
+    }
+  ],
+  "selection": [
+    {
+      "policy": "single_model_pass",
+      "selected": 4,
+      "total": 24,
+      "boltz_iptm_mean": 0.8641739040613174,
+      "esmfold_rmsd_mean": 0.375
+    },
+    {
+      "policy": "two_model_pass",
+      "selected": 4,
+      "total": 24,
+      "boltz_iptm_mean": 0.8641739040613174,
+      "esmfold_rmsd_mean": 0.375
+    }
+  ],
+  "limitations": [
+    "No assay labels; no binding-accuracy conclusion.",
+    "Two target families, one scaffold, four paired blocks; no promotion or significance claim.",
+    "Independent metrics are computational proxies. OpenMM is a geometry diagnostic.",
+    "Runtime includes compilation and all inference; persistent cache was shared."
+  ]
+}

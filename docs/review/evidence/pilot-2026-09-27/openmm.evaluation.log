@@ -1,0 +1,6 @@
+OpenMM platform: CUDA
+/home/bizon/projects/foldcraft-gpu-20260927/pilot-01/pool: 24 to score (0 already done / skipped)
+  [10/24] pdl1_top7_20260928_mpnn_temp_02_traj_1_1: dE=-35.65 kcal/mol
+  [20/24] egfr_top7_20260928_mpnn_temp_02_traj_1_1: dE=-70.43 kcal/mol
+  [24/24] egfr_top7_20260928_normalized_pairs_traj_1_1: dE=29.68 kcal/mol
+wrote openmm_dE -> /home/bizon/projects/foldcraft-gpu-20260927/pilot-01/pool/results.csv

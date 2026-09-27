@@ -1,0 +1,5 @@
+/home/bizon/projects/foldcraft-gpu-20260927/pilot-01/pool: 24 to score (0 already done / skipped)
+  [10/24] pdl1_top7_20260928_mpnn_temp_02_traj_1_1: iptm=0.2977251410484314 ipae=None
+  [20/24] egfr_top7_20260928_mpnn_temp_02_traj_1_1: iptm=0.8789148926734924 ipae=None
+  [24/24] egfr_top7_20260928_normalized_pairs_traj_1_1: iptm=0.7046260237693787 ipae=None
+wrote boltz2_* columns -> /home/bizon/projects/foldcraft-gpu-20260927/pilot-01/pool/results.csv

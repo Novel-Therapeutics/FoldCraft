@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "candidates": 24,
+  "scorers": {
+    "esmfold": {
+      "measured": {
+        "esmfold_plddt": 24,
+        "esmfold_rmsd": 24
+      },
+      "records": 24
+    },
+    "boltz2": {
+      "measured": {
+        "boltz2_iptm": 24,
+        "boltz2_pair_iptm": 24,
+        "boltz2_plddt": 24,
+        "boltz2_ipae": 0
+      },
+      "records": 24
+    },
+    "openmm": {
+      "measured": {
+        "openmm_dE": 24,
+        "openmm_e_complex": 24
+      },
+      "records": 24
+    }
+  },
+  "boltz_selection_receipts_verified": 24,
+  "openmm_mean_dE_kcal_mol_by_arm": {
+    "baseline": -42.53625,
+    "mpnn_temp_02": -39.368750000000006,
+    "normalized_pairs": -29.509999999999998
+  }
+}

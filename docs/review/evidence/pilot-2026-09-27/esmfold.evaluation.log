@@ -1,0 +1,17 @@
+/home/bizon/projects/foldcraft-gpu-20260927/pilot-01/pool: 24 to score (0 already done / skipped)
+
+Loading weights:   0%|          | 0/4498 [00:00<?, ?it/s]
+Loading weights:   0%|          | 18/4498 [00:00<02:19, 32.08it/s]
+Loading weights:  24%|██▍       | 1082/4498 [00:00<00:01, 2183.28it/s]
+Loading weights: 100%|██████████| 4498/4498 [00:00<00:00, 6243.96it/s]
+[transformers] [1mEsmForProteinFolding LOAD REPORT[0m from: /home/bizon/.cache/huggingface/hub/models--facebook--esmfold_v1/snapshots/75a3841ee059df2bf4d56688166c8fb459ddd97a
+Key                                | Status  |
+-----------------------------------+---------+-
+esm.contact_head.regression.bias   | MISSING |
+esm.contact_head.regression.weight | MISSING |
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  [20/24] egfr_top7_20260928_mpnn_temp_02_traj_1_1: plddt=87.9 rmsd=0.38
+  [24/24] egfr_top7_20260928_normalized_pairs_traj_1_1: plddt=47.9 rmsd=19.61
+wrote esmfold_* columns -> /home/bizon/projects/foldcraft-gpu-20260927/pilot-01/pool/results.csv
