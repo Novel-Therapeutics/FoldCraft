@@ -9,7 +9,7 @@ scorer validation and corrected-baseline tag have been tested. This does not
 close every original review item: see [the closure status](CLOSURE_STATUS.md). See
 [CPU fixes](../../CPU_FIXES.md), [GPU checks](../../GPU_FIXES.md),
 [scorer fixes](../../SCORING_FIXES.md), [inference provenance](../../INFERENCE_PROVENANCE.md)
-and [pilot results](../../PILOT_RESULTS.md).
+[closure validation](../../CLOSURE_VALIDATION.md) and [pilot results](../../PILOT_RESULTS.md).
 The plan below is the original ordering; its historical “Immediate next PR”
 section is superseded by the next experiments in the pilot report.
 

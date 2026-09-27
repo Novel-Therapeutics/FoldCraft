@@ -88,7 +88,7 @@ def chunk_signature(chunk):
     root = Path(chunk.runtime_bundle['identity']['request']['repo_root']) if chunk.runtime_bundle else Path(__file__).resolve().parents[1]
     code = {name: sha256(root / name) for name in (
         'FoldCraft.py', 'input_validation.py', 'cmap_utils.py', 'biopython_utils.py',
-        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py', 'model_validation.py', 'design_objective.py', 'run_watchdog.py', 'inference_bundle.py', 'baseline/checkpoint_files.py')}
+        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py', 'model_validation.py', 'design_objective.py', 'run_watchdog.py', 'inference_bundle.py', 'baseline/checkpoint_files.py', 'optimization_history.py')}
     return dict(schema=2, inference_bundle=chunk.runtime_bundle['identity'] if chunk.runtime_bundle else None, seed=stage_seed(0, chunk.fold, chunk.idx), fold=chunk.fold, index=chunk.idx, trajectories=chunk.chunk_traj,
                 spec=spec, code=code)
 
@@ -167,6 +167,10 @@ def _merge_chunks(fold, chunk_dirs, out_dir, template):
         manifest = Path(cdir)/'run.json'
         source = json.loads(manifest.read_text()) if manifest.exists() else {}
         source_bundles[str(Path(cdir).resolve())] = (source.get('inference_bundle') or {}).get('identity')
+        for history in sorted((Path(cdir)/'optimization').glob('*.json')):
+            destination = Path(out_dir)/'optimization'/f'c{idx}_{history.name}'
+            destination.parent.mkdir(exist_ok=True)
+            shutil.copy2(history, destination)
         csv = os.path.join(cdir, "results.csv")
         if not os.path.exists(csv):
             raise FileNotFoundError(f"merge {fold}: chunk missing results.csv: {csv}")

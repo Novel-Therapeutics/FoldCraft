@@ -110,7 +110,7 @@ def inference_files(tmp_path, monkeypatch):
     repo=tmp_path/'repo';repo.mkdir()
     sources=['FoldCraft.py','input_validation.py','cmap_utils.py','biopython_utils.py','sequence_design.py','run_state.py',
              'baseline/result_io.py','baseline/scheduler.py','model_validation.py','design_objective.py','run_watchdog.py',
-             'inference_bundle.py','baseline/checkpoint_files.py']
+             'inference_bundle.py','baseline/checkpoint_files.py','optimization_history.py']
     for name in sources:
         path=repo/name;path.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(Path(REPO_ROOT)/name,path)
     (repo/'framework').mkdir();(repo/'framework/vhh.npy').write_bytes(b'conditioning')

@@ -117,3 +117,8 @@ All jobs use `--num_designs 40`. Tune any run by editing its script — common k
 ```
 
 See the repository root `README.md` for the full list of `FoldCraft.py` options.
+
+The VHH scripts explicitly use `foldcraft-127-current-v1`. Three archived maps
+use a different binder selection. See [VHH_CONVENTIONS.md](VHH_CONVENTIONS.md)
+for exact historical reproduction and the golden-fixture checks; archived maps
+are preserved unchanged.

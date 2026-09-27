@@ -1,0 +1,9 @@
+Stage 1: running (logits → soft)
+1 models [1] recycles 0 hard 0 soft 1 temp 1 loss 3.85 plddt 0.83 ptm 0.46 i_ptm 0.09 cmap_loss_binder 3.85
+Stage 2: running (soft → hard)
+2 models [0] recycles 0 hard 0 soft 1 temp 0.01 loss 3.53 plddt 0.42 ptm 0.48 i_ptm 0.11 cmap_loss_binder 3.53
+Stage 3: running (hard)
+3 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 3.47 plddt 0.37 ptm 0.48 i_ptm 0.09 cmap_loss_binder 3.47
+Predicting sequences with AF2_ptm...
+predict: traj_1_0 plddt: 0.661, i_pae: 0.884, i_ptm: 0.118, cmap_loss: 3.816
+predict: traj_1_1 plddt: 0.568, i_pae: 0.893, i_ptm: 0.121, cmap_loss: 3.764

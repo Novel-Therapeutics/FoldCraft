@@ -1,0 +1,107 @@
+{
+  "schema": 2,
+  "inference_bundle": {
+    "schema": 1,
+    "request": {
+      "data_dir": "/home/bizon/projects/foldcraft-gpu-20260927/weights",
+      "mpnn_weight": "soluble",
+      "vhh": false,
+      "validation_models": [
+        "model_1_ptm"
+      ],
+      "repo_root": "/home/bizon/projects/foldcraft-gpu-20260927/closure-repo"
+    },
+    "package_root": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign",
+    "files": {
+      "af2:model_1_ptm": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_1_ptm.npz",
+        "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_1_ptm.npz",
+        "sha256": "5e564f79af5bcd54ccef6e2a6bb0ff01015d01650ebc41d4575e35f0de9ecc84",
+        "size": 373103340
+      },
+      "af2:model_2_ptm": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_2_ptm.npz",
+        "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_2_ptm.npz",
+        "sha256": "23645d9a82c4af2ed54cd48a7b3c1c2575dc6aa9fe931adb4d7203ca5f0dc398",
+        "size": 373103340
+      },
+      "loader:__init__.py": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/__init__.py",
+        "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/__init__.py",
+        "sha256": "d9b0d50d0bfbc516c5cc3a203c86738f6ef317e355c7acc44032c64fcdc15779",
+        "size": 541
+      },
+      "loader:af/alphafold/model/data.py": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/alphafold/model/data.py",
+        "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/alphafold/model/data.py",
+        "sha256": "e532dab64bff98280611f1dc152ee72c556a992abebc778db1c881560cc70936",
+        "size": 1631
+      },
+      "loader:af/model.py": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/model.py",
+        "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/model.py",
+        "sha256": "d0e7aa65e491f6744e4e8ef26f01a88bc731855f773e68bc3a0ca46cc29e1758",
+        "size": 10294
+      },
+      "loader:mpnn/model.py": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/model.py",
+        "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/model.py",
+        "sha256": "301fb7186c3f5c5a2914a0cd57ef4aea64d5d47b9d2e8be6a9a82e8c5842a8dd",
+        "size": 11289
+      },
+      "loader:mpnn/weights_soluble/__init__.py": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/__init__.py",
+        "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/__init__.py",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size": 1
+      },
+      "mpnn:v_48_010": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/v_48_010.pkl",
+        "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/v_48_010.pkl",
+        "sha256": "b54d7ddbfac98eedd4ee37c93515c91691abb681b59fa2717c178d31cd7dd18a",
+        "size": 6650310
+      }
+    },
+    "packages": {
+      "colabdesign": "1.1.3",
+      "jax": "0.6.2",
+      "jaxlib": "0.6.2",
+      "numpy": "1.26.4",
+      "dm-haiku": "0.0.14",
+      "optax": "0.2.5",
+      "chex": "0.1.89"
+    }
+  },
+  "seed": 2157295258,
+  "fold": "audit",
+  "index": 0,
+  "trajectories": 1,
+  "spec": {
+    "template": {
+      "path": "/home/bizon/projects/foldcraft-gpu-20260927/closure-repo/examples/templates/1qys1.pdb",
+      "sha256": "b1a4d72d9cb44230343ce1f38b50567c069b67bd40c667b44f97cfe46aa3953d"
+    },
+    "target": {
+      "path": "/home/bizon/projects/foldcraft-gpu-20260927/closure-repo/examples/targets/pd-l1-1.pdb",
+      "sha256": "0974c630f7cdb2faa1c666143a469798e1b92f71dff1456bb6cf2a459a0b2cc1"
+    },
+    "target_hotspots": "30-34,50-54,69-76",
+    "binder_hotspots": "26-40,58-71"
+  },
+  "code": {
+    "FoldCraft.py": "ec55faf9b5e152f25c88a89269f515731ae7841e53ee00c78bd9429ced622366",
+    "input_validation.py": "8dd5bfd36a7c9134b57872ef602d6cb55c6244a4dfd284021c268cb85bb95938",
+    "cmap_utils.py": "29e990f8e8b303ef6075f669ab8f88ffea9f96969e4712976ccf30cfe2264ad1",
+    "biopython_utils.py": "3665ab5b2184f9f7337724a93855f85be7e9b00c3b388cd52d7cdb5b36a0f526",
+    "sequence_design.py": "7f2c890144b32e4a5ee488a0c1966c4a77b9bc159580566c7b8820d8a3a9db5f",
+    "run_state.py": "a7d94914e0e8f669427c02042bb8abcbd0c3edc233586f0304874f9514adfebd",
+    "baseline/result_io.py": "970307b6f47c22aadf80b65c4d7ef46bf69fd0a9e77fd8985ca52afc3a7f0b0f",
+    "baseline/scheduler.py": "440759220c001037374bc7aff6ba1fb2d38d84a3167e915dfde567302c649c98",
+    "model_validation.py": "29eacd8adcd224e752c041c8a91342a61656c74a165c837f3038f78c4b5967ee",
+    "design_objective.py": "83e60cc53b84b4047e07693c08d6b2477d6412d8cde4d651a6e633db58b35938",
+    "run_watchdog.py": "5fb36ade6512688958ba2883a9586f01c4ed601e52f6836a98265250c72f1337",
+    "inference_bundle.py": "dc5dc44ae80accd3050cc1597f8561b221da18ffacb41470a4a2493a80cb0023",
+    "baseline/checkpoint_files.py": "172d364f2c8045b4558c17baa226378fbab15162e01d2560e8959d23c1e7e9f8",
+    "optimization_history.py": "62512a7fa3ab119697a3d60b8b5f9e4a51d40a6d4a43e7aefffd341a9666367a"
+  }
+}

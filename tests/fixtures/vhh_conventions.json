@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "array_hash_encoding": "C-order little-endian float64",
+  "framework_sha256": "6e4e82b36f053ba099b6607eb3e4a90fcf0e2aac57966fe1f4f1203ff8b4a66d",
+  "conventions": {
+    "foldcraft-127-current-v1": "26-35,55-59,102-116",
+    "foldcraft-127-historical-v0": "27-35,56-60,103-117"
+  },
+  "examples": [
+    {
+      "name": "pd_l1",
+      "target": "examples/targets/pd-l1-1.pdb",
+      "target_sha256": "0974c630f7cdb2faa1c666143a469798e1b92f71dff1456bb6cf2a459a0b2cc1",
+      "target_hotspots": "30-34,50-54,69-76",
+      "target_length": 112,
+      "archive": "examples/cmaps/vhh_pd_l1.npy",
+      "archive_sha256": "76cfd14ae16160a55f4446f9c2108ea5d0b51a709a84a6f043f147dc958f2638",
+      "archive_mask": "examples/cmaps/vhh_pd_l1_mask.npy",
+      "archive_mask_sha256": "b0c1769310f55e9576678272b0acd2fdcf9ef7f09e00665e0e754959d9073f1a",
+      "archive_convention": "foldcraft-127-historical-v0",
+      "current_array_sha256": "2eecc7082085369eb5ab840eaafb68c3cb579cd39a37fc62b5f34f92693816bc",
+      "current_mask_array_sha256": "ec00f604cfc7ea5d0244a76eb345c1a4a1628ae7f769fbf415bb86bb7239823a",
+      "changed_cells": 180
+    },
+    {
+      "name": "pd_1",
+      "target": "examples/targets/pd-1.pdb",
+      "target_sha256": "0261da860fa7e4b82ebfd90b933a71714f402e2819aa06bb3ae98dd3a4cbbe40",
+      "target_hotspots": "44-48,81-88,103-106",
+      "target_length": 115,
+      "archive": "examples/cmaps/vhh_pd_1.npy",
+      "archive_sha256": "bf6d2aa07501afb9c23ccd490625dff47587aff3b1fdcee7871ea5a3b76b1422",
+      "archive_mask": "examples/cmaps/vhh_pd_1_mask.npy",
+      "archive_mask_sha256": "451935b8d2ebafd99770282629426f882e8bf47f7670001fbfeef68b0b349347",
+      "archive_convention": "foldcraft-127-historical-v0",
+      "current_array_sha256": "3373068fa4ec2691b93cc5f742cd0330d70a05510ba1adb3dfe875b043ec916a",
+      "current_mask_array_sha256": "459b2558ee8459741a628247a0f6d325b8e7d2b15de9e70724a1424852f0900c",
+      "changed_cells": 170
+    },
+    {
+      "name": "ifnar",
+      "target": "examples/targets/ifnar.pdb",
+      "target_sha256": "b7f89ec920ce7e2befb4e657259c7c915614e34b8b54b08001de0e5b234966cd",
+      "target_hotspots": "44-46,73-76,87-91",
+      "target_length": 103,
+      "archive": "examples/cmaps/vhh_ifnar.npy",
+      "archive_sha256": "666c669b7cb24096a77abbc98d46854bc31aa7650be8fcc77a388e0cc0a13386",
+      "archive_mask": "examples/cmaps/vhh_ifnar_mask.npy",
+      "archive_mask_sha256": "7ac4f8a8bd57344fd934fb6a6519ba8a73734efefcf778f6f96a00f47c60070c",
+      "archive_convention": "foldcraft-127-historical-v0",
+      "current_array_sha256": "e6f746e956a0497506cee2951faf2abbf9b1be7d2212a96f91aebbcaa58780d5",
+      "current_mask_array_sha256": "84ff4358609217612d1791b6793fcf7468d51ce4dbd7b3e5203d6be58e36036f",
+      "changed_cells": 120
+    },
+    {
+      "name": "egfr",
+      "target": "examples/targets/egfr.pdb",
+      "target_sha256": "21882997abef4ef6536c96df909350f80c8a24702020781c8f9676be9b38a5d1",
+      "target_hotspots": "106-107,128-131,138-153",
+      "target_length": 174,
+      "archive": "examples/cmaps/vhh_egfr.npy",
+      "archive_sha256": "27b590fc7714dfd0871fa76b9bb9cbdfd14f82da5f60ce0bf97dfc35b37c4dff",
+      "archive_mask": "examples/cmaps/vhh_egfr_mask.npy",
+      "archive_mask_sha256": "f51f8dc887913f1c11564e242de798a4b7b45f0270ccbf8561733bfd251e126a",
+      "archive_convention": "foldcraft-127-current-v1",
+      "current_array_sha256": "13d646ebe346a3fb4bb4131a92434bf2c5ce5e291fccf709ef3704dbca6ca03c",
+      "current_mask_array_sha256": "61c3eb5c5161af37492209f5b4662ff373a5e0442971c4458f27f22c0ad98d14",
+      "changed_cells": 0
+    }
+  ]
+}

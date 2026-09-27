@@ -39,7 +39,7 @@ def start_run(folder, args, prepared, *, inference_bundle=None):
     from input_validation import VHH_CONVENTION
     root = Path(__file__).resolve().parent
     code = {name:sha256(root / name) for name in ('FoldCraft.py','input_validation.py',
-        'sequence_design.py','cmap_utils.py','biopython_utils.py','run_state.py','model_validation.py','design_objective.py','run_watchdog.py','inference_bundle.py','baseline/checkpoint_files.py')}
+        'sequence_design.py','cmap_utils.py','biopython_utils.py','run_state.py','model_validation.py','design_objective.py','run_watchdog.py','inference_bundle.py','baseline/checkpoint_files.py','optimization_history.py')}
     packages = {}
     for package in ('colabdesign','jax','jaxlib','numpy','biopython'):
         try:
@@ -47,10 +47,10 @@ def start_run(folder, args, prepared, *, inference_bundle=None):
         except PackageNotFoundError:
             pass
     manifest = dict(inference_bundle=inference_bundle, packages=packages, seed_protocol='sha256-stage-v1', created_at=datetime.now(timezone.utc).isoformat(), code=code,
-                    vhh_convention=VHH_CONVENTION if args.vhh else None, schema=1, status='running', config=vars(args).copy(),
+                    vhh_convention=getattr(args, 'vhh_convention', VHH_CONVENTION) if args.vhh else None, schema=1, status='running', config=vars(args).copy(),
                     target=target.manifest(), binder=binder.manifest() if binder else None,
                     mapped_hotspots=dict(target=thot, binder=bhot, binder_mask=mask),
-                    validation_artifacts='per-model-v1', validation_policy='all_models_pass',
+                    optimization_history='three-stage-log-v1', validation_artifacts='per-model-v1', validation_policy='all_models_pass',
                     validation_models=args.validation_models.split(','), validation_recycles=args.validation_recycles)
     write_json(folder / 'run.json', manifest)
     return manifest
@@ -80,7 +80,23 @@ def finish_run(folder, state, *, status='complete'):
                 if not p.is_file() or p.stat().st_size == 0:
                     raise ValueError(f'Missing candidate artifact: {p}')
                 artifacts[relative] = sha256(p)
+        if state.get('optimization_history') == 'three-stage-log-v1':
+            attempts = json.loads((folder/'attempts.json').read_text())
+            trajectories = {a['trajectory'] for a in attempts}
+            if not trajectories:
+                raise ValueError('Missing optimization trajectories')
+            for trajectory in trajectories:
+                if Path(trajectory).name != trajectory:
+                    raise ValueError('Invalid trajectory identity')
+                path = folder/'optimization'/f'{trajectory}.json'
+                history = json.loads(path.read_text())
+                stages = [int(n) for n in state['config']['design_stages'].split(',')]
+                if (history.get('protocol') != state['optimization_history'] or
+                    history.get('trajectory') != trajectory or
+                    len(history.get('records', [])) != sum(stages)):
+                    raise ValueError('Incomplete optimization history')
         for p in [folder / 'template.pdb', folder / 'attempts.json',
+                  *sorted((folder / 'optimization').glob('*.json')),
                   *sorted(folder.glob('fold_cond_cmap*.npy')), *sorted((folder / 'inputs').glob('*.pdb'))]:
             if p.is_file():
                 artifacts[str(p.relative_to(folder))] = sha256(p)

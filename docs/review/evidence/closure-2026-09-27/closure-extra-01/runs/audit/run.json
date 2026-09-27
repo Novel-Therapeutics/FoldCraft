@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "validation_artifacts": "per-model-v1",
+  "chunks": [
+    "/home/bizon/projects/foldcraft-gpu-20260927/closure-extra-01/runs/audit__c0"
+  ],
+  "chunk_inference_bundles": {
+    "/home/bizon/projects/foldcraft-gpu-20260927/closure-extra-01/runs/audit__c0": {
+      "schema": 1,
+      "request": {
+        "data_dir": "/home/bizon/projects/foldcraft-gpu-20260927/weights",
+        "mpnn_weight": "soluble",
+        "vhh": false,
+        "validation_models": [
+          "model_1_ptm"
+        ],
+        "repo_root": "/home/bizon/projects/foldcraft-gpu-20260927/closure-repo"
+      },
+      "package_root": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign",
+      "files": {
+        "af2:model_1_ptm": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_1_ptm.npz",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_1_ptm.npz",
+          "sha256": "5e564f79af5bcd54ccef6e2a6bb0ff01015d01650ebc41d4575e35f0de9ecc84",
+          "size": 373103340
+        },
+        "af2:model_2_ptm": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_2_ptm.npz",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_2_ptm.npz",
+          "sha256": "23645d9a82c4af2ed54cd48a7b3c1c2575dc6aa9fe931adb4d7203ca5f0dc398",
+          "size": 373103340
+        },
+        "loader:__init__.py": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/__init__.py",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/__init__.py",
+          "sha256": "d9b0d50d0bfbc516c5cc3a203c86738f6ef317e355c7acc44032c64fcdc15779",
+          "size": 541
+        },
+        "loader:af/alphafold/model/data.py": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/alphafold/model/data.py",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/alphafold/model/data.py",
+          "sha256": "e532dab64bff98280611f1dc152ee72c556a992abebc778db1c881560cc70936",
+          "size": 1631
+        },
+        "loader:af/model.py": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/model.py",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/model.py",
+          "sha256": "d0e7aa65e491f6744e4e8ef26f01a88bc731855f773e68bc3a0ca46cc29e1758",
+          "size": 10294
+        },
+        "loader:mpnn/model.py": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/model.py",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/model.py",
+          "sha256": "301fb7186c3f5c5a2914a0cd57ef4aea64d5d47b9d2e8be6a9a82e8c5842a8dd",
+          "size": 11289
+        },
+        "loader:mpnn/weights_soluble/__init__.py": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/__init__.py",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/__init__.py",
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "size": 1
+        },
+        "mpnn:v_48_010": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/v_48_010.pkl",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/v_48_010.pkl",
+          "sha256": "b54d7ddbfac98eedd4ee37c93515c91691abb681b59fa2717c178d31cd7dd18a",
+          "size": 6650310
+        }
+      },
+      "packages": {
+        "colabdesign": "1.1.3",
+        "jax": "0.6.2",
+        "jaxlib": "0.6.2",
+        "numpy": "1.26.4",
+        "dm-haiku": "0.0.14",
+        "optax": "0.2.5",
+        "chex": "0.1.89"
+      }
+    }
+  },
+  "status": "complete",
+  "updated_at": "2026-09-27T14:07:32.288911+00:00",
+  "candidate_names": [
+    "c0_traj_1_0",
+    "c0_traj_1_1",
+    "c0_traj_1_2",
+    "c0_traj_1_3",
+    "c0_traj_1_4"
+  ],
+  "candidate_records": [
+    {
+      "name": "c0_traj_1_0",
+      "sequence": "TVTVPKDLYVVEYGSNMTIECKFPVEKQLDLAALIVYWEMEDKNIIQFVHGEEDLKVQHSSYRQRARLLKDQLSLGNAALQITDVKLQDAGVYRCMISYGGADYKRITVKVN/MIKLKVELYKDGKTYLYEKEFEEEGELYRELIRLFLEARKLEPDKIIVKLEAPDPETAEKLVPVLESTLKAAGVKSIKVKVEGNEVLLEGKK"
+    },
+    {
+      "name": "c0_traj_1_1",
+      "sequence": "TVTVPKDLYVVEYGSNMTIECKFPVEKQLDLAALIVYWEMEDKNIIQFVHGEEDLKVQHSSYRQRARLLKDQLSLGNAALQITDVKLQDAGVYRCMISYGGADYKRITVKVN/MIRLEVELFRDGKRYRYVREFSEEGEVYRELIRLFLEIRRLQPDRVVVRLTAPNPELTEKYVPVFESALRAAGVREIEVRVEGNTLLLHGVA"
+    },
+    {
+      "name": "c0_traj_1_2",
+      "sequence": "TVTVPKDLYVVEYGSNMTIECKFPVEKQLDLAALIVYWEMEDKNIIQFVHGEEDLKVQHSSYRQRARLLKDQLSLGNAALQITDVKLQDAGVYRCMISYGGADYKRITVKVN/MYRLKVRLYKDGEEYLYEKEFEEEGELYRELIRLFLKIRELQPDYVELILEAPNPEEAEKLVPVLESALRAAGIETIEVRVEGNTVILRGRR"
+    },
+    {
+      "name": "c0_traj_1_3",
+      "sequence": "TVTVPKDLYVVEYGSNMTIECKFPVEKQLDLAALIVYWEMEDKNIIQFVHGEEDLKVQHSSYRQRARLLKDQLSLGNAALQITDVKLQDAGVYRCMISYGGADYKRITVKVN/MIRLVVELERGGERYRYEREFEEEGELYRELIRLFLRIRELEPDRVLVRLELPDPELARRYVPVLESALRAAGIKEIRVELRGNEVLLRGER"
+    },
+    {
+      "name": "c0_traj_1_4",
+      "sequence": "TVTVPKDLYVVEYGSNMTIECKFPVEKQLDLAALIVYWEMEDKNIIQFVHGEEDLKVQHSSYRQRARLLKDQLSLGNAALQITDVKLQDAGVYRCMISYGGADYKRITVKVN/MIRLKVRLYRDGKEYVYEKEFENEGDLYRELIRLFLEIRELEPDRVELILEAPNPEEAEKLVPVLESALRAAGIEDIEVRVEGNRIYLLGRK"
+    }
+  ],
+  "artifacts": {
+    "designs/c0_traj_1_0.validation.json": "0f0ee282781de3429d4a7d964574aafeeaa486edd5b83f5bc978da4f8eeb110d",
+    "designs/c0_traj_1_0.pdb": "5e6cdf99e4babb41d2a367cbe80648b9bb628ca6dfb07d530a8294354b5624d0",
+    "designs/c0_traj_1_0.pickle": "9939be0ab06736d77b1a57b84956b7e5c397cd430994b558d162993b6b837843",
+    "designs/c0_traj_1_1.validation.json": "7c87f8247ecb4dd7e599951c90a38441657f300e37f256d83a7c77b09f8d4779",
+    "designs/c0_traj_1_1.pdb": "e0c9a023e770a4b8a0fda62140303951050abecbd0a948fc1c893127a2356e15",
+    "designs/c0_traj_1_1.pickle": "701d5508d4a27afedaca7924871531bc6d6350deaa10657294a866f5592aaa63",
+    "designs/c0_traj_1_2.validation.json": "f3c3e4f7ad410b1bdf14d4455473a9af5e518e1fdb2e9854feba6af3aa4a666c",
+    "designs/c0_traj_1_2.pdb": "7f3b7ad418d83938ff4df8eb1d1710abb302f819a70ed6d1534684578f935c9d",
+    "designs/c0_traj_1_2.pickle": "52bafd5b1e1ff2154d67a1b637543f294670239952da6702d059d733826ee213",
+    "designs/c0_traj_1_3.validation.json": "ebf9d728ec918c54e440bfb09c62c638869ca97f31b74173c56d37c9fdac8b16",
+    "designs/c0_traj_1_3.pdb": "b3b5b9fd840670025c3440b60c475e69abb848e94f353620a6315d328d81f354",
+    "designs/c0_traj_1_3.pickle": "c33cf0cf06fb09e720663ae46d280e993b89ae60220aeaa90d83a3db916e8358",
+    "designs/c0_traj_1_4.validation.json": "e4d7bf4775066b0987465e1cd8441c08cb19fc2b2c71058c098fbf970165cff4",
+    "designs/c0_traj_1_4.pdb": "5e7279206e7e364a2418b6b2f18ba43808765ceaedc4fd23d51921ff9f887c35",
+    "designs/c0_traj_1_4.pickle": "5aae208854dac246661fb39cef46eb0fbaf05f5fcc6dd11c337ea24c6d503c7c",
+    "template.pdb": "b1a4d72d9cb44230343ce1f38b50567c069b67bd40c667b44f97cfe46aa3953d",
+    "optimization/c0_traj_1.json": "e2c3baf815264edb04f728487637a7041acc45b47b60a8de4124a1b96f6866e9"
+  }
+}

@@ -5,6 +5,7 @@ from run_state import start_run, finish_run, stage_seed
 from run_watchdog import DEFAULT_TIMEOUT_MINUTES
 
 def parse_args(argv=None):
+    from input_validation import VHH_CONVENTION, VHH_CONVENTIONS
     parser = argparse.ArgumentParser(description="Run fold-conditioned binder design")
 
     parser.add_argument('--output_folder', type=str, required=True, help='Folder to save the results')
@@ -13,6 +14,9 @@ def parse_args(argv=None):
     parser.add_argument('--num_designs', type=int, default=1, help='Number of design trajectories to generate (ignored if --sample is enabled)')
     parser.add_argument('--vhh', action='store_true', help='Whether to use VHH framework to construct target cmap (all binder information would be ignored in that case)')
     
+    parser.add_argument('--vhh_convention', choices=tuple(VHH_CONVENTIONS), default=VHH_CONVENTION,
+                        help='Versioned VHH conditioning; historical-v0 reproduces archived PD-L1/PD-1/IFNAR maps')
+
     parser.add_argument('--binder_template', type=str, default='', help='Path to the binder template PDB file (required unless --vhh is set)')
     parser.add_argument('--target_template', type=str, required=True, help='Path to the target template PDB file (required)')
     parser.add_argument('--target_hotspots', type=str, required=True, help='''Residue ranges for target hotspots, e.g., "14-30,80-81,90-102" (required)''')
@@ -107,6 +111,7 @@ def execute(args, prepared, state):
     from sequence_design import redesign
     from model_validation import validate_candidate
     from design_objective import contact_objective
+    from optimization_history import save_history
     from functools import partial
     from inference_bundle import guarded_load, AF2_TEMPLATE_MODELS, MPNN_MODEL_NAME
     bundle = state.get('inference_bundle')
@@ -171,7 +176,7 @@ def execute(args, prepared, state):
 
         target_len = af_model._len
         binder_len = 127
-        binder_hotspots = '26-35,55-59,102-116'
+        # Use the convention resolved by CPU preflight and recorded in run.json.
         fc_cmap = assemble_fold_conditioned_cmap(load_np, target_len, binder_len,
                                                  target_hotspots, binder_hotspots)
     else:
@@ -362,6 +367,7 @@ def execute(args, prepared, state):
             
             af_model.restart(seed=stage_seed(args.seed, 'design', i), reset_opt=False)
             af_model.design_3stage(design_stages[0],design_stages[1],design_stages[2])
+            save_history(folder_name, name, af_model, design_stages, stage_seed(args.seed, 'design', i))
             record_attempt(name, None, af_model.aux['log'], None)
             af_model.save_pdb(f"{folder_name}/traj/{name}.pdb", get_best=False)
 
@@ -449,6 +455,7 @@ def execute(args, prepared, state):
             
             af_model.restart(seed=stage_seed(args.seed, 'design', i), reset_opt=False)
             af_model.design_3stage(design_stages[0],design_stages[1],design_stages[2])
+            save_history(folder_name, name, af_model, design_stages, stage_seed(args.seed, 'design', i))
             record_attempt(name, None, af_model.aux['log'], None)
             af_model.save_pdb(f"{folder_name}/traj/{name}.pdb", get_best=False)
             with open(f'{folder_name}/traj/{name}.pickle', 'wb') as handle:

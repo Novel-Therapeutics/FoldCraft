@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "protocol": "three-stage-log-v1",
+  "trajectory": "traj_1",
+  "seed": 3344702600,
+  "requested_iterations": [
+    1,
+    1,
+    1
+  ],
+  "records": [
+    {
+      "iteration": 1,
+      "stage": "logits",
+      "stage_iteration": 1,
+      "model_names": [
+        "model_2_ptm"
+      ],
+      "metrics": {
+        "cmap_loss_binder": 3.8658018112182617,
+        "con": 6.404144287109375,
+        "exp_res": 0.6437432169914246,
+        "i_con": 7.28018856048584,
+        "i_pae": 0.9279623031616211,
+        "pae": 0.6544569134712219,
+        "plddt": 0.8270644545555115,
+        "seq_ent": 2.995537757873535,
+        "loss": 3.8658018112182617,
+        "i_ptm": 0.09146611392498016,
+        "ptm": 0.4562434256076813,
+        "hard": 0.0,
+        "soft": 1.0,
+        "temp": 1.0,
+        "recycles": 0,
+        "models": [
+          1
+        ]
+      }
+    },
+    {
+      "iteration": 2,
+      "stage": "temperature",
+      "stage_iteration": 1,
+      "model_names": [
+        "model_1_ptm"
+      ],
+      "metrics": {
+        "cmap_loss_binder": 3.5485730171203613,
+        "con": 4.450212001800537,
+        "exp_res": 0.3320408761501312,
+        "i_con": 6.724873065948486,
+        "i_pae": 0.8864971399307251,
+        "pae": 0.7951497435569763,
+        "plddt": 0.41678059101104736,
+        "seq_ent": 0.8315661549568176,
+        "loss": 3.5485730171203613,
+        "i_ptm": 0.1075362041592598,
+        "ptm": 0.48432451486587524,
+        "hard": 0.0,
+        "soft": 1.0,
+        "temp": 0.01,
+        "recycles": 0,
+        "models": [
+          0
+        ]
+      }
+    },
+    {
+      "iteration": 3,
+      "stage": "hard",
+      "stage_iteration": 1,
+      "model_names": [
+        "model_1_ptm",
+        "model_2_ptm"
+      ],
+      "metrics": {
+        "cmap_loss_binder": 3.512627601623535,
+        "con": 4.372518539428711,
+        "exp_res": 0.2706092894077301,
+        "i_con": 6.644903182983398,
+        "i_pae": 0.9156444668769836,
+        "pae": 0.8043084144592285,
+        "plddt": 0.376583456993103,
+        "seq_ent": 0.8230577111244202,
+        "loss": 3.512627601623535,
+        "i_ptm": 0.09064998477697372,
+        "ptm": 0.4773103594779968,
+        "hard": 1.0,
+        "soft": 1.0,
+        "temp": 0.01,
+        "recycles": 0,
+        "models": [
+          0,
+          1
+        ]
+      }
+    }
+  ]
+}

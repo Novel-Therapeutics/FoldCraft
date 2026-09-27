@@ -148,3 +148,9 @@ reuse; completed results are preserved. Scheduler `--data-dir` selects AF2 weigh
 `--mpnn-weight` selects the variant, and `--dry-run --verify-runtime` checks resume
 compatibility with the selected `--python` on CPU. See
 [INFERENCE_PROVENANCE.md](INFERENCE_PROVENANCE.md) for checks and evidence.
+
+VHH runs can explicitly select `--vhh_convention`; the default remains
+`foldcraft-127-current-v1`. See [the VHH conventions](examples/VHH_CONVENTIONS.md)
+for historical-map reproduction. Completed trajectories now retain all optimization
+iterations in `optimization/`, including actual model dispatch and stage seeds.
+See [the closure validation report](CLOSURE_VALIDATION.md) for remaining scope.

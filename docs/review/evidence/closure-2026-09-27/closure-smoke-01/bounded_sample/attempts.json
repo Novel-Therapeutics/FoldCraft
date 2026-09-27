@@ -1,0 +1,13 @@
+[
+  {
+    "trajectory": "traj_1",
+    "candidate": null,
+    "accepted": null,
+    "metrics": {
+      "plddt": 0.5356711745262146,
+      "i_pae": 0.9147927761077881,
+      "i_ptm": 0.07377035915851593,
+      "cmap_loss_binder": 3.8415536880493164
+    }
+  }
+]

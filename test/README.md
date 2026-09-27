@@ -38,3 +38,25 @@ These scripts import `biopython_utils` from the repository root, so run them
 ```bash
 python test/FoldCraft_binder.py --help
 ```
+
+## Execution controls and validation limits
+
+The supported experimental mode requires `--sample`. VHH/template/binder-map
+options are rejected rather than silently ignored; use the main driver for those
+workflows. `--preflight_only` validates inputs without importing GPU/PyRosetta
+packages. `--data_dir` selects AF2 weights, `--seed` records reproducible Python,
+AF2, MPNN and PyRosetta seeds, and `--timeout_minutes` (default 360) supervises the
+worker process group. Timeouts return 124 and preserve partial artifacts.
+
+`experimental_run.json` distinguishes running, failed, exhausted, timed-out and
+complete runs. Completion requires the exact accepted count, finite metrics and
+all predicted/relaxed artifacts, whose hashes are saved. Result CSVs publish
+atomically. This manifest is separate from the main pipeline's completion and
+scheduler protocol; experimental runs cannot be used as main-pipeline resume
+chunks. Interrupted trajectories restart in a fresh output directory.
+
+CPU doubles exercise the complete selection/artifact flow. Real-process tests
+exercise dependency failure and timeout cleanup. Full numerical PyRosetta/BindCraft
+validation still requires an installed licensed environment; the main GPU suite
+cannot certify this separate physical-scoring path. See
+[CLOSURE_VALIDATION.md](../CLOSURE_VALIDATION.md) for current evidence.

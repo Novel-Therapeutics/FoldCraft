@@ -10,6 +10,10 @@ import numpy as np
 STANDARD = set('ALA ARG ASN ASP CYS GLN GLU GLY HIS ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL'.split())
 VHH_HOTSPOTS = '26-35,55-59,102-116'
 VHH_CONVENTION = 'foldcraft-127-current-v1'
+VHH_CONVENTIONS = {
+    VHH_CONVENTION: VHH_HOTSPOTS,
+    'foldcraft-127-historical-v0': '27-35,56-60,103-117',
+}
 
 
 def residue_range(value, *, allow_empty=False):
@@ -134,6 +138,11 @@ def validate_controls(args):
     timeout = getattr(args, "timeout_minutes", 360.)
     if not math.isfinite(timeout) or timeout <= 0:
         raise ValueError("--timeout_minutes must be finite and positive")
+    convention = getattr(args, 'vhh_convention', VHH_CONVENTION)
+    if convention not in VHH_CONVENTIONS:
+        raise ValueError('Unknown VHH conditioning convention')
+    if not args.vhh and convention != VHH_CONVENTION:
+        raise ValueError('--vhh_convention requires --vhh')
     from model_validation import model_names
     model_names(args.validation_models)
     if args.validation_recycles < 0:
@@ -165,7 +174,7 @@ def preflight(args):
     if args.vhh:
         validate_cmap(np.load(Path(__file__).resolve().parent / 'framework' / 'vhh.npy', allow_pickle=False), size=127)
         binder = None
-        hotspots, mask = VHH_HOTSPOTS, ''
+        hotspots, mask = VHH_CONVENTIONS[getattr(args, 'vhh_convention', VHH_CONVENTION)], ''
     else:
         binder = read_chain(args.binder_template, args.binder_chain)
         hotspots = binder.selection(args.binder_hotspots, allow_empty=True)

@@ -382,7 +382,9 @@ def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successfu
             predict_calls.append(kwargs)
             self.aux['log'].update(models=[self._model_names.index(kwargs.get('models',['model_1_ptm'])[0])],recycles=kwargs['num_recycles'])
         def restart(self,**kwargs): pass
-        def design_3stage(self,*args): design_calls.append(args)
+        def design_3stage(self,*args):
+            design_calls.append(args)
+            self._tmp={'log':[dict(self.aux['log'], loss=.2, models=[0], recycles=0) for _ in range(sum(args))]}
         def save_pdb(self,path,**kwargs): Path(path).write_text(pdb_text()+pdb_text(chain='B'))
     class MPNN:
         def set_seed(self,*args):pass
@@ -424,6 +426,12 @@ def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successfu
     attempts = json.loads((out/"attempts.json").read_text())
     assert all(row["accepted"] is successful for row in attempts if row["candidate"] is not None)
     assert len(design_calls)==(1 if sample and successful else 2)
+    histories=list((out/'optimization').glob('*.json'))
+    assert len(histories)==len(design_calls)
+    assert all(len(json.loads(p.read_text())['records'])==220 for p in histories)
+    if not (sample and not successful):
+        histories[0].write_text('{}')
+        assert not completed_run(out)
 
 
 def test_stage_streams_and_arm_order_are_replayable():
