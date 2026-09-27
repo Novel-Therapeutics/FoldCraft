@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "absolute_tolerance": 1e-05,
+  "max_pae_delta": 0.0,
+  "max_coordinate_delta": 0.0,
+  "normalized_perfect_match_gradient_finite": true
+}

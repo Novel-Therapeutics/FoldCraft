@@ -30,6 +30,7 @@ def parse_args(argv=None):
     parser.add_argument('--mpnn_sampling_temp', type=float, default=0.1, help="Sampling temperature for amino acids 0.0-1.0 (default: 0.1)")
     parser.add_argument('--mpnn_save', action='store_true', help='Whether to save MPNN sampled sequences')
       
+    parser.add_argument('--loss_mode',choices=['legacy','normalized_pairs'],default='legacy',help='Experimental design objective; legacy is the unchanged default')
     parser.add_argument('--validation_models', default='model_1_ptm', help='Comma-separated validation models; two-model acceptance remains experimental pending accuracy benchmarks')
     parser.add_argument('--validation_recycles', type=int, default=3)
     parser.add_argument('--seed', type=int, default=None, help='Replay seed (default: generate and record a random seed)')
@@ -85,6 +86,7 @@ def execute(args, prepared, state):
     from cmap_utils import assemble_fold_conditioned_cmap, binarize_cmap
     from sequence_design import redesign
     from model_validation import validate_candidate
+    from design_objective import contact_objective
     target_input, binder_input, mapped_target, mapped_binder, mapped_mask = prepared
 
     #Prepare fold conditioned binder
@@ -260,7 +262,7 @@ def execute(args, prepared, state):
         out_cmap_conditioned = i_cmap * conditioned_mask
 
         # calculate the RMSE between predicted and fold-conditioned cmaps
-        cmap_loss_binder = jnp.sqrt(jnp.square(out_cmap_conditioned - conditioned_array).sum(-1).mean())
+        cmap_loss_binder = contact_objective(i_cmap, conditioned_array, conditioned_mask, binder_len, args.loss_mode, xp=jnp)
     
         return {"cmap_loss_binder":cmap_loss_binder}
     

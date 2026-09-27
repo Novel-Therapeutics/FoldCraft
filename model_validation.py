@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 import math
 import pickle
+import time
 import numpy as np
 
 from baseline.result_io import atomic_write, write_json
@@ -73,8 +74,10 @@ def validate_candidate(predictor, sequence, binder_len, folder, candidate, model
         # separate streams, independent of execution order or RNG consumption.
         model_seed = seed if index == 0 else stage_seed(seed, name)
         predictor.set_seq(sequence[-binder_len:])
+        started = time.perf_counter()
         predictor.predict(num_recycles=recycles, verbose=False, models=[name],
                           num_models=1, sample_models=False, seed=model_seed)
+        prediction_seconds = time.perf_counter() - started
         log = predictor.aux['log']
         executed = [available[int(n)] for n in log['models']]
         if executed != [name]:
@@ -93,7 +96,7 @@ def validate_candidate(predictor, sequence, binder_len, folder, candidate, model
             with open(path, 'wb') as stream:
                 pickle.dump(predictor.aux['all'], stream, protocol=pickle.HIGHEST_PROTOCOL)
         atomic_write(pickle_path, dump)
-        report['models'][name] = dict(metrics=metrics, seed=model_seed,
+        report['models'][name] = dict(metrics=metrics, seed=model_seed, prediction_seconds=prediction_seconds,
             requested_recycles=recycles, actual_recycles=int(log['recycles']),
             executed_models=executed, passed=bool(passes(metrics)),
             pdb_sha256=sha256(pdb_path), pickle_sha256=sha256(pickle_path))
