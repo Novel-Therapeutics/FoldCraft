@@ -15,7 +15,7 @@ Layout: a design dir has results.csv (with a 'name' column) + designs/<name>.pdb
 complex = chain A (target) + chain B (binder). FoldCraft: loop over
 baseline/repro/<fold>/. BoltzProt: pass baseline/boltzprot/ directly.
 
-Idempotent: rows already carrying boltz2_iptm are skipped, so a killed run resumes.
+Resumes only scores with matching input/settings provenance in the scorer sidecar.
 GPU-only -- run on reg-box-1. Requires `pip install boltz[cuda]` (MIT) + a GPU.
 
 Usage:  python baseline/score_boltz2.py <design_dir> [--sample N] [--no-msa]
@@ -28,6 +28,11 @@ import os
 import subprocess
 import sys
 import tempfile
+
+try:
+    from .score_cache import ScoreSession
+except ImportError:
+    from score_cache import ScoreSession
 
 import pandas as pd
 from Bio.PDB import PDBParser
@@ -59,6 +64,10 @@ def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=
     # Without --use_msa_server boltz needs an explicit MSA; `msa: empty` selects
     # single-sequence mode (no server query) -- the robust path when the public
     # MSA server is throttling. With use_msa we let --use_msa_server fetch it.
+    if diffusion_samples < 1:
+        raise ValueError('diffusion_samples must be positive')
+    os.makedirs(workdir, exist_ok=True)
+    workdir = tempfile.mkdtemp(prefix='invocation-', dir=workdir)
     msa = "" if use_msa else ", msa: empty"
     yml = os.path.join(workdir, "complex.yaml")
     with open(yml, "w") as fh:
@@ -86,8 +95,15 @@ def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=
     if not confs:
         raise RuntimeError(f"no confidence_*.json produced under {workdir}")
     # highest confidence_score sample
-    best = max((json.load(open(c)) for c in confs),
-               key=lambda d: d.get("confidence_score", d.get("iptm", 0.0)))
+    predictions = []
+    for path in sorted(confs):
+        with open(path) as stream:
+            predictions.append((path, json.load(stream)))
+    best_path, best = max(predictions, key=lambda item: item[1].get('confidence_score', item[1].get('iptm', 0.0)))
+    with open(os.path.join(workdir, 'selection.json'), 'w') as stream:
+        json.dump(dict(confidence_file=os.path.relpath(best_path, workdir),
+                       target_sequence=target_seq, binder_sequence=binder_seq,
+                       diffusion_samples=diffusion_samples, use_msa=use_msa), stream, indent=2)
     # pair_chains_iptm is keyed by integer chain index as strings ("0"=target A,
     # "1"=binder B); the A<->B interface value is [0][1] (== overall iptm for a
     # 2-chain complex, but kept explicit).
@@ -115,46 +131,52 @@ def main():
     ap.add_argument("--diffusion-samples", type=int, default=1)
     ap.add_argument("--workdir", default=None)
     args = ap.parse_args()
+    if args.sample < 0:
+        ap.error('--sample must be nonnegative')
 
     csvf = os.path.join(args.design_dir, "results.csv")
     if not os.path.exists(csvf):
         sys.exit(f"no results.csv in {args.design_dir}")
-    df = pd.read_csv(csvf)
-    df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
-    for col in ("boltz2_iptm", "boltz2_pair_iptm", "boltz2_plddt", "boltz2_ipae"):
-        if col not in df.columns:
-            df[col] = pd.NA
+    with ScoreSession(csvf, __file__, ['boltz2_iptm', 'boltz2_pair_iptm', 'boltz2_plddt', 'boltz2_ipae'],
+                      dict(use_msa=not args.no_msa, diffusion_samples=args.diffusion_samples, flash_attn=True), extra_inputs=(), structure=True) as session:
+        df = pd.read_csv(csvf)
+        df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
+        for col in ("boltz2_iptm", "boltz2_pair_iptm", "boltz2_plddt", "boltz2_ipae"):
+            if col not in df.columns:
+                df[col] = pd.NA
 
-    todo = df[df["boltz2_iptm"].isna()]
-    if args.af2_pass_only:
-        # AF2 gate, using whichever AF2 columns the dir carries: FoldCraft's
-        # design-time plddt/iptm/ipae, or score_af2.py's af2_* for BoltzProt.
-        p, i, e = (("plddt", "iptm", "ipae") if "iptm" in df.columns
-                   else ("af2_plddt", "af2_iptm", "af2_ipae"))
-        todo = todo[(todo[p] > 0.8) & (todo[i] > 0.5) & (todo[e] < 0.35)]
-    if args.sample and len(todo) > args.sample:
-        todo = todo.sample(args.sample, random_state=0)
-    print(f"{args.design_dir}: {len(todo)} to score "
-          f"({len(df) - len(todo)} already done / skipped)")
+        df = session.prepare(df)
+        session.publish(df)  # publish invalidation before expensive inference
+        todo = df[df["boltz2_iptm"].isna()]
+        if args.af2_pass_only:
+            # AF2 gate, using whichever AF2 columns the dir carries: FoldCraft's
+            # design-time plddt/iptm/ipae, or score_af2.py's af2_* for BoltzProt.
+            p, i, e = (("plddt", "iptm", "ipae") if "iptm" in df.columns
+                       else ("af2_plddt", "af2_iptm", "af2_ipae"))
+            todo = todo[(todo[p] > 0.8) & (todo[i] > 0.5) & (todo[e] < 0.35)]
+        if args.sample and len(todo) > args.sample:
+            todo = todo.sample(args.sample, random_state=0)
+        print(f"{args.design_dir}: {len(todo)} to score "
+              f"({len(df) - len(todo)} already done / skipped)")
 
-    work_root = args.workdir or tempfile.mkdtemp(prefix="boltz2_")
-    for i, (idx, row) in enumerate(todo.iterrows(), 1):
-        pdb = os.path.join(args.design_dir, "designs", f"{row['name']}.pdb")
-        if not os.path.exists(pdb):
-            sys.exit(f"design PDB missing: {pdb}")
-        tgt, binder = chain_sequences(pdb)
-        wd = os.path.join(work_root, str(row["name"]))
-        os.makedirs(wd, exist_ok=True)
-        iptm, pair, plddt, ipae = run_boltz2(
-            tgt, binder, wd, use_msa=not args.no_msa,
-            diffusion_samples=args.diffusion_samples)
-        df.loc[idx, ["boltz2_iptm", "boltz2_pair_iptm", "boltz2_plddt",
-                     "boltz2_ipae"]] = [iptm, pair, plddt, ipae]
-        if i % 10 == 0 or i == len(todo):
-            df.to_csv(csvf, index=False)   # checkpoint for resumability
-            print(f"  [{i}/{len(todo)}] {row['name']}: iptm={iptm} ipae={ipae}")
-    df.to_csv(csvf, index=False)
-    print(f"wrote boltz2_* columns -> {csvf}")
+        work_root = args.workdir or tempfile.mkdtemp(prefix="boltz2_")
+        for i, (idx, row) in enumerate(todo.iterrows(), 1):
+            pdb = os.path.join(args.design_dir, "designs", f"{row['name']}.pdb")
+            if not os.path.exists(pdb):
+                sys.exit(f"design PDB missing: {pdb}")
+            tgt, binder = chain_sequences(pdb)
+            wd = os.path.join(work_root, str(row["name"]))
+            os.makedirs(wd, exist_ok=True)
+            iptm, pair, plddt, ipae = run_boltz2(
+                tgt, binder, wd, use_msa=not args.no_msa,
+                diffusion_samples=args.diffusion_samples)
+            df.loc[idx, ["boltz2_iptm", "boltz2_pair_iptm", "boltz2_plddt",
+                         "boltz2_ipae"]] = [iptm, pair, plddt, ipae]
+            if i % 10 == 0 or i == len(todo):
+                session.publish(df)   # checkpoint for resumability
+                print(f"  [{i}/{len(todo)}] {row['name']}: iptm={iptm} ipae={ipae}")
+        session.publish(df)
+        print(f"wrote boltz2_* columns -> {csvf}")
 
 
 if __name__ == "__main__":

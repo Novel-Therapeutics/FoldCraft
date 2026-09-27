@@ -92,3 +92,19 @@ This repository uses code from:
 * Justas Dauparas's ProteinMPNN (https://github.com/dauparas/ProteinMPNN)
 
 *   Martin Pacesa's BindCraft (https://github.com/martinpacesa/BindCraft)
+
+### Correctness branch: CPU preflight and durable runs
+
+See [CPU_FIXES.md](CPU_FIXES.md) for the implemented fixes, validation and remaining
+GPU checks. Hotspot/mask inputs now use **original PDB residue numbers**, inclusive
+at both endpoints; the driver records their mapping to model positions. Run your
+normal command with `--preflight_only` to check inputs without GPU packages or
+weights. Use a **new output directory** for each direct run. Success sampling is
+bounded by `--max_trajectories` (default 1000); `--seed` enables replay, and
+`--data_dir` selects the AlphaFold weight location.
+
+New campaigns default to `runs/`; committed `baseline/` results are historical
+reference data. GPU scorers use provenance sidecars and recompute legacy CSV-only
+scores when invoked, so score copies of historical tables when preserving them.
+The notebooks now call this checkout's CLI and require a prepared environment
+for their inference cell.

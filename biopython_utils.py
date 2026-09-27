@@ -10,18 +10,8 @@ from Bio.PDB.Selection import unfold_entities
 from Bio.PDB.Polypeptide import is_aa
 
 def set_range(hotspots_input):
-    new_h = [x for x in hotspots_input.split(',')]
-    h_range = []
-    for i in new_h:
-        if '-' in i:
-            # inclusive of both endpoints: "39-45" -> 39..45 (was exclusive of
-            # the upper bound, which silently dropped the last residue of every
-            # hotspot/mask window).
-            lo, hi = i.split('-')
-            h_range += [x for x in range(int(lo), int(hi) + 1)]
-        else:
-            h_range.append(int(i))
-    return h_range
+    from input_validation import residue_range
+    return residue_range(hotspots_input)
 
 
 def iter_until_target(items, current_count, target):
@@ -55,25 +45,15 @@ def iter_until_target(items, current_count, target):
 
 
 def write_atomic(final_path, write_fn, finalize=False):
-    """Write output via a temporary ``.partial`` file, promoting it to
-    ``final_path`` only on ``finalize`` (an atomic ``os.replace``) -- so
-    ``final_path`` exists only once it is fully written.
+    """Atomically replace a recoverable .partial checkpoint, then optionally finalize.
 
-    ``write_fn(path)`` performs the actual write (e.g. ``df.to_csv``). Every call
-    (re)writes ``final_path + '.partial'``; with ``finalize=True`` that partial is
-    atomically renamed onto ``final_path``. A crash before the finalizing call
-    leaves only the ``.partial`` (every row written so far, for recovery) and
-    never a half-written ``final_path``.
-
-    This matters when a consumer treats the file's *existence* as "complete":
-    baseline/scheduler.py keys chunk resume/merge on ``results.csv`` existing, so
-    streaming progress straight into ``results.csv`` would make a preempted chunk
-    look finished. Streaming into ``results.csv.partial`` and promoting once, at
-    the end, keeps "``results.csv`` exists == chunk done" true. Returns the
-    partial path.
+    A failed serialization keeps the previous checkpoint intact. Completion is
+    separately authenticated by run.json, never by CSV existence alone.
     """
+    from baseline.result_io import atomic_write
+    final_path = os.fspath(final_path)
     partial = final_path + ".partial"
-    write_fn(partial)
+    atomic_write(partial, write_fn)
     if finalize:
         os.replace(partial, final_path)
     return partial
@@ -133,15 +113,15 @@ def target_pdb_rmsd(trajectory_pdb, starting_pdb, chain_ids_string):
     # Extract residues from chain A in trajectory_pdb
     residues_trajectory = [residue for residue in chain_trajectory if is_aa(residue, standard=True)]
     
-    # Ensure that both structures have the same number of residues
-    min_length = min(len(residues_starting), len(residues_trajectory))
-    residues_starting = residues_starting[:min_length]
-    residues_trajectory = residues_trajectory[:min_length]
-    
-    # Collect CA atoms from the two sets of residues
-    atoms_starting = [residue['CA'] for residue in residues_starting if 'CA' in residue]
-    atoms_trajectory = [residue['CA'] for residue in residues_trajectory if 'CA' in residue]
-    
+    from baseline.structure_checks import matching_ca
+    if any('CA' not in r for r in residues_starting + residues_trajectory):
+        raise ValueError('Target RMSD requires every CA atom')
+    matching_ca(residues_starting, residues_trajectory)
+    if [r.resname for r in residues_starting] != [r.resname for r in residues_trajectory]:
+        raise ValueError('Target RMSD residue sequences do not match')
+    atoms_starting = [r['CA'] for r in residues_starting]
+    atoms_trajectory = [r['CA'] for r in residues_trajectory]
+
     # Calculate RMSD using structural alignment
     sup = Superimposer()
     sup.set_atoms(atoms_starting, atoms_trajectory)
@@ -150,14 +130,15 @@ def target_pdb_rmsd(trajectory_pdb, starting_pdb, chain_ids_string):
     return round(rmsd, 2)
 
 # detect C alpha clashes for deformed trajectories
-def calculate_clash_score(pdb_file, threshold=2.4, only_ca=False):
+def calculate_clash_score(pdb_file, threshold=2.4, only_ca=False, model_id=0):
     parser = PDBParser(QUIET=True)
     structure = parser.get_structure('protein', pdb_file)
 
     atoms = []
     atom_info = []  # Detailed atom info for debugging and processing
 
-    for model in structure:
+    # Alternative models are separate conformations, never simultaneous atoms.
+    for model in [structure[model_id]]:
         for chain in model:
             for residue in chain:
                 for atom in residue:
@@ -168,6 +149,8 @@ def calculate_clash_score(pdb_file, threshold=2.4, only_ca=False):
                     atoms.append(atom.coord)
                     atom_info.append((chain.id, residue.id[1], atom.get_name(), atom.coord))
 
+    if not atoms:
+        return 0
     tree = cKDTree(atoms)
     pairs = tree.query_pairs(threshold)
 

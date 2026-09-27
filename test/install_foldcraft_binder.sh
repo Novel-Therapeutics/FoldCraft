@@ -49,7 +49,7 @@ chmod +x "${BINDCRAFT_DIR}/functions/DAlphaBall.gcc" \
     || echo "Warning: could not chmod +x DAlphaBall.gcc"
 
 # Confirm bindcraft_deps.py can locate the checkout.
-python -c "import sys; sys.path.insert(0, '${SCRIPT_DIR}'); from bindcraft_deps import find_bindcraft_repo; print('BindCraft at', find_bindcraft_repo())" \
+PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:$PYTHONPATH}" python -c "from bindcraft_deps import find_bindcraft_repo; print('BindCraft at', find_bindcraft_repo())" \
     || { echo "Error: BindCraft not importable via bindcraft_deps"; exit 1; }
 
 echo "BindCraft dependency installed for the FoldCraft binder pipeline."

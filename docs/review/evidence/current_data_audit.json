@@ -1,0 +1,736 @@
+[
+  {
+    "path": "baseline/ab_get_best/best/results.csv",
+    "rows": 75,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "iptm",
+      "ipae",
+      "cmap_loss"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 15,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      205,
+      205
+    ],
+    "sequence_separators": 75,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0
+    },
+    "af_pass": 21
+  },
+  {
+    "path": "baseline/ab_get_best/last/results.csv",
+    "rows": 75,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "iptm",
+      "ipae",
+      "cmap_loss"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 15,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      205,
+      205
+    ],
+    "sequence_separators": 75,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0
+    },
+    "af_pass": 24
+  },
+  {
+    "path": "baseline/ab_loss/cmap/results.csv",
+    "rows": 75,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "iptm",
+      "ipae",
+      "cmap_loss",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 15,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      205,
+      205
+    ],
+    "sequence_separators": 75,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "openmm_dE": 0
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 5,
+    "openmm_max": 3.51,
+    "af_pass": 14
+  },
+  {
+    "path": "baseline/ab_loss/ipae0.05/results.csv",
+    "rows": 75,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "iptm",
+      "ipae",
+      "cmap_loss",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 15,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      205,
+      205
+    ],
+    "sequence_separators": 75,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "openmm_dE": 0
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 2,
+    "openmm_max": 1.35,
+    "af_pass": 23
+  },
+  {
+    "path": "baseline/ab_loss/ipae0.1/results.csv",
+    "rows": 75,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "iptm",
+      "ipae",
+      "cmap_loss",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 15,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      205,
+      205
+    ],
+    "sequence_separators": 75,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "openmm_dE": 0
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 7,
+    "openmm_max": 3.71,
+    "af_pass": 16
+  },
+  {
+    "path": "baseline/ab_loss/ipae0.2/results.csv",
+    "rows": 75,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "iptm",
+      "ipae",
+      "cmap_loss",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 15,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      205,
+      205
+    ],
+    "sequence_separators": 75,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "openmm_dE": 0
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 7,
+    "openmm_max": 3.16,
+    "af_pass": 27
+  },
+  {
+    "path": "baseline/ab_loss_fp/fp0/results.csv",
+    "rows": 75,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "iptm",
+      "ipae",
+      "cmap_loss",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 15,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      205,
+      205
+    ],
+    "sequence_separators": 75,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "openmm_dE": 0
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 0,
+    "openmm_max": -0.61,
+    "af_pass": 36
+  },
+  {
+    "path": "baseline/ab_loss_fp/fp0.1/results.csv",
+    "rows": 75,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "iptm",
+      "ipae",
+      "cmap_loss",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 15,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      205,
+      205
+    ],
+    "sequence_separators": 75,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "openmm_dE": 0
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 33,
+    "openmm_max": 4.17,
+    "af_pass": 0
+  },
+  {
+    "path": "baseline/ab_loss_fp/fp0.3/results.csv",
+    "rows": 75,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "iptm",
+      "ipae",
+      "cmap_loss",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 15,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      205,
+      205
+    ],
+    "sequence_separators": 75,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "openmm_dE": 0
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 42,
+    "openmm_max": 5.93,
+    "af_pass": 0
+  },
+  {
+    "path": "baseline/boltzprot/results.csv",
+    "rows": 200,
+    "columns": [
+      "name",
+      "sequence",
+      "length",
+      "boltz_iptm",
+      "boltz_binding_confidence",
+      "boltz_min_interaction_pae",
+      "esmfold_plddt",
+      "esmfold_rmsd",
+      "boltz2_iptm",
+      "boltz2_pair_iptm",
+      "boltz2_plddt",
+      "boltz2_ipae",
+      "af2_plddt",
+      "af2_iptm",
+      "af2_ipae",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 200,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      71,
+      185
+    ],
+    "sequence_separators": 0,
+    "missing_metrics": {
+      "openmm_dE": 0,
+      "boltz2_iptm": 100,
+      "esmfold_rmsd": 100
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 0,
+    "openmm_max": -5.47
+  },
+  {
+    "path": "baseline/repro/ankyrin/results.csv",
+    "rows": 200,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae",
+      "esmfold_plddt",
+      "esmfold_rmsd",
+      "boltz2_iptm",
+      "boltz2_pair_iptm",
+      "boltz2_plddt",
+      "boltz2_ipae",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 40,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      239,
+      239
+    ],
+    "sequence_separators": 200,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0,
+      "openmm_dE": 0,
+      "boltz2_iptm": 198,
+      "esmfold_rmsd": 198
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 32,
+    "openmm_max": 5.21,
+    "af_pass": 2,
+    "afpass_missing_boltz": 0,
+    "fold_pass": 22,
+    "combined_pass": 1
+  },
+  {
+    "path": "baseline/repro/barrel/results.csv",
+    "rows": 200,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae",
+      "esmfold_plddt",
+      "esmfold_rmsd",
+      "boltz2_iptm",
+      "boltz2_pair_iptm",
+      "boltz2_plddt",
+      "boltz2_ipae",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 40,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      224,
+      224
+    ],
+    "sequence_separators": 200,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0,
+      "openmm_dE": 0,
+      "boltz2_iptm": 144,
+      "esmfold_rmsd": 144
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 2,
+    "openmm_max": 1.39,
+    "af_pass": 56,
+    "afpass_missing_boltz": 0,
+    "fold_pass": 187,
+    "combined_pass": 56
+  },
+  {
+    "path": "baseline/repro/iglike/results.csv",
+    "rows": 200,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae",
+      "esmfold_plddt",
+      "esmfold_rmsd",
+      "boltz2_iptm",
+      "boltz2_pair_iptm",
+      "boltz2_plddt",
+      "boltz2_ipae",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 40,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      190,
+      190
+    ],
+    "sequence_separators": 200,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0,
+      "openmm_dE": 0,
+      "boltz2_iptm": 134,
+      "esmfold_rmsd": 134
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 13,
+    "openmm_max": 3.12,
+    "af_pass": 66,
+    "afpass_missing_boltz": 0,
+    "fold_pass": 187,
+    "combined_pass": 66
+  },
+  {
+    "path": "baseline/repro/solenoid/results.csv",
+    "rows": 200,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae",
+      "esmfold_plddt",
+      "esmfold_rmsd",
+      "boltz2_iptm",
+      "boltz2_pair_iptm",
+      "boltz2_plddt",
+      "boltz2_ipae",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 40,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      211,
+      211
+    ],
+    "sequence_separators": 200,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0,
+      "openmm_dE": 0,
+      "boltz2_iptm": 180,
+      "esmfold_rmsd": 180
+    },
+    "openmm_extreme_abs_gt_1e6": 0,
+    "openmm_positive": 34,
+    "openmm_max": 3.99,
+    "af_pass": 20,
+    "afpass_missing_boltz": 0,
+    "fold_pass": 41,
+    "combined_pass": 16
+  },
+  {
+    "path": "baseline/repro/top7/results.csv",
+    "rows": 200,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae",
+      "esmfold_plddt",
+      "esmfold_rmsd",
+      "af2_plddt",
+      "af2_iptm",
+      "af2_ipae",
+      "boltz2_iptm",
+      "boltz2_pair_iptm",
+      "boltz2_plddt",
+      "boltz2_ipae",
+      "openmm_dE",
+      "openmm_e_complex"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 40,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      205,
+      205
+    ],
+    "sequence_separators": 200,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0,
+      "openmm_dE": 0,
+      "boltz2_iptm": 119,
+      "esmfold_rmsd": 156
+    },
+    "openmm_extreme_abs_gt_1e6": 1,
+    "openmm_positive": 9,
+    "openmm_max": 1.3313118043947483e+19,
+    "af_pass": 44,
+    "afpass_missing_boltz": 27,
+    "fold_pass": 166,
+    "combined_pass": 44
+  },
+  {
+    "path": "baseline/runs/ankyrin/results.csv",
+    "rows": 100,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 10,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      238,
+      238
+    ],
+    "sequence_separators": 100,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0
+    },
+    "af_pass": 12,
+    "fold_pass": 13,
+    "combined_pass": 2
+  },
+  {
+    "path": "baseline/runs/barrel/results.csv",
+    "rows": 100,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 10,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      224,
+      224
+    ],
+    "sequence_separators": 100,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0
+    },
+    "af_pass": 34,
+    "fold_pass": 92,
+    "combined_pass": 34
+  },
+  {
+    "path": "baseline/runs/iglike/results.csv",
+    "rows": 100,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 10,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      188,
+      188
+    ],
+    "sequence_separators": 100,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0
+    },
+    "af_pass": 14,
+    "fold_pass": 83,
+    "combined_pass": 14
+  },
+  {
+    "path": "baseline/runs/solenoid/results.csv",
+    "rows": 100,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 10,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      210,
+      210
+    ],
+    "sequence_separators": 100,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0
+    },
+    "af_pass": 17,
+    "fold_pass": 53,
+    "combined_pass": 17
+  },
+  {
+    "path": "baseline/runs/tim/results.csv",
+    "rows": 100,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 10,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      293,
+      293
+    ],
+    "sequence_separators": 100,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0
+    },
+    "af_pass": 1,
+    "fold_pass": 52,
+    "combined_pass": 1
+  },
+  {
+    "path": "baseline/runs/top7/results.csv",
+    "rows": 100,
+    "columns": [
+      "name",
+      "sequence",
+      "plddt",
+      "ipae",
+      "iptm",
+      "cmap_loss",
+      "rmsd",
+      "ipsae"
+    ],
+    "duplicate_names": 0,
+    "trajectories": 10,
+    "duplicate_sequences": 0,
+    "sequence_lengths": [
+      204,
+      204
+    ],
+    "sequence_separators": 100,
+    "missing_metrics": {
+      "plddt": 0,
+      "iptm": 0,
+      "ipae": 0,
+      "rmsd": 0
+    },
+    "af_pass": 40,
+    "fold_pass": 86,
+    "combined_pass": 40
+  }
+]

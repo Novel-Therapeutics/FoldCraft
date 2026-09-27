@@ -20,6 +20,15 @@ import warnings
 
 warnings.filterwarnings("ignore")
 from Bio.PDB import PDBParser, Superimposer
+try:
+    from .structure_checks import chain_ca, matching_ca
+except ImportError:
+    from structure_checks import chain_ca, matching_ca
+try:
+    from .result_io import publish_columns
+except ImportError:
+    from result_io import publish_columns
+
 import pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -30,7 +39,7 @@ _parser = PDBParser(QUIET=True)
 def template_ca_atoms(template_pdb):
     """CA atoms of the fold template's first chain (parsed once per fold)."""
     t = _parser.get_structure("t", template_pdb)
-    return [r["CA"] for r in list(t[0])[0] if "CA" in r]
+    return chain_ca(list(t[0])[0])
 
 
 def rmsd_to_template(design_pdb, templ):
@@ -42,12 +51,10 @@ def rmsd_to_template(design_pdb, templ):
     bit-identical to parsing the template inline.
     """
     d = _parser.get_structure("d", design_pdb)
-    binder = [r["CA"] for r in d[0]["B"] if "CA" in r]
-    n = min(len(binder), len(templ))
-    if n < 3:
-        raise ValueError(f"{design_pdb}: fewer than 3 comparable CA atoms")
+    binder = chain_ca(d[0]["B"])
+    matching_ca(templ, binder)
     sup = Superimposer()
-    sup.set_atoms(templ[:n], binder[:n])
+    sup.set_atoms(templ, binder)
     return round(sup.rms, 2)
 
 
@@ -72,7 +79,7 @@ def main():
                 sys.exit(f"design PDB missing, cannot compute rmsd: {dp}")
             rmsds.append(rmsd_to_template(dp, templ))
         df["rmsd"] = rmsds
-        df.to_csv(csvf, index=False)
+        publish_columns(csvf, df, ['rmsd'])
         print(f"{fold}: wrote rmsd for {len(rmsds)} designs -> {csvf}")
 
 

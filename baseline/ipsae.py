@@ -12,6 +12,7 @@ the asymmetric value is ``max_i`` of that, and ipSAE is the max of the two chain
 directions. It needs only the PAE matrix (in Angstroms) and the chain split.
 """
 import numpy as np
+from numbers import Integral
 
 
 def calc_d0_array(L):
@@ -43,6 +44,12 @@ def ipsae(pae, len_a, len_b, pae_cutoff=10.0):
     point ``len_a`` matters, not which chain is target vs binder.
     """
     pae = np.asarray(pae, dtype=float)
+    if pae.ndim != 2 or pae.shape[0] != pae.shape[1] or not np.isfinite(pae).all() or (pae < 0).any():
+        raise ValueError('PAE must be a finite, nonnegative square matrix')
+    if any(not isinstance(n, Integral) or n < 1 for n in (len_a, len_b)):
+        raise ValueError('Both chain lengths must be positive integers')
+    if not np.isfinite(pae_cutoff) or pae_cutoff <= 0:
+        raise ValueError('PAE cutoff must be finite and positive')
     n = pae.shape[0]
     if n != len_a + len_b:
         raise ValueError(f"PAE is {n}x{n} but len_a+len_b={len_a}+{len_b}={len_a + len_b}")

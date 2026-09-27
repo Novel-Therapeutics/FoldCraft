@@ -17,7 +17,7 @@ cd "$REPO"
 export XLA_PYTHON_CLIENT_PREALLOCATE=false PYTHONUNBUFFERED=1
 
 TARGET="examples/targets/pd-l1-1.pdb"
-OUT="baseline/repro"
+OUT="${1:-runs/repro}"
 mkdir -p "$OUT"
 
 # fold  template                        target_hotspots      binder_hotspots
@@ -42,8 +42,7 @@ while read -r fold tmpl thot bhot; do
         --target_hotspots "$thot" \
         --binder_hotspots "$bhot" \
         --num_designs 40
-    # record the template used so RMSD-to-template scoring is unambiguous later
-    cp "$tmpl" "$OUT/$fold/template.pdb"
+    # FoldCraft records the canonical template and its hash before completion.
     rows=$(($(wc -l < "$OUT/$fold/results.csv") - 1))
     echo "FOLD_OK $fold rows=$rows $(date +%H:%M:%S)"
 done <<< "$CONFIG"

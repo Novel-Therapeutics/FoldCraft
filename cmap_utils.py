@@ -8,11 +8,9 @@ duplicated the same logic inline).
 
 Index conventions: hotspot/mask range strings are parsed by ``set_range`` into
 1-based residue numbers (inclusive of both endpoints), which map to 0-based
-array positions as ``residue R -> index R-1``. When no binder hotspots are
-given the default ``np.array([range(1, binder_len + 1)])`` -- a 2-D
-``(1, binder_len)`` array of 1-based residue numbers -- drives NumPy
-fancy-indexing in the contact loop, selecting every binder position (identical
-to passing ``--binder_hotspots 1-<binder_len>``).
+array positions as ``residue R -> index R-1``. An empty binder selection includes
+all binder positions. The CLI maps original PDB IDs to these positions before
+calling this module; direct callers must already supply model positions.
 
 These semantics decide which residues the design loss conditions on, so changes
 here are accuracy-relevant and should be measured against the design baseline.
@@ -22,6 +20,7 @@ independent re-implementation of the assembly.
 import numpy as np
 
 from biopython_utils import set_range
+from input_validation import positions, validate_cmap
 
 
 def apply_binder_mask(binder_cmap, binder_mask):
@@ -34,7 +33,7 @@ def apply_binder_mask(binder_cmap, binder_mask):
     raises ``ValueError`` (rather than silently wrapping a negative index or
     raising a bare IndexError). Operates on a copy; the input is not mutated.
     """
-    binder_cmap = np.array(binder_cmap, copy=True)
+    binder_cmap = np.array(validate_cmap(binder_cmap), copy=True)
     if binder_mask != '':
         n = binder_cmap.shape[0]
         for r in set_range(binder_mask):
@@ -75,29 +74,17 @@ def assemble_fold_conditioned_cmap(binder_cmap, target_len, binder_len,
         The fold-conditioned cmap (float; target<->binder hotspot contacts
         marked ``1.0``).
     """
+    if not isinstance(target_len, (int, np.integer)) or target_len < 1 or not isinstance(binder_len, (int, np.integer)) or binder_len < 1:
+        raise ValueError('Target and binder lengths must be positive integers')
+    validate_cmap(binder_cmap, size=binder_len)
     binder_cmap = apply_binder_mask(binder_cmap, binder_mask)
-
-    target_hotspots_np = np.array(set_range(target_hotspots))
-
+    targets = np.asarray(positions(target_hotspots, target_len), dtype=int) - 1
+    binders = positions(binder_hotspots, binder_len, allow_empty=True) or list(range(1, binder_len + 1))
+    binders = np.asarray(binders, dtype=int) - 1 + target_len
     fc_cmap = np.zeros((target_len + binder_len, target_len + binder_len))
-
-    if binder_hotspots == '':
-        # "all binder residues" -- 1-based 1..binder_len, matching what
-        # set_range yields for an explicit "1-<binder_len>". The previous
-        # 0-based range(0, binder_len) shifted the whole interface block up one
-        # row: it wrote a spurious contact on the LAST target residue and dropped
-        # the binder's C-terminal residue from conditioning (only hit when
-        # --binder_hotspots is omitted; every shipped config passes it).
-        cdr_range = np.array([range(1, binder_len + 1)]) + target_len
-    else:
-        cdr_range = np.array(set_range(binder_hotspots)) + target_len
-
     fc_cmap[-binder_len:, -binder_len:] = binder_cmap
-
-    for i in target_hotspots_np:
-        for x in cdr_range:
-            fc_cmap[x - 1, i - 1] = 1.
-            fc_cmap[i - 1, x - 1] = 1.
+    fc_cmap[np.ix_(binders, targets)] = 1.0
+    fc_cmap[np.ix_(targets, binders)] = 1.0
 
     return fc_cmap
 

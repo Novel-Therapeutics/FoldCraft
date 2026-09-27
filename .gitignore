@@ -63,3 +63,6 @@ test/BindCraft/
 
 # Rendered report artifacts -- baseline/REPORT.md is the tracked source of truth
 baseline/REPORT.pdf
+
+# Live campaigns; archived baseline tables remain tracked
+/runs/

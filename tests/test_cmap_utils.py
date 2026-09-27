@@ -64,7 +64,7 @@ DIFFERENTIAL_CASES = [
     (5, 4, "2-4", "", ""),               # default: all binder residues
     (6, 5, "1-3,5", "2-4", "2-3"),       # with a binder mask
     (8, 6, "3-6", "1-2,4-6", ""),        # multiple hotspot ranges
-    (10, 127, "5-9,20", "26-35,55-59,102-116", ""),  # VHH-like geometry
+    (20, 127, "5-9,20", "26-35,55-59,102-116", ""),  # VHH-like geometry
     (4, 3, "1", "1", ""),                # singletons
 ]
 
@@ -163,7 +163,7 @@ class TestApplyBinderMask:
             cu.apply_binder_mask(bc, "0-2")  # residue 0 invalid (1-based)
 
     def test_empty_mask_is_identity_copy(self):
-        bc = np.arange(9).reshape(3, 3).astype(float)
+        bc = np.arange(9).reshape(3, 3).astype(float) / 8
         out = cu.apply_binder_mask(bc, "")
         np.testing.assert_array_equal(out, bc)
         assert out is not bc  # still a copy

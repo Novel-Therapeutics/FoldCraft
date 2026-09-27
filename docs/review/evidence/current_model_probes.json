@@ -1,0 +1,61 @@
+{
+  "ab_fold_hotspot_ranges": {
+    "top7": {
+      "polymer_residues": 92,
+      "first_last_resseq": [
+        1,
+        92
+      ],
+      "hotspots": "26-40,58-71",
+      "out_of_bounds": []
+    },
+    "barrel": {
+      "polymer_residues": 111,
+      "first_last_resseq": [
+        1,
+        111
+      ],
+      "hotspots": "30-44,90-104",
+      "out_of_bounds": []
+    },
+    "iglike": {
+      "polymer_residues": 77,
+      "first_last_resseq": [
+        1,
+        77
+      ],
+      "hotspots": "1-9,40-54",
+      "out_of_bounds": []
+    },
+    "solenoid": {
+      "polymer_residues": 98,
+      "first_last_resseq": [
+        1,
+        98
+      ],
+      "hotspots": "28-42,70-84",
+      "out_of_bounds": []
+    }
+  },
+  "loss_unconstrained_padding": {
+    "N4": 0.7071067811865476,
+    "N8_same_two_errors": 0.5
+  },
+  "esm_rmsd_truncated_match": {
+    "reference_residues": 5,
+    "scored_residues": 3,
+    "reported_rmsd": 0.0
+  },
+  "boltz_stale_confidence_selection": {
+    "fresh_iptm": 0.2,
+    "stale_iptm": 0.99,
+    "returned_iptm": 0.99
+  },
+  "ipsae_rectangular_input": {
+    "shape": [
+      4,
+      1
+    ],
+    "returned": 0.5
+  }
+}

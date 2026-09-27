@@ -56,7 +56,7 @@ conda env list | grep -w 'FoldCraft' >/dev/null 2>&1 || { echo -e "Error: Conda 
 
 # Load newly created BindCraft environment
 echo -e "Loading FoldCraft environment\n"
-source ${CONDA_BASE}/bin/activate ${CONDA_BASE}/envs/FoldCraft || { echo -e "Error: Failed to activate the BindCraft environment."; exit 1; }
+source "${CONDA_BASE}/bin/activate" "${CONDA_BASE}/envs/FoldCraft" || { echo -e "Error: Failed to activate the BindCraft environment."; exit 1; }
 [ "$CONDA_DEFAULT_ENV" = "FoldCraft" ] || { echo -e "Error: The FoldCraft environment is not active."; exit 1; }
 echo -e "FoldCraft environment activated at ${CONDA_BASE}/envs/FoldCraft"
 
@@ -90,8 +90,18 @@ fi
 
 # install ColabDesign
 echo -e "Installing ColabDesign\n"
-pip3 install git+https://github.com/sokrypton/ColabDesign.git --no-deps || { echo -e "Error: Failed to install ColabDesign"; exit 1; }
+pip3 install git+https://github.com/sokrypton/ColabDesign.git@e31a56fe1d9b4de25c8697f3a28b75892941cc72 --no-deps || { echo -e "Error: Failed to install ColabDesign"; exit 1; }
 python -c "import colabdesign" >/dev/null 2>&1 || { echo -e "Error: colabdesign module not found after installation"; exit 1; }
+
+# Verify this GPU/runtime can execute before downloading large weight files.
+python - <<'PYGPU'
+import jax
+import jax.numpy as jnp
+if not any(device.platform == 'gpu' for device in jax.devices()):
+    raise SystemExit('No usable JAX GPU. Resolve CUDA/JAX compatibility before downloading weights.')
+jnp.ones((32, 32)).dot(jnp.ones((32, 32))).block_until_ready()
+PYGPU
+[ "$?" -eq 0 ] || { echo "JAX GPU preflight failed" >&2; exit 1; }
 
 # AlphaFold2 weights
 echo -e "Downloading AlphaFold2 model weights \n"

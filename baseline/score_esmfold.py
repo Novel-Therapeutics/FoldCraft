@@ -22,9 +22,18 @@ import os
 import sys
 
 import numpy as np
+try:
+    from .score_cache import ScoreSession
+except ImportError:
+    from score_cache import ScoreSession
+
 import pandas as pd
 from Bio.PDB import PDBParser, Superimposer
 from Bio.SeqUtils import seq1
+try:
+    from .structure_checks import chain_ca, matching_ca
+except ImportError:
+    from structure_checks import chain_ca, matching_ca
 
 _parser = PDBParser(QUIET=True)
 _MODEL = None
@@ -67,20 +76,21 @@ def binder_seq_and_ca(pdb, chain="B"):
     RMSD reference come from one consistent source.
     """
     model = _parser.get_structure("d", pdb)[0]
-    residues = [r for r in model[chain] if r.id[0] == " "]
-    seq = seq1("".join(r.resname for r in residues))
-    ca = np.array([r["CA"].coord for r in residues if "CA" in r])
+    atoms = chain_ca(model[chain])
+    seq = seq1("".join(a.parent.resname for a in atoms), custom_map={"MSE": "M"})
+    ca = np.array([a.coord for a in atoms])
     return seq, ca
 
 
 def ca_rmsd(a, b):
     """RMSD between two equal-order CA coordinate sets after superposition."""
-    n = min(len(a), len(b))
-    if n < 3:
-        raise ValueError("fewer than 3 comparable CA atoms")
+    a, b = np.asarray(a, dtype=float), np.asarray(b, dtype=float)
+    matching_ca(a, b)
+    if a.shape != b.shape or a.ndim != 2 or a.shape[1] != 3 or not np.isfinite(a).all() or not np.isfinite(b).all():
+        raise ValueError('RMSD requires finite matching Nx3 coordinates')
     from Bio.PDB.qcprot import QCPSuperimposer
     sup = QCPSuperimposer()
-    sup.set(a[:n].astype(float), b[:n].astype(float))
+    sup.set(a, b)
     sup.run()
     return round(sup.get_rms(), 2)
 
@@ -92,39 +102,45 @@ def main():
     ap.add_argument("--af2-pass-only", action="store_true",
                     help="score only designs that clear the AF2 gate (consensus candidates)")
     args = ap.parse_args()
+    if args.sample < 0:
+        ap.error('--sample must be nonnegative')
 
     csvf = os.path.join(args.design_dir, "results.csv")
     if not os.path.exists(csvf):
         sys.exit(f"no results.csv in {args.design_dir}")
-    df = pd.read_csv(csvf)
-    df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
-    for col in ("esmfold_plddt", "esmfold_rmsd"):
-        if col not in df.columns:
-            df[col] = pd.NA
+    with ScoreSession(csvf, __file__, ['esmfold_plddt', 'esmfold_rmsd'],
+                      dict(model='facebook/esmfold_v1', tf32=True, trunk='fp16'), extra_inputs=(), structure=True) as session:
+        df = pd.read_csv(csvf)
+        df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
+        for col in ("esmfold_plddt", "esmfold_rmsd"):
+            if col not in df.columns:
+                df[col] = pd.NA
 
-    todo = df[df["esmfold_plddt"].isna()]
-    if args.af2_pass_only:
-        p, i, e = (("plddt", "iptm", "ipae") if "iptm" in df.columns
-                   else ("af2_plddt", "af2_iptm", "af2_ipae"))
-        todo = todo[(todo[p] > 0.8) & (todo[i] > 0.5) & (todo[e] < 0.35)]
-    if args.sample and len(todo) > args.sample:
-        todo = todo.sample(args.sample, random_state=0)
-    print(f"{args.design_dir}: {len(todo)} to score "
-          f"({len(df) - len(todo)} already done / skipped)")
+        df = session.prepare(df)
+        session.publish(df)  # publish invalidation before expensive inference
+        todo = df[df["esmfold_plddt"].isna()]
+        if args.af2_pass_only:
+            p, i, e = (("plddt", "iptm", "ipae") if "iptm" in df.columns
+                       else ("af2_plddt", "af2_iptm", "af2_ipae"))
+            todo = todo[(todo[p] > 0.8) & (todo[i] > 0.5) & (todo[e] < 0.35)]
+        if args.sample and len(todo) > args.sample:
+            todo = todo.sample(args.sample, random_state=0)
+        print(f"{args.design_dir}: {len(todo)} to score "
+              f"({len(df) - len(todo)} already done / skipped)")
 
-    for i, (idx, row) in enumerate(todo.iterrows(), 1):
-        pdb = os.path.join(args.design_dir, "designs", f"{row['name']}.pdb")
-        if not os.path.exists(pdb):
-            sys.exit(f"design PDB missing: {pdb}")
-        binder_seq, ca_design = binder_seq_and_ca(pdb)
-        plddt, ca_pred = esmfold_predict(binder_seq)
-        rmsd = ca_rmsd(ca_pred, ca_design)
-        df.loc[idx, ["esmfold_plddt", "esmfold_rmsd"]] = [round(plddt, 1), rmsd]
-        if i % 20 == 0 or i == len(todo):
-            df.to_csv(csvf, index=False)      # checkpoint for resumability
-            print(f"  [{i}/{len(todo)}] {row['name']}: plddt={plddt:.1f} rmsd={rmsd}")
-    df.to_csv(csvf, index=False)
-    print(f"wrote esmfold_* columns -> {csvf}")
+        for i, (idx, row) in enumerate(todo.iterrows(), 1):
+            pdb = os.path.join(args.design_dir, "designs", f"{row['name']}.pdb")
+            if not os.path.exists(pdb):
+                sys.exit(f"design PDB missing: {pdb}")
+            binder_seq, ca_design = binder_seq_and_ca(pdb)
+            plddt, ca_pred = esmfold_predict(binder_seq)
+            rmsd = ca_rmsd(ca_pred, ca_design)
+            df.loc[idx, ["esmfold_plddt", "esmfold_rmsd"]] = [round(plddt, 1), rmsd]
+            if i % 20 == 0 or i == len(todo):
+                session.publish(df)      # checkpoint for resumability
+                print(f"  [{i}/{len(todo)}] {row['name']}: plddt={plddt:.1f} rmsd={rmsd}")
+        session.publish(df)
+        print(f"wrote esmfold_* columns -> {csvf}")
 
 
 if __name__ == "__main__":

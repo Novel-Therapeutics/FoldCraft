@@ -1,0 +1,29 @@
+Current VHH versus bundled reference maps:
+  vhh_pd_l1: 180 different entries
+  vhh_pd_1: 170 different entries
+  vhh_ifnar: 120 different entries
+  vhh_egfr: 0 different entries
+Hotspot validation / range handling:
+  target='6' binder='1': nonzero entries [[5, 5]]
+  target='0' binder='1': nonzero entries [[5, 7], [7, 5]]
+  target='2' binder='0': nonzero entries [[1, 4], [4, 1]]
+  target='4-2' binder='1': nonzero entries []
+  target='2' binder='3-1': nonzero entries []
+Full MPNN redesign fixed residues: [(np.str_('A'), np.int64(1)), (np.str_('A'), np.int64(2)), (np.str_('B'), np.int64(3))]
+Empty non-interface mask: IndexError string index out of range
+Rerun still exposes stale final: OLD COMPLETE
+Last complete checkpoint replaced by: TRUNCATED
+Gapped target: cmap target_len=5, binder model target_len=4
+Resulting conditioned-mask multiply: ValueError operands could not be broadcast together with shapes (7,7) (8,8)
+PDB hotspot A15: upstream array index 5 ; FoldCraft cmap index 14 ; cmap selects original PDB residue 24
+Validation model dispatch: [0] ; with explicit num_models=2: [0, 1]
+Target with contiguous numbering but one missing N (CA present): cmap length 3; binder-model target length 2
+Malformed cmap acceptance: (1,1) silently broadcasts to (3,3); NaNs pass through
+CLI accepts zero MPNN batch, negative quotas/noise/temperature, and only two design stages
+FoldCraft.ipynb: range 2-3 -> [2]
+FoldCraft_VHH.ipynb: range 2-3 -> [2]
+Notebook non-interface mutable set with protected [2,3]: B1,B2,B3,B4
+Experimental default dispatch: 0 model calls, empty results.csv
+Clash helper counts 2 clashes between different models; each model has none
+RMSD helper reports 0.0 for unequal-length chains without coverage warning
+All current-branch CPU correctness probes completed successfully.

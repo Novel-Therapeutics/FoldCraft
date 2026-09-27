@@ -1,38 +1,9 @@
 import argparse
-import jax
-import jax.numpy as jnp
 import os
+from input_validation import validate_controls, preflight
+from run_state import start_run, finish_run, stage_seed
 
-from colabdesign import mk_af_model
-
-import pandas as pd
-import matplotlib.pyplot as plt
-from Bio.PDB import PDBParser
-from Bio.PDB.Polypeptide import is_aa
-import numpy as np
-import pickle
-from tqdm.notebook import tqdm
-import glob
-
-from colabdesign.af.alphafold.common import protein
-from colabdesign.shared.protein import renum_pdb_str
-from colabdesign.af.alphafold.common import residue_constants
-
-import os
-from colabdesign import mk_afdesign_model, clear_mem
-import numpy as np
-
-from colabdesign.af.loss import get_contact_map
-
-import matplotlib.pyplot as plt
-from matplotlib import patches
-from colabdesign.mpnn import mk_mpnn_model
-from biopython_utils import *
-from cmap_utils import assemble_fold_conditioned_cmap, binarize_cmap
-import warnings
-
-
-def parse_args():
+def parse_args(argv=None):
     parser = argparse.ArgumentParser(description="Run fold-conditioned binder design")
 
     parser.add_argument('--output_folder', type=str, required=True, help='Folder to save the results')
@@ -59,13 +30,62 @@ def parse_args():
     parser.add_argument('--mpnn_sampling_temp', type=float, default=0.1, help="Sampling temperature for amino acids 0.0-1.0 (default: 0.1)")
     parser.add_argument('--mpnn_save', action='store_true', help='Whether to save MPNN sampled sequences')
       
-    return parser.parse_args()
+    parser.add_argument('--seed', type=int, default=None, help='Replay seed (default: generate and record a random seed)')
+    parser.add_argument('--data_dir', default=os.path.dirname(os.path.abspath(__file__)), help='AlphaFold weight directory, or its parent containing params/')
+    parser.add_argument('--max_trajectories', type=int, default=1000,
+                        help='Maximum attempted trajectories in --sample mode (default: 1000)')
+    parser.add_argument('--preflight_only', action='store_true', help='Validate inputs on CPU without loading model weights')
+    args = parser.parse_args(argv)
+    try:
+        return validate_controls(args)
+    except ValueError as exc:
+        parser.error(str(exc))
 
 def main():
     args = parse_args()
+    try:
+        prepared = preflight(args)
+    except ValueError as exc:
+        raise SystemExit(f'Input error: {exc}') from exc
+    if args.preflight_only:
+        print('Input preflight passed (no model weights loaded).')
+        return
+    if os.path.exists(args.output_folder):
+        raise SystemExit('Output folder already exists; choose a new directory to prevent stale-run reuse.')
+    state = start_run(args.output_folder, args, prepared)
+    try:
+        execute(args, prepared, state)
+    except BaseException as exc:
+        from pathlib import Path
+        import json
+        current = json.loads((Path(args.output_folder) / 'run.json').read_text())
+        if current.get('status') == 'running':
+            state['error'] = f'{type(exc).__name__}: {exc}'
+            finish_run(args.output_folder, state, status='failed')
+        raise
+
+
+def execute(args, prepared, state):
+    import jax.numpy as jnp
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    from matplotlib import patches
+    from Bio.PDB import PDBParser
+    from Bio.PDB.Polypeptide import is_aa
+    import numpy as np
+    import pickle
+    import warnings
+    from colabdesign.af.alphafold.common import residue_constants
+    from colabdesign import mk_afdesign_model, clear_mem
+    from colabdesign.af.loss import get_contact_map
+    from colabdesign.mpnn import mk_mpnn_model
+    from biopython_utils import hotspot_residues, iter_until_target, write_atomic
+    from cmap_utils import assemble_fold_conditioned_cmap, binarize_cmap
+    from sequence_design import redesign
+    target_input, binder_input, mapped_target, mapped_binder, mapped_mask = prepared
 
     #Prepare fold conditioned binder
-    template_pdb = args.binder_template #template for binder
+    template_pdb = os.path.join(args.output_folder, 'inputs', 'binder.pdb') if not args.vhh else ''
     binder_template = template_pdb.split('/')[-1].split('.')[0]
     chain_template = args.binder_chain #chain for binder
     vhh = args.vhh
@@ -73,13 +93,13 @@ def main():
     if not vhh and not template_pdb:
         raise SystemExit("Error: --binder_template is required unless --vhh is set.")
 
-    pdb_target_path = args.target_template #template for target
+    pdb_target_path = os.path.join(args.output_folder, 'inputs', 'target.pdb')
     chain_id = args.target_chain #Select chain for target protein.
     
-    target_hotspots = args.target_hotspots #Choose hotspots on target protein
-    binder_hotspots = args.binder_hotspots #Optional: Choose hotspots on binder protein
+    target_hotspots = mapped_target
+    binder_hotspots = mapped_binder
     
-    binder_mask = args.binder_mask
+    binder_mask = mapped_mask
     
     folder_name = args.output_folder #name for output folder
     
@@ -113,7 +133,7 @@ def main():
         vhh_framework = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                      'framework', 'vhh.npy')
         load_np = np.load(vhh_framework)
-        af_model = mk_afdesign_model(protocol="fixbb", use_templates=True)
+        af_model = mk_afdesign_model(data_dir=args.data_dir, protocol="fixbb", use_templates=True)
         af_model.prep_inputs(pdb_filename=pdb_target_path,
                              ignore_missing=False,
                              chain = chain_id,)
@@ -136,7 +156,7 @@ def main():
         structure = PDBParser(QUIET=True).get_structure(binder_template, template_pdb)
         n_polymer = sum(1 for residue in structure[0][chain_template] if is_aa(residue))
 
-        af_binder = mk_afdesign_model(protocol="fixbb", use_templates=True)
+        af_binder = mk_afdesign_model(data_dir=args.data_dir, protocol="fixbb", use_templates=True)
         af_binder.prep_inputs(pdb_filename=template_pdb,
                              ignore_missing=False,
                              chain = chain_template,
@@ -162,7 +182,7 @@ def main():
             residue_constants.restypes[a] if a < residue_constants.restype_num else 'X'
             for a in af_binder._wt_aatype)
         af_binder.set_seq(query_chain)
-        af_binder.predict(num_recycles=3, verbose=False)
+        af_binder.predict(num_recycles=3, verbose=False, seed=stage_seed(args.seed, 'reference'))
         print(f"CMAP of {binder_template} (monomer plddt: {af_binder.aux['log']['plddt']:.3f})")
         #plt.imshow(af_model.aux['cmap'])
 
@@ -171,7 +191,7 @@ def main():
 
         #Prepare target protein structure
 
-        af_model = mk_afdesign_model(protocol="fixbb", use_templates=True)
+        af_model = mk_afdesign_model(data_dir=args.data_dir, protocol="fixbb", use_templates=True)
         af_model.prep_inputs(pdb_filename=pdb_target_path,
                              ignore_missing=False,
                              chain = chain_id,)
@@ -185,7 +205,6 @@ def main():
                                                  target_hotspots, binder_hotspots,
                                                  binder_mask)
 
-    from matplotlib import patches
     fig, ax = plt.subplots()
     plt.imshow(fc_cmap)
     rect = patches.Rectangle((0, 0), target_len, target_len, linewidth=2, edgecolor='b', facecolor='none')
@@ -193,6 +212,7 @@ def main():
     ax.add_patch(rect)
     ax.add_patch(rect2)
     plt.savefig(f'{folder_name}/fold_cond_cmap.png')
+    plt.close(fig)
 
     np.save(f'{folder_name}/fold_cond_cmap.npy',fc_cmap)
 
@@ -248,15 +268,14 @@ def main():
     iptms = []
     cmap_loss = []
 
-    # Persist results incrementally so an OOM/RunTimeError/preemption mid-run keeps
-    # every design recorded so far, instead of losing the whole table (it was
-    # previously written only once, after both loops). Progress streams to
-    # results.csv.partial after each accepted design; results.csv itself is created
-    # only by the finalizing call at the very end (atomic os.replace via
-    # write_atomic). This keeps "results.csv exists == chunk complete" true, which
-    # baseline/scheduler.py relies on for resume/merge -- a preempted chunk leaves
-    # results.csv.partial (recoverable) but no results.csv, so the scheduler
-    # re-runs it instead of skipping/merging it as done.
+    # Publish recoverable checkpoints; run.json authenticates final completion.
+    from baseline.result_io import write_json
+    attempts = []
+    def record_attempt(trajectory, candidate, log, accepted):
+        attempts.append(dict(trajectory=trajectory, candidate=candidate, accepted=accepted,
+                             metrics={key:float(log[key]) for key in ('plddt','i_pae','i_ptm','cmap_loss_binder')}))
+        write_json(os.path.join(folder_name, 'attempts.json'), attempts)
+
     results_csv = f"{folder_name}/results.csv"
     def write_results(finalize=False):
         df = pd.DataFrame({'name':names,
@@ -265,22 +284,14 @@ def main():
                            'ipae':ipaes,
                            'iptm':iptms,
                            'cmap_loss':cmap_loss})
-        write_atomic(results_csv, df.to_csv, finalize=finalize)
+        write_atomic(results_csv, lambda p: df.to_csv(p, index=False), finalize=finalize)
 
     # Create folders to save outputs
     os.makedirs(f'{folder_name}/traj/', exist_ok=True)
     os.makedirs(f'{folder_name}/mpnn/', exist_ok=True)
     os.makedirs(f'{folder_name}/designs/', exist_ok=True)
 
-    # Build ProteinMPNN once: model_name/backbone_noise/weights are constant for
-    # the whole run, but mk_mpnn_model joblib-loads the weights and rebuilds its
-    # jitted score/sample functions on every construction. Constructing it per
-    # trajectory (as before) repeated that work each iteration. Only prep_inputs
-    # (which writes self._inputs, not the model) varies per trajectory, so build
-    # here and re-prep inside the loop. The sampler RNG is seeded at construction
-    # with seed=None (non-deterministic), so a single shared key stream is
-    # statistically identical to a fresh model per trajectory -- no distribution
-    # change, just no reload.
+    # Reuse host-side parameters; each trajectory gets its recorded RNG stream.
     mpnn_model = mk_mpnn_model(model_name, backbone_noise=mpnn_backbone_noise,
                                weights=mpnn_version)
 
@@ -290,15 +301,12 @@ def main():
         for i in range(num_designs):
             i+=1
             clear_mem() # clearing memory at each step helps to avoid RunTimeError
-            # clear_mem() deletes every live JAX device buffer, including the hoisted
-            # mpnn_model's RNG key (its params are host-side numpy and survive), which
-            # would break sample_parallel below. Re-seed it: set_seed(None) gives a
-            # fresh key per trajectory, matching the original per-trajectory build.
-            mpnn_model.set_seed(None)
+            # clear_mem() deletes the model RNG buffer; restore its stage seed.
+            mpnn_model.set_seed(stage_seed(args.seed, 'mpnn', i))
             name = f'traj_{i}'
             rm_aa = 'C'
             
-            af_model = mk_afdesign_model(protocol="binder", loss_callback=cmap_loss_binder,
+            af_model = mk_afdesign_model(data_dir=args.data_dir, protocol="binder", loss_callback=cmap_loss_binder,
                                                  use_templates=True,)
 
             # load the fold-conditioned cmaps inside of af_model
@@ -316,27 +324,18 @@ def main():
             af_model.opt["weights"].update({"cmap_loss_binder":1.0, "rmsd":0.0, "fape":0.0, "plddt":0.0,
                                                     "con":0.0, "i_con":0.0, "i_pae":0.})
             
+            af_model.restart(seed=stage_seed(args.seed, 'design', i), reset_opt=False)
             af_model.design_3stage(design_stages[0],design_stages[1],design_stages[2])
+            record_attempt(name, None, af_model.aux['log'], None)
             af_model.save_pdb(f"{folder_name}/traj/{name}.pdb", get_best=False)
 
             with open(f'{folder_name}/traj/{name}.pickle', 'wb') as handle:
                 pickle.dump(af_model.aux['all'], handle, protocol=pickle.HIGHEST_PROTOCOL)
             
             #Running ProteinMPNN on designed trajectory
-            design_pos = range(1,binder_len) # positions to design
-            interface_residues_list = list(hotspot_residues(f"{folder_name}/traj/{name}.pdb", 'B').keys())
-        
-            if redesign_method == 'non-interface':
-                sol_design_pos = ','.join([f'B{i}' for i in design_pos if i not in interface_residues_list])
-            elif redesign_method == 'full':
-                sol_design_pos = ','.join([f'B{x}' for x in design_pos])
-            else:
-                raise ValueError("Wrong redesign_method was selected. Options: 'full','non-interface'")
-        
-            mpnn_model.prep_inputs(pdb_filename=f"{folder_name}/traj/{name}.pdb", chain='A,B',
-                                   fix_pos=sol_design_pos, rm_aa = "C", inverse=True)
-        
-            samples = mpnn_model.sample_parallel(temperature=mpnn_sampling_temp, batch=mpnn_samples)
+            interface = list(hotspot_residues(f"{folder_name}/traj/{name}.pdb", 'B').keys())
+            samples = redesign(mpnn_model, f"{folder_name}/traj/{name}.pdb", binder_len,
+                               interface, redesign_method, mpnn_sampling_temp, mpnn_samples)
             
             # save sequences in pickle file if --mpnn_save enabled
             if mpnn_save:
@@ -349,7 +348,7 @@ def main():
             # across the mpnn_samples sequences (only set_seq changes). Previously a
             # fresh model + prep_inputs was constructed for every sample, re-running
             # template featurization and forcing a fresh XLA compile each time.
-            af_model = mk_afdesign_model(protocol="binder", loss_callback=cmap_loss_binder,
+            af_model = mk_afdesign_model(data_dir=args.data_dir, protocol="binder", loss_callback=cmap_loss_binder,
                                                    use_templates=True,)
             af_model.opt['cond_cmap'] = cond_cmap.copy()
             af_model.opt['cond_cmap_mask'] = cond_cmap_mask.copy()
@@ -360,8 +359,9 @@ def main():
                                            )
             for num, seq in enumerate(samples['seq']):
                 af_model.set_seq(seq[-binder_len:])
-                af_model.predict(num_recycles=3, verbose=False, models=["model_1_ptm","model_2_ptm"])
+                af_model.predict(num_recycles=3, verbose=False, models=["model_1_ptm"], num_models=1, seed=stage_seed(args.seed, "validation", i, num))
                 print(f"predict: {name}_{num} plddt: {af_model.aux['log']['plddt']:.3f}, i_pae: {(af_model.aux['log']['i_pae']):.3f}, i_ptm: {af_model.aux['log']['i_ptm']:.3f}, cmap_loss: {af_model.aux['log']['cmap_loss_binder']:.3f}")
+                record_attempt(name, f'{name}_{num}', af_model.aux['log'], True)
                 af_model.save_pdb(f"{folder_name}/designs/{name}_{num}.pdb", get_best=False)
                 with open(f'{folder_name}/designs/{name}_{num}.pickle', 'wb') as handle:
                     pickle.dump(af_model.aux['all'], handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -384,14 +384,18 @@ def main():
         # outer guard only fires between trajectories. Together they make the
         # accepted-design count exactly --target_success.
         while passed < success_target:
+            if i >= args.max_trajectories:
+                write_results()
+                state.update(attempted_trajectories=i, accepted_candidates=passed, reason='max_trajectories')
+                finish_run(folder_name, state, status='exhausted')
+                raise SystemExit(f'Sampling budget exhausted after {i} trajectories; {passed}/{success_target} accepted. Partial results preserved.')
             clear_mem()
-            mpnn_model.set_seed(None)  # clear_mem() deletes the hoisted mpnn_model's
-                                       # RNG key; re-seed it (see the --num_designs branch)
+            mpnn_model.set_seed(stage_seed(args.seed, 'mpnn', i + 1))  # restore deleted RNG buffer
             i+=1
             name = f'traj_{i}' #@param {type:"string"}
             rm_aa = 'C' #@param {type:"string"}
             
-            af_model = mk_afdesign_model(protocol="binder", loss_callback=cmap_loss_binder,
+            af_model = mk_afdesign_model(data_dir=args.data_dir, protocol="binder", loss_callback=cmap_loss_binder,
                                                  use_templates=True,)
             
             af_model.opt['cond_cmap'] = cond_cmap.copy()
@@ -407,26 +411,17 @@ def main():
             af_model.opt["weights"].update({"cmap_loss_binder":1.0, "rmsd":0.0, "fape":0.0, "plddt":0.0,
                                                     "con":0.0, "i_con":0.0, "i_pae":0.})
             
+            af_model.restart(seed=stage_seed(args.seed, 'design', i), reset_opt=False)
             af_model.design_3stage(design_stages[0],design_stages[1],design_stages[2])
+            record_attempt(name, None, af_model.aux['log'], None)
             af_model.save_pdb(f"{folder_name}/traj/{name}.pdb", get_best=False)
             with open(f'{folder_name}/traj/{name}.pickle', 'wb') as handle:
                 pickle.dump(af_model.aux['all'], handle, protocol=pickle.HIGHEST_PROTOCOL)
             if af_model.aux['log']['i_pae']<0.4 and af_model.aux['log']['plddt']>.7:
                 #Running ProteinMPNN on designed trajectory
-                design_pos = range(1,binder_len) # positions to design
-                interface_residues_list = list(hotspot_residues(f"{folder_name}/traj/{name}.pdb", 'B').keys())
-            
-                if redesign_method == 'non-interface':
-                    sol_design_pos = ','.join([f'B{i}' for i in design_pos if i not in interface_residues_list])
-                elif redesign_method == 'full':
-                    sol_design_pos = ','.join([f'B{x}' for x in design_pos])
-                else:
-                    raise ValueError("Wrong redesign_method was selected. Options: 'full','non-interface'")
-            
-                mpnn_model.prep_inputs(pdb_filename=f"{folder_name}/traj/{name}.pdb", chain='A,B',
-                                       fix_pos=sol_design_pos, rm_aa = "C", inverse=True)
-            
-                samples = mpnn_model.sample_parallel(temperature=mpnn_sampling_temp, batch=mpnn_samples)
+                interface = list(hotspot_residues(f"{folder_name}/traj/{name}.pdb", 'B').keys())
+                samples = redesign(mpnn_model, f"{folder_name}/traj/{name}.pdb", binder_len,
+                                   interface, redesign_method, mpnn_sampling_temp, mpnn_samples)
                 if mpnn_save:
                     with open(f'{folder_name}/mpnn/mpnn_{name}.pickle', 'wb') as handle:
                         pickle.dump(samples, handle, protocol=pickle.HIGHEST_PROTOCOL)   
@@ -435,7 +430,7 @@ def main():
                 print('Predicting sequences with AF2_ptm...')
                 # Build the AF2-ptm prediction model once per trajectory and reuse it
                 # across the batch (only set_seq changes), as in the non-sample path.
-                af_model = mk_afdesign_model(protocol="binder", loss_callback=cmap_loss_binder,
+                af_model = mk_afdesign_model(data_dir=args.data_dir, protocol="binder", loss_callback=cmap_loss_binder,
                                                        use_templates=True,)
                 af_model.opt['cond_cmap'] = cond_cmap.copy()
                 af_model.opt['cond_cmap_mask'] = cond_cmap_mask.copy()
@@ -449,8 +444,10 @@ def main():
                 # the live `passed`, which is incremented on each accepted design.
                 for num, seq in iter_until_target(samples['seq'], lambda: passed, success_target):
                     af_model.set_seq(seq[-binder_len:])
-                    af_model.predict(num_recycles=3, verbose=False, models=["model_1_ptm","model_2_ptm"])
+                    af_model.predict(num_recycles=3, verbose=False, models=["model_1_ptm"], num_models=1, seed=stage_seed(args.seed, "validation", i, num))
                     print(f"predict: {name}_{num} plddt: {af_model.aux['log']['plddt']:.3f}, i_pae: {(af_model.aux['log']['i_pae']):.3f}, i_ptm: {af_model.aux['log']['i_ptm']:.3f}, cmap_loss: {af_model.aux['log']['cmap_loss_binder']:.3f}")
+                    accepted = af_model.aux['log']['i_pae']<0.35 and af_model.aux['log']['plddt']>.8 and af_model.aux['log']['i_ptm']>0.5
+                    record_attempt(name, f'{name}_{num}', af_model.aux['log'], bool(accepted))
                     if af_model.aux['log']['i_pae']<0.35 and af_model.aux['log']['plddt']>.8 and af_model.aux['log']['i_ptm']>0.5:
                         af_model.save_pdb(f"{folder_name}/designs/{name}_{num}.pdb", get_best=False)
                         with open(f'{folder_name}/designs/{name}_{num}.pickle', 'wb') as handle:
@@ -464,9 +461,9 @@ def main():
                         passed+=1
                         write_results()   # checkpoint after each design
     
-    # Final flush + atomic promote: results.csv now exists, signalling the chunk
-    # completed (also writes an empty table if no designs passed, as before).
+    # Final CSV publication precedes the verified completion manifest.
     write_results(finalize=True)
+    finish_run(folder_name, state)
 
 if __name__ == '__main__':
     main()

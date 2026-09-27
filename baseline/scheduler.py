@@ -1,42 +1,21 @@
-"""Memory-gated, multi-GPU scheduler for FoldCraft design campaigns.
+"""Memory-gated GPU campaigns with manifest-based completion and isolated retries.
 
-FoldCraft design jobs are embarrassingly parallel: each fold's trajectories are
-independent, and trajectories of different folds are independent. This scheduler
-exploits that to pack several designs onto one GPU when memory permits, and to
-fan a campaign out across many GPUs (e.g. a cloud node of 8x A100) -- the same
-machinery serves both.
-
-Design
-------
-* Unit of work is a **chunk**: ``FoldCraft.py --num_designs <chunk_traj>`` for one
-  fold, written to its own dir ``<repro>/<fold>__c<idx>``. FoldCraft.py has no
-  trajectory-offset arg and names trajectories ``traj_1..N``, so two chunks of the
-  same fold would collide -- separate dirs avoid that, and merge_chunks() stitches
-  them back together with chunk-tagged names.
-* **Memory gating**: a chunk launches on a GPU only when that GPU's *estimated*
-  free memory (capacity minus already-committed jobs) AND its *actual* free memory
-  (from nvidia-smi) both clear ``job_mem + headroom``. The double check guards
-  against both over-commit and a newly-launched neighbour still ramping up.
-* **Resume**: ``results.csv`` exists only once a chunk has finished all its
-  trajectories, so ``results.csv`` existing == chunk done. FoldCraft.py streams
-  progress to ``results.csv.partial`` during the run and atomically promotes it to
-  ``results.csv`` only at the end (see write_atomic), so a preempted chunk leaves a
-  ``.partial`` but no ``results.csv`` and is correctly re-run rather than skipped.
-  Completed chunks (and already-merged folds) are skipped, making the whole
-  campaign restartable without losing finished work. (Do NOT change FoldCraft.py to
-  write ``results.csv`` incrementally -- that silently breaks this invariant.)
-* **Loud failure**: a chunk whose process exits non-zero is recorded as failed and
-  (once) retried solo with full headroom; a fold is merged only when all its
-  chunks succeeded. Nothing is silently dropped.
-
-The functions above the ``# --- orchestration ---`` line are pure and GPU-free so
-they can be unit-tested (see tests/test_scheduler.py).
+Historical CSV tables never count as executable completed runs. Use a fresh
+output root; compatible completed chunks can be resumed after interruption.
 """
 import os
 import shutil
 import subprocess
 import sys
 import time
+import json
+import math
+import uuid
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from run_state import completed_run, finish_run, sha256, stage_seed
+from baseline.result_io import atomic_write, write_json
 
 import pandas as pd
 
@@ -73,8 +52,14 @@ def plan_chunks(folds, chunk_traj):
     """
     if chunk_traj < 1:
         raise ValueError(f"chunk_traj must be >= 1, got {chunk_traj}")
+    if not folds or len({f['fold'] for f in folds}) != len(folds):
+        raise ValueError('Fold names must be nonempty and unique')
     chunks = []
     for f in folds:
+        if not f['fold'] or Path(f['fold']).name != f['fold'] or f['fold'] in ('.', '..'):
+            raise ValueError('Fold names must be plain directory names')
+        if not math.isfinite(float(f['mem_gb'])) or float(f['mem_gb']) <= 0:
+            raise ValueError('Memory estimates must be finite and positive')
         total = int(f["total_traj"])
         if total < 1:
             raise ValueError(f"{f['fold']}: total_traj must be >= 1, got {total}")
@@ -91,79 +76,36 @@ def plan_chunks(folds, chunk_traj):
     return chunks
 
 
+def chunk_signature(chunk):
+    spec = dict(chunk.spec)
+    for name in ('target', 'template'):
+        spec[name] = dict(path=os.path.abspath(spec[name]), sha256=sha256(spec[name]))
+    root = Path(__file__).resolve().parents[1]
+    code = {name: sha256(root / name) for name in (
+        'FoldCraft.py', 'input_validation.py', 'cmap_utils.py', 'biopython_utils.py',
+        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py')}
+    return dict(schema=1, seed=stage_seed(0, chunk.fold, chunk.idx), fold=chunk.fold, index=chunk.idx, trajectories=chunk.chunk_traj,
+                spec=spec, code=code)
+
+
 def chunk_done(chunk, repro):
-    """A chunk is finished iff its output dir has a results.csv (written only at
-    the end of FoldCraft.py's loop)."""
-    return os.path.exists(os.path.join(chunk.out_dir(repro), "results.csv"))
+    path = Path(chunk.out_dir(repro))
+    if not completed_run(path):
+        return False
+    try:
+        return json.loads(Path(str(path) + '.job.json').read_text()) == chunk_signature(chunk)
+    except (OSError, ValueError):
+        return False
 
 
 def fold_done(fold, repro):
-    """A fold is finished iff its merged dir is *scoreable*: both the merged
-    ``results.csv`` and the ``template.pdb`` that add_rmsd needs. (results.csv
-    alone -- e.g. a fold merged before merge_chunks recorded the template -- is
-    not enough; it would be skipped on resume yet fail RMSD scoring.)"""
-    d = os.path.join(repro, fold)
-    return (os.path.exists(os.path.join(d, "results.csv"))
-            and os.path.exists(os.path.join(d, "template.pdb")))
+    path = Path(repro) / fold
+    return (path / 'template.pdb').is_file() and completed_run(path)
 
 
-def _merged_without_template(fold_dir):
-    """A merged fold (has results.csv) whose template.pdb is absent -- the state
-    repair_fold_template restores. Shared by the repair and its read-only
-    predictor (is_repairable) so the two can't drift."""
-    return (os.path.exists(os.path.join(fold_dir, "results.csv"))
-            and not os.path.exists(os.path.join(fold_dir, "template.pdb")))
-
-
-def repair_fold_template(fold_dir, template):
-    """Restore a merged fold's ``template.pdb`` if it is missing.
-
-    Handles a fold that was merged before merge_chunks recorded the template:
-    results.csv is present but template.pdb is not, so the fold would be skipped
-    on resume yet remain unscoreable. Copies ``template`` in (no re-merge needed).
-    Returns True if a repair was made. Raises if the source template is missing.
-    """
-    if not _merged_without_template(fold_dir):
-        return False
-    shutil.copy2(template, os.path.join(fold_dir, "template.pdb"))
-    return True
-
-
-def is_repairable(fold_dir, template):
-    """Whether repair_fold_template() would restore the template -- read-only
-    (the template is missing AND the source exists). --dry-run uses this to
-    predict run()'s pre-scheduling repair without mutating the filesystem (a dry
-    run must not write files)."""
-    return _merged_without_template(fold_dir) and os.path.exists(template)
-
-
-def repair_merged_folds(folds, repro, log=lambda *_: None):
-    """Repair every already-merged fold that is missing its template.pdb.
-
-    Must run BEFORE filter_todo: a merged-but-template-less fold has
-    ``fold_done() == False``, so without an up-front repair its chunks would be
-    re-queued and needlessly re-run on the GPU before the (cheap) template copy
-    that would have marked the fold done. Returns the repaired fold names.
-    """
-    repaired = []
-    for f in folds:
-        if repair_fold_template(os.path.join(repro, f["fold"]), f["template"]):
-            repaired.append(f["fold"])
-            log(f"[sched] repaired {f['fold']}: restored template.pdb")
-    return repaired
-
-
-def filter_todo(chunks, repro, extra_done=()):
-    """Drop chunks whose fold is already merged or whose own chunk is complete.
-
-    ``extra_done`` is an extra set of fold names to treat as done -- used by
-    --dry-run to fold in the templates run() would restore before scheduling, so
-    the dry-run plan matches the real run without performing the repair.
-    """
-    extra = set(extra_done)
-    return [c for c in chunks
-            if c.fold not in extra
-            and not fold_done(c.fold, repro) and not chunk_done(c, repro)]
+def filter_todo(chunks, repro):
+    # Require the actual chunks; a merged CSV alone cannot attest to this config.
+    return [c for c in chunks if not chunk_done(c, repro)]
 
 
 def fits(actual_free_gb, committed_gb, capacity_gb, job_mem_gb, headroom_gb):
@@ -195,7 +137,7 @@ def remap_name(name, chunk_idx):
     return f"c{chunk_idx}_{name}"
 
 
-def merge_chunks(fold, chunk_dirs, out_dir, template):
+def _merge_chunks(fold, chunk_dirs, out_dir, template):
     """Stitch a fold's chunk dirs into one scoreable dir with unique names.
 
     Concatenates each chunk's results.csv (re-tagging the ``name`` column) and
@@ -221,7 +163,7 @@ def merge_chunks(fold, chunk_dirs, out_dir, template):
             new = remap_name(old, idx)
             for ext in (".pdb", ".pickle"):
                 src = os.path.join(cdir, "designs", f"{old}{ext}")
-                if ext == ".pdb" and not os.path.exists(src):
+                if not os.path.exists(src):
                     raise FileNotFoundError(
                         f"merge {fold}: design PDB missing: {src}")
                 if os.path.exists(src):
@@ -229,8 +171,23 @@ def merge_chunks(fold, chunk_dirs, out_dir, template):
         df["name"] = df["name"].map(lambda n: remap_name(n, idx))
         frames.append(df)
     merged = pd.concat(frames, ignore_index=True)
-    merged.to_csv(os.path.join(out_dir, "results.csv"), index=False)
+    atomic_write(os.path.join(out_dir, "results.csv"), lambda p: merged.to_csv(p, index=False))
+    finish_run(out_dir, {"schema": 1, "chunks": [str(Path(d).resolve()) for d in chunk_dirs]})
     return len(merged)
+
+
+def merge_chunks(fold, chunk_dirs, out_dir, template):
+    if os.path.exists(out_dir):
+        raise FileExistsError(f'Refusing to overwrite merged/archive directory: {out_dir}')
+    out_dir = os.fspath(out_dir)
+    staging = out_dir + '.merging-' + uuid.uuid4().hex
+    try:
+        count = _merge_chunks(fold, chunk_dirs, staging, template)
+        os.rename(staging, out_dir)
+        return count
+    finally:
+        if os.path.isdir(staging):
+            shutil.rmtree(staging)
 
 
 def resolve_paths(folds, repo, repro):
@@ -283,23 +240,33 @@ def gpu_mem_gb(smi, gpu):
 
 def launch(chunk, repro, gpu, repo, python):
     out = chunk.out_dir(repro)
-    os.makedirs(out, exist_ok=True)
+    if os.path.exists(out):
+        if completed_run(out):
+            raise ValueError(f'Completed chunk has an incompatible configuration: {out}; use a new output root')
+        os.rename(out, out + '.failed-' + uuid.uuid4().hex)
+    write_json(out + '.job.json', chunk_signature(chunk))
+    os.makedirs(os.path.join(repro, 'logs'), exist_ok=True)
     env = dict(os.environ,
                CUDA_VISIBLE_DEVICES=str(gpu),
                XLA_PYTHON_CLIENT_PREALLOCATE="false",
                PYTHONUNBUFFERED="1")
-    log = open(os.path.join(out, "chunk.log"), "w")
-    cmd = [python, "FoldCraft.py",
+    log = open(os.path.join(repro, "logs", chunk.tag + "-" + uuid.uuid4().hex + ".log"), "w")
+    cmd = [python, "FoldCraft.py", "--seed", str(stage_seed(0, chunk.fold, chunk.idx)),
            "--output_folder", out,
            "--binder_template", chunk.spec["template"],
            "--target_template", chunk.spec["target"],
            "--target_hotspots", chunk.spec["target_hotspots"],
            "--binder_hotspots", chunk.spec["binder_hotspots"],
            "--num_designs", str(chunk.chunk_traj)]
-    return subprocess.Popen(cmd, cwd=repo, env=env, stdout=log, stderr=subprocess.STDOUT), log
+    try:
+        return subprocess.Popen(cmd, cwd=repo, env=env, stdout=log,
+                                stderr=subprocess.STDOUT, start_new_session=True), log
+    except BaseException:
+        log.close()
+        raise
 
 
-def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
+def _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
         poll_s=15, log=print):
     """Schedule all folds' chunks across ``gpus`` with memory gating, then merge."""
     # absolute paths so makedirs/exists checks here and FoldCraft's cwd=repo child
@@ -310,9 +277,6 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
     committed = {g: 0.0 for g in gpus}          # GB reserved by running jobs
     running = {}                                  # pid -> (proc, log, chunk, gpu)
 
-    # repair merged-but-template-less folds BEFORE deciding what's done, so their
-    # chunks aren't re-run just to restore a template that a cheap copy fixes.
-    repair_merged_folds(folds, repro, log)
     queue = filter_todo(plan_chunks(folds, chunk_traj), repro)
     total = len(plan_chunks(folds, chunk_traj))
 
@@ -330,69 +294,88 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
         f"(rest already complete)")
     failed, retried = [], set()
 
-    while queue or running:
-        # try to launch as many queued jobs as fit
-        launched = 0
-        progress = True
-        while progress and queue:
-            progress = False
-            for gi, g in enumerate(gpus):
-                if not queue:
-                    break
-                # pick the largest queued job that fits this GPU
-                free, _ = gpu_mem_gb(smi, g)
-                for j, c in enumerate(queue):
-                    if can_launch(c, free, committed[g], caps[g], headroom_gb):
-                        proc, lf = launch(c, repro, g, repo, python)
-                        committed[g] += c.mem_gb
-                        running[proc.pid] = (proc, lf, c, g)
-                        queue.pop(j)
-                        log(f"[sched] launch {c.tag}{' [solo]' if c.solo else ''} "
-                            f"-> gpu{g} (free {free:.1f}GB, "
-                            f"committed {committed[g]:.1f}GB)")
-                        progress = True
-                        launched += 1
+    try:
+        while queue or running:
+            # try to launch as many queued jobs as fit
+            launched = 0
+            progress = True
+            while progress and queue:
+                progress = False
+                for gi, g in enumerate(gpus):
+                    if not queue:
                         break
-        # deadlock guard: nothing running and nothing could launch -> no running
-        # job will ever free memory, so we would spin forever. Surface it.
-        if queue and not running and launched == 0:
-            raise SystemExit(
-                f"[sched] cannot place {len(queue)} remaining chunk(s) on any GPU "
-                f"(live free memory too low / GPUs externally occupied): "
-                + ", ".join(c.tag for c in queue))
-        # reap finished jobs
-        time.sleep(poll_s)
-        for pid in list(running):
-            proc, lf, c, g = running[pid]
-            rc = proc.poll()
-            if rc is None:
-                continue
-            lf.close()
-            committed[g] -= c.mem_gb
-            del running[pid]
-            if rc == 0 and chunk_done(c, repro):
-                log(f"[sched] DONE {c.tag} (gpu{g}, rc=0)")
-            elif c.tag not in retried:
-                # one retry, flagged solo so it reruns on an otherwise-empty GPU
-                # (memory pressure is the most common cause of a failed pack)
-                log(f"[sched] FAIL {c.tag} (rc={rc}); will retry solo")
-                retried.add(c.tag)
-                c.solo = True
-                queue.append(c)
-            else:
-                log(f"[sched] FAIL {c.tag} (rc={rc}) on retry -- giving up")
-                failed.append(c)
+                    # pick the largest queued job that fits this GPU
+                    if any(job.solo and gpu == g for _, _, job, gpu in running.values()):
+                        continue
+                    free, _ = gpu_mem_gb(smi, g)
+                    for j, c in enumerate(queue):
+                        if can_launch(c, free, committed[g], caps[g], headroom_gb):
+                            proc, lf = launch(c, repro, g, repo, python)
+                            committed[g] += c.mem_gb
+                            running[proc.pid] = (proc, lf, c, g)
+                            queue.pop(j)
+                            log(f"[sched] launch {c.tag}{' [solo]' if c.solo else ''} "
+                                f"-> gpu{g} (free {free:.1f}GB, "
+                                f"committed {committed[g]:.1f}GB)")
+                            progress = True
+                            launched += 1
+                            break
+            # deadlock guard: nothing running and nothing could launch -> no running
+            # job will ever free memory, so we would spin forever. Surface it.
+            if queue and not running and launched == 0:
+                raise SystemExit(
+                    f"[sched] cannot place {len(queue)} remaining chunk(s) on any GPU "
+                    f"(live free memory too low / GPUs externally occupied): "
+                    + ", ".join(c.tag for c in queue))
+            # reap finished jobs
+            time.sleep(poll_s)
+            for pid in list(running):
+                proc, lf, c, g = running[pid]
+                rc = proc.poll()
+                if rc is None:
+                    continue
+                lf.close()
+                committed[g] -= c.mem_gb
+                del running[pid]
+                if rc == 0 and chunk_done(c, repro):
+                    log(f"[sched] DONE {c.tag} (gpu{g}, rc=0)")
+                elif c.tag not in retried:
+                    # one retry, flagged solo so it reruns on an otherwise-empty GPU
+                    # (memory pressure is the most common cause of a failed pack)
+                    log(f"[sched] FAIL {c.tag} (rc={rc}); will retry solo")
+                    retried.add(c.tag)
+                    c.solo = True
+                    queue.append(c)
+                else:
+                    log(f"[sched] FAIL {c.tag} (rc={rc}) on retry -- giving up")
+                    failed.append(c)
 
-    # merge folds whose chunks all completed (merged-but-template-less folds were
-    # already repaired up front, before the queue was built).
+    finally:
+        # Only terminate children this scheduler owns, never other GPU users.
+        import signal
+        for proc, lf, c, g in running.values():
+            try:
+                if proc.poll() is None:
+                    os.killpg(proc.pid, signal.SIGTERM)
+                    try:
+                        proc.wait(timeout=10)
+                    except subprocess.TimeoutExpired:
+                        os.killpg(proc.pid, signal.SIGKILL)
+                        proc.wait()
+            except ProcessLookupError:
+                pass
+            finally:
+                lf.close()
+
+    # Publish only folds whose chunks all completed.
     merged = []
     for f in folds:
-        if fold_done(f["fold"], repro):
+        if fold_done(f["fold"], repro) and all(chunk_done(c, repro) for c in plan_chunks([f], chunk_traj)):
             continue
         fold_dir = os.path.join(repro, f["fold"])
-        cdirs = sorted(
-            d.out_dir(repro) for d in plan_chunks([f], chunk_traj))
-        if all(os.path.exists(os.path.join(d, "results.csv")) for d in cdirs):
+        planned = sorted(plan_chunks([f], chunk_traj), key=lambda c: c.idx)
+        cdirs = [d.out_dir(repro) for d in planned]
+        if all(chunk_done(d, repro) for d in planned):
             n = merge_chunks(f["fold"], cdirs, fold_dir, f["template"])
             merged.append((f["fold"], n))
             log(f"[sched] merged {f['fold']}: {n} designs")
@@ -403,6 +386,38 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
         raise SystemExit(f"[sched] {len(failed)} chunk(s) failed: "
                          f"{[c.tag for c in failed]}")
     return merged
+
+
+
+def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s=15, log=print):
+    folds, repo, repro = resolve_paths(folds, repo, repro)
+    if not gpus or len(set(gpus)) != len(gpus) or not math.isfinite(headroom_gb) or not math.isfinite(poll_s) or headroom_gb < 0 or poll_s < 0:
+        raise ValueError('GPUs, nonnegative headroom and polling interval are required')
+    os.makedirs(repro, exist_ok=True)
+    # One scheduler per output root. Refuse competing launchers rather than wait.
+    import fcntl
+    with open(os.path.join(repro, '.scheduler.lock'), 'a') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeError('Another scheduler owns this output root') from exc
+        for f in folds:
+            folder = os.path.join(repro, f['fold'])
+            if os.path.exists(folder) and not fold_done(f['fold'], repro):
+                raise ValueError(f'Unverified/archive merged folder {folder}; choose a fresh output root')
+            if os.path.exists(folder):
+                planned = sorted(plan_chunks([f], chunk_traj), key=lambda c:c.idx)
+                recorded = json.loads((Path(folder) / 'run.json').read_text()).get('chunks')
+                if recorded != [str(Path(c.out_dir(repro)).resolve()) for c in planned] or not all(chunk_done(c, repro) for c in planned):
+                    raise ValueError('Merged fold does not match this plan; choose a fresh output root')
+            for c in plan_chunks([f], chunk_traj):
+                if completed_run(c.out_dir(repro)) and not chunk_done(c, repro):
+                    raise ValueError('Completed chunk configuration changed; choose a new output root')
+        from input_validation import read_chain
+        for f in folds:
+            read_chain(f['target'], 'A').selection(f['target_hotspots'])
+            read_chain(f['template'], 'A').selection(f['binder_hotspots'], allow_empty=True)
+        return _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s, log)
 
 
 # ---------------------------------------------------------------------------
@@ -426,7 +441,7 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("config", help="TSV config (see load_config); resolved against "
                                    "--repo if a relative path")
-    p.add_argument("--repro", default="baseline/repro", help="output root")
+    p.add_argument("--repro", default="runs/repro", help="live output root (separate from archived baseline tables)")
     p.add_argument("--repo", default=os.getcwd(), help="FoldCraft repo root")
     p.add_argument("--python", default=sys.executable)
     p.add_argument("--gpus", default="auto",
@@ -443,16 +458,9 @@ def main(argv=None):
         # resolve paths so the done/todo split reflects the real repro dir
         folds, _, repro = resolve_paths(folds, args.repo, args.repro)
         chunks = plan_chunks(folds, args.chunk_traj)
-        # predict (read-only) the templates run() would restore before scheduling,
-        # so dry-run doesn't over-report those folds' chunks as todo.
-        repairs = sorted(f["fold"] for f in folds
-                         if not fold_done(f["fold"], repro)
-                         and is_repairable(os.path.join(repro, f["fold"]), f["template"]))
-        todo = filter_todo(chunks, repro, extra_done=repairs)
+        todo = filter_todo(chunks, repro)
         print(f"folds={len(folds)} chunks={len(chunks)} todo={len(todo)} "
               f"(done={len(chunks) - len(todo)})")
-        if repairs:
-            print(f"would repair template.pdb for: {', '.join(repairs)}")
         for c in todo:
             print(f"  {c!r}")
         return

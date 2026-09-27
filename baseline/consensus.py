@@ -8,9 +8,8 @@ from different model families, so requiring both removes single-model/self bias)
   Boltz-2 leg : boltz2_iptm>0.5   (boltz2_ipae is in A, reported for context)
 ESMFold rmsd (binder monomer vs design chain B) reports fold fidelity.
 
-For FoldCraft, Boltz-2 was run on every AF2-passer, so the consensus count is
-exact. For BoltzProt, Boltz-2 ran on a random sample; rates over that sample are
-extrapolations. Usage: python baseline/consensus.py
+Missing scores are unknown outcomes, reported as bounds. Observed-sample
+rates do not establish full-cohort rates without a verified sampling protocol. Usage: python baseline/consensus.py
 """
 import glob
 import os
@@ -38,33 +37,42 @@ def af2_mask(d):
     return (d[p] > 0.8) & (d[i] > 0.5) & (d[e] < 0.35)
 
 
+def consensus_counts(d):
+    import numpy as np
+    p, i, e = (("plddt", "iptm", "ipae") if "iptm" in d.columns
+               else ("af2_plddt", "af2_iptm", "af2_ipae"))
+    specs = [(p, lambda x:x>.8), (i, lambda x:x>.5), (e, lambda x:x<.35),
+             ('boltz2_iptm', lambda x:x>.5)]
+    known_fail = pd.Series(False, index=d.index)
+    known_pass = pd.Series(True, index=d.index)
+    for col, gate in specs:
+        values = pd.to_numeric(d[col], errors='coerce') if col in d else pd.Series(float('nan'),index=d.index)
+        present = np.isfinite(values)
+        passed = gate(values)
+        known_fail |= present & ~passed
+        known_pass &= present & passed
+    n_pass = int(known_pass.sum())
+    unknown = int((~known_fail & ~known_pass).sum())
+    return dict(n=len(d), known_pass=n_pass, unknown=unknown, lower=n_pass, upper=n_pass+unknown)
+
+
 def main():
-    print("=" * 80)
-    print("FoldCraft (fold-conditioned) -- n/fold; Boltz-2 ran on every AF2-passer")
-    print("  consensus = AF2(plddt>.8 iptm>.5 ipae<.35) AND Boltz-2(boltz2_iptm>.5)")
-    print("=" * 80)
-    print(f"{'fold':9s}{'AF2 pass':>11s}{'Boltz2|AF2':>12s}"
-          f"{'CONSENSUS':>11s}{'95% CI':>14s}{'ESM rmsd':>10s}")
-    tot_n = tot_af2 = tot_cons = 0
+    print('FoldCraft consensus: AF2(plddt>.8 iptm>.5 ipae<.35) AND Boltz-2(iptm>.5)')
+    print('Counts are known passes plus unresolved outcomes; bounds are not confidence intervals.')
+    all_frames = []
     for f in sorted(glob.glob(os.path.join(HERE, "repro", "*", "results.csv"))):
         d = pd.read_csv(f)
+        all_frames.append(d)
+        c = consensus_counts(d)
         fold = os.path.basename(os.path.dirname(f))
-        n = len(d)
-        af2 = af2_mask(d)
-        bz = d["boltz2_iptm"] > 0.5
-        cons = af2 & bz
-        na, nc = int(af2.sum()), int(cons.sum())
-        lo, hi = wilson(nc, n)
-        esm = d[cons]["esmfold_rmsd"].median() if nc else float("nan")
-        print(f"{fold:9s}{na:6d}/{n:<4d}{int((bz & af2).sum()):8d}/{na:<3d}"
-              f"{nc:6d}={100*nc/n:4.1f}%{f'[{lo:.1f}-{hi:.1f}]':>14s}{esm:8.2f} A")
-        tot_n += n; tot_af2 += na; tot_cons += nc
-    lo, hi = wilson(tot_cons, tot_n)
-    print(f"{'POOLED':9s}{tot_af2:6d}/{tot_n:<4d}{'':>12s}"
-          f"{tot_cons:6d}={100*tot_cons/tot_n:4.1f}%{f'[{lo:.1f}-{hi:.1f}]':>14s}")
-
+        print(f"{fold:9s}: {c['known_pass']} known + {c['unknown']} unknown; "
+              f"consensus {c['lower']}-{c['upper']}/{c['n']}")
+    if all_frames:
+        c = consensus_counts(pd.concat(all_frames, ignore_index=True))
+        print(f"POOLED   : {c['known_pass']} known + {c['unknown']} unknown; "
+              f"consensus {c['lower']}-{c['upper']}/{c['n']}")
     print("\n" + "=" * 80)
-    print("BoltzProt-1 (unconstrained) -- AF2 on all 200; Boltz-2 on a random sample")
+    print("BoltzProt-1 (unconstrained) -- AF2 on all 200; Boltz-2 on an observed subset (sampling provenance unverified)")
     print("=" * 80)
     d = pd.read_csv(os.path.join(HERE, "boltzprot", "results.csv"))
     af2 = af2_mask(d)

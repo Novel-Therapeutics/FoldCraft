@@ -1,0 +1,64 @@
+{
+  "archive_resume": {
+    "dry_run": "folds=6 chunks=24 todo=4 (done=20)",
+    "historical_folds_without_designs": 5
+  },
+  "config_ignored_on_resume": {
+    "changed_hotspots": "55-60",
+    "changed_trajectory_count": 10,
+    "scheduled_chunks": 0,
+    "old_chunk_trajectories": 1
+  },
+  "interrupted_merge_is_done": {
+    "interrupted_merge_considered_done": true,
+    "rows_in_partial_final_csv": 0
+  },
+  "solo_not_reserved": {
+    "launches": [
+      {
+        "tag": "small_retry__c0",
+        "solo": false,
+        "concurrent": []
+      },
+      {
+        "tag": "small_retry__c0",
+        "solo": true,
+        "concurrent": []
+      },
+      {
+        "tag": "normal__c0",
+        "solo": false,
+        "concurrent": [
+          "small_retry__c0"
+        ]
+      }
+    ]
+  },
+  "scorer_lost_update": {
+    "columns_after_both_successful_scorers": [
+      "name",
+      "sequence",
+      "af2_plddt",
+      "af2_iptm",
+      "af2_ipae"
+    ]
+  },
+  "scorer_config_ignored": {
+    "requested_scoring_configs": 2,
+    "actual_prediction_calls": [
+      [
+        "target.pdb",
+        "1"
+      ]
+    ]
+  },
+  "boltz_stale_result": {
+    "current_result_iptm": 0.1,
+    "reported_iptm": 0.99
+  },
+  "campaign_false_success": {
+    "exit_code": 0,
+    "failed_folds": 6,
+    "last_line": "CAMPAIGN_DONE 13:24:23"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "best_minus_last": {
+    "trajectories": 15,
+    "difference_pp": -4.0,
+    "paired_trajectory_bootstrap_95_pp": [
+      -14.67,
+      6.67
+    ]
+  },
+  "ab_loss/ipae0.05": {
+    "trajectories_per_arm": 15,
+    "difference_pp": 12.0,
+    "unpaired_trajectory_bootstrap_95_pp": [
+      -14.67,
+      40.0
+    ]
+  },
+  "ab_loss/ipae0.1": {
+    "trajectories_per_arm": 15,
+    "difference_pp": 2.67,
+    "unpaired_trajectory_bootstrap_95_pp": [
+      -18.67,
+      24.0
+    ]
+  },
+  "ab_loss/ipae0.2": {
+    "trajectories_per_arm": 15,
+    "difference_pp": 17.33,
+    "unpaired_trajectory_bootstrap_95_pp": [
+      -6.67,
+      40.0
+    ]
+  },
+  "ab_loss_fp/fp0.1": {
+    "trajectories_per_arm": 15,
+    "difference_pp": -48.0,
+    "unpaired_trajectory_bootstrap_95_pp": [
+      -66.67,
+      -29.33
+    ]
+  },
+  "ab_loss_fp/fp0.3": {
+    "trajectories_per_arm": 15,
+    "difference_pp": -48.0,
+    "unpaired_trajectory_bootstrap_95_pp": [
+      -66.67,
+      -29.33
+    ]
+  }
+}

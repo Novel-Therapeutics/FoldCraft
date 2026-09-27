@@ -1,26 +1,10 @@
-"""A/B for Accuracy #4: does adding a false-positive penalty to FoldCraft's
-recall-only cmap loss sharpen the interface -- without collapsing it?
+"""Exploratory paired loss ablation with shared stage seeds and randomized arm order.
 
-FoldCraft's loss is recall-only: it pushes predicted contacts TOWARD the
-conditioned cmap but never penalizes EXTRA contacts. Off-support cells (where
-conditioned_mask==0) contribute exactly 0, so a design can freely add
-off-hotspot interface contacts -- a larger/different interface than intended.
-This adds a penalty on i_cmap*(1-mask), restricted to the binder + cross blocks
-(the target-target block is excluded -- penalizing target-internal contacts is
-meaningless).
-
-The penalty is exposed as a SEPARATE weighted loss term ("fp_loss") so the
-recall term ("cmap_loss_binder") is still logged on its own -- that's the fold
-fidelity metric, comparable across arms (a win must NOT regress it).
-
-UNPAIRED: arm 'fp0' (baseline = recall only) vs 'fp<w>' per swept weight.
-  python baseline/ab_loss_fp.py --fold top7 --n 15 --fp 0.1,0.3
-
-Risk HIGH: a mis-scaled penalty can fight the recall term and collapse the
-interface -- watch the success rate AND the recall cmap_loss together.
-
-Reuses ab_get_best's proven helpers (build_cond_cmap, mpnn_and_predict, ...).
+Report confidence gates and combined fold/interface contact loss separately from
+fold retention or binding accuracy. Analyze uncertainty over trajectories, not
+sibling MPNN sequences; historical CSVs from unpaired runs remain historical.
 """
+import math
 import argparse
 import os
 import sys
@@ -32,8 +16,7 @@ from colabdesign import mk_afdesign_model, clear_mem
 from colabdesign.af.loss import get_contact_map
 from colabdesign.mpnn import mk_mpnn_model
 
-sys.path.insert(0, ".")
-sys.path.insert(0, "baseline")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ab_get_best as A
 
 
@@ -43,7 +26,7 @@ def cmap_loss_fp(inputs, outputs, opt):
     Returns two named losses; the caller weights them via opt['weights']
     (cmap_loss_binder = 1.0 always; fp_loss = the swept weight). Keeping them
     separate means aux['log']['cmap_loss_binder'] stays the pure recall metric
-    (fold fidelity) regardless of the fp weight.
+    (combined fold/interface loss) regardless of the fp weight.
     """
     conditioned_array = opt['cond_cmap']
     conditioned_mask = opt['cond_cmap_mask']
@@ -68,7 +51,7 @@ def cmap_loss_fp(inputs, outputs, opt):
 
 
 def design_model(cond_cmap, cond_cmap_mask, binder_len, fp_w):
-    m = mk_afdesign_model(protocol="binder", loss_callback=cmap_loss_fp, use_templates=True)
+    m = mk_afdesign_model(data_dir=A._ROOT, protocol="binder", loss_callback=cmap_loss_fp, use_templates=True)
     m.opt['cond_cmap'] = cond_cmap.copy()
     m.opt['cond_cmap_mask'] = cond_cmap_mask.copy()
     m.prep_inputs(pdb_filename=A.TARGET, chain=A.CHAIN, binder_len=binder_len,
@@ -87,12 +70,21 @@ def main():
                     help="comma-separated false-positive weights (sweep)")
     ap.add_argument("--mpnn-samples", type=int, default=5)
     ap.add_argument("--mpnn-temp", type=float, default=0.1)
-    ap.add_argument("--out", default="baseline/ab_loss_fp")
+    ap.add_argument("--out", default="runs/ab_loss_fp")
+    ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
+    if not 0 <= args.seed < 2**32:
+        ap.error("--seed must be a 32-bit nonnegative integer")
+    if os.path.exists(args.out):
+        ap.error('Output already exists; choose a fresh --out directory')
+    if args.n < 1 or args.mpnn_samples < 1:
+        ap.error('Trajectory and sample counts must be positive')
 
     weights = [float(w) for w in args.fp.split(",")]
+    if not all(math.isfinite(w) and w >= 0 for w in weights):
+        ap.error("Loss weights must be finite and nonnegative")
     binder_template, binder_hotspots = A.FOLDS[args.fold]
-    cond_cmap, cond_cmap_mask, binder_len = A.build_cond_cmap(binder_template, binder_hotspots)
+    cond_cmap, cond_cmap_mask, binder_len = A.build_cond_cmap(binder_template, binder_hotspots, seed=args.seed)
     print(f"fold={args.fold} binder_len={binder_len} n={args.n} fp_weights={weights}", flush=True)
 
     mpnn = mk_mpnn_model(A.MODEL_NAME, backbone_noise=0.0, weights="soluble")
@@ -100,30 +92,32 @@ def main():
     for w in weights:
         arms[f"fp{w}"] = w
     rows = {a: [] for a in arms}
-    recall_loss = {a: [] for a in arms}   # recall cmap_loss = fold fidelity
+    recall_loss = {a: [] for a in arms}   # combined fold/interface cmap loss
 
-    for arm, fp_w in arms.items():
-        adir = os.path.join(args.out, arm)
-        os.makedirs(os.path.join(adir, "traj"), exist_ok=True)
-        for i in range(1, args.n + 1):
+    A.record_protocol(args.out, args, arms, binder_template, binder_hotspots, A.TARGET, A.TARGET_HOTSPOTS)
+    for i in range(1, args.n + 1):
+        for arm in A.arm_order(arms, args.seed, i):
+            fp_w = arms[arm]
+            adir = os.path.join(args.out, arm)
+            os.makedirs(os.path.join(adir, "traj"), exist_ok=True)
             clear_mem()
-            mpnn.set_seed(None)
             name = f"traj_{i}"
             m = design_model(cond_cmap, cond_cmap_mask, binder_len, fp_w)
+            m.restart(seed=A.stage_seed(args.seed, "design", i), reset_opt=False)
             m.design_3stage(*A.DESIGN_STAGES)
             recall_loss[arm].append(float(m.aux['log']['cmap_loss_binder']))
             tpdb = os.path.join(adir, "traj", f"{name}.pdb")
             m.save_pdb(tpdb, get_best=False)
             pred = design_model(cond_cmap, cond_cmap_mask, binder_len, 0.0)
             r = A.mpnn_and_predict(tpdb, name, mpnn, pred, cond_cmap, cond_cmap_mask,
-                                   binder_len, args.mpnn_samples, args.mpnn_temp, adir)
+                                   binder_len, args.mpnn_samples, args.mpnn_temp, adir, seed=args.seed)
             rows[arm].extend(r)
             npass = sum(A.passes(x) for x in r)
-            pd.DataFrame(rows[arm]).to_csv(os.path.join(adir, "results.csv"), index=False)
+            A.atomic_write(os.path.join(adir, "results.csv"), lambda p: pd.DataFrame(rows[arm]).to_csv(p, index=False))
             print(f"[{arm}][{i}/{args.n}] {name}: recall cmap_loss="
                   f"{recall_loss[arm][-1]:.3f} passes={npass}/{args.mpnn_samples}", flush=True)
 
-    print("\n=== SUMMARY (unpaired, n={} trajectories/arm) ===".format(args.n))
+    print("\n=== SUMMARY (paired stage seeds, n={} trajectories/arm) ===".format(args.n))
     for arm in arms:
         df = pd.DataFrame(rows[arm])
         npass = int(df.apply(A.passes, axis=1).sum())
@@ -131,8 +125,8 @@ def main():
         print(f"  {arm:8s}: {len(df)} designs, {npass} pass "
               f"({100*npass/len(df):.0f}%); recall cmap_loss median {np.median(rl):.3f}; "
               f"design iptm {df['iptm'].median():.3f} ipae {df['ipae'].median():.3f}")
-    print("  WIN iff a fp arm's pass-rate UP and its recall cmap_loss NOT worse "
-          "(else the penalty fought recall / collapsed the interface). Then score_openmm.")
+    print("  Exploratory confidence metrics only. Analyze paired trajectory-level outcomes "
+          "and independent structural/experimental evidence before promoting an arm.")
 
 
 if __name__ == "__main__":

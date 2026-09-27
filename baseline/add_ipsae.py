@@ -21,10 +21,18 @@ import warnings
 
 warnings.filterwarnings("ignore")
 import numpy as np
+try:
+    from .result_io import publish_columns
+except ImportError:
+    from result_io import publish_columns
+
 import pandas as pd
 from Bio.PDB import PDBParser
 
-from ipsae import ipsae  # baseline/ is on sys.path[0] when run as a script
+try:
+    from .ipsae import ipsae
+except ImportError:
+    from ipsae import ipsae
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _parser = PDBParser(QUIET=True)
@@ -43,6 +51,15 @@ def complex_chain_lens(pdb):
             raise ValueError(f"{pdb}: missing chain {cid} (expected target=A, binder=B)")
     n = {cid: sum(1 for r in model[cid] if r.id[0] == " ") for cid in ("A", "B")}
     return n["A"], n["B"]
+
+
+def single_model_pae(value):
+    pae = np.asarray(value)
+    if pae.ndim == 3 and pae.shape[0] == 1:
+        return pae[0]
+    if pae.ndim == 2:
+        return pae
+    raise ValueError('Expected one model PAE; score multiple models separately')
 
 
 def main():
@@ -66,13 +83,13 @@ def main():
                 sys.exit(f"design PDB missing, cannot determine chain split: {pdb}")
             tlen, blen = complex_chain_lens(pdb)
             with open(pk, "rb") as fh:
-                pae = np.asarray(pickle.load(fh)["pae"])[0]
+                pae = single_model_pae(pickle.load(fh)["pae"])
             if tlen + blen != pae.shape[0]:
                 sys.exit(f"{pdb}: chain lengths {tlen}+{blen} != PAE dim "
                          f"{pae.shape[0]} -- target/binder split is inconsistent")
             vals.append(round(ipsae(pae, tlen, blen, PAE_CUTOFF), 4))
         df["ipsae"] = vals
-        df.to_csv(csvf, index=False)
+        publish_columns(csvf, df, ['ipsae'])
         print(f"{fold}: ipsae for {len(vals)} designs (pae_cutoff={PAE_CUTOFF}) -> {csvf}")
 
 

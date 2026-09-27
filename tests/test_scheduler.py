@@ -135,167 +135,50 @@ def _merged(repro, fold, with_template=True):
 
 
 class TestResume:
-    def test_skips_completed_chunk_and_scoreable_fold(self, tmp_path):
-        repro = str(tmp_path)
-        folds = [_fold("a", 20), _fold("b", 20)]
-        chunks = sch.plan_chunks(folds, chunk_traj=10)
-        # a__c0 chunk done (results.csv); fold b fully merged AND scoreable
-        os.makedirs(os.path.join(repro, "a__c0"))
-        open(os.path.join(repro, "a__c0", "results.csv"), "w").close()
-        _merged(repro, "b", with_template=True)
+    def test_csv_and_template_alone_never_complete(self, tmp_path):
+        _merged(str(tmp_path), 'a')
+        assert not sch.fold_done('a', str(tmp_path))
+        chunks = sch.plan_chunks([_fold('a', 20)], 10)
+        assert sch.filter_todo(chunks, str(tmp_path)) == chunks
 
-        todo = sch.filter_todo(chunks, repro)
-        assert {c.tag for c in todo} == {"a__c1"}  # a__c0 + both b chunks skipped
+    def test_manifest_artifacts_and_config_required(self, tmp_path):
+        from pathlib import Path
+        from run_state import finish_run
+        from baseline.result_io import write_json
+        f = _fold('a', 20)
+        for key in ('template', 'target'):
+            p = tmp_path / (key + '.pdb'); p.write_text('input')
+            f[key] = str(p)
+        c = sch.plan_chunks([f], 10)[0]
+        out = Path(c.out_dir(str(tmp_path))); (out / 'designs').mkdir(parents=True)
+        (out / 'results.csv').write_text('name\nx\n')
+        for ext in ('.pdb', '.pickle'):
+            (out / 'designs' / ('x'+ext)).write_text('artifact')
+        assert not sch.chunk_done(c, str(tmp_path))
+        finish_run(out, {'schema': 1})
+        write_json(str(out)+'.job.json', sch.chunk_signature(c))
+        assert sch.chunk_done(c, str(tmp_path))
+        c.spec['binder_hotspots'] = '2'
+        assert not sch.chunk_done(c, str(tmp_path))
+        c.spec['binder_hotspots'] = '1-5'
+        (out / 'designs' / 'x.pdb').write_text('damaged')
+        assert not sch.chunk_done(c, str(tmp_path))
 
-    def test_fold_with_results_but_no_template_is_not_done(self, tmp_path):
-        # a fold merged before merge_chunks recorded the template: results.csv but
-        # no template.pdb -> NOT scoreable, must not be treated as done/skipped.
-        repro = str(tmp_path)
-        _merged(repro, "b", with_template=False)
-        assert not sch.fold_done("b", repro)
-        # with the template it is done
-        open(os.path.join(repro, "b", "template.pdb"), "w").close()
-        assert sch.fold_done("b", repro)
+    def test_archive_refused_before_gpu_access(self, tmp_path, monkeypatch):
+        _merged(str(tmp_path), 'a')
+        monkeypatch.setattr(sch, '_nvidia_smi', lambda: pytest.fail('GPU touched'))
+        with pytest.raises(ValueError, match='archive'):
+            sch.run([_fold('a', 20)], str(tmp_path), str(tmp_path), ['0'], 10, 2, 'python')
 
-    def test_partial_results_csv_is_not_done_and_not_skipped(self, tmp_path):
-        # The reported P1: FoldCraft streams progress to results.csv.partial and
-        # only atomically promotes it to results.csv once the chunk finishes. A
-        # preempted chunk thus has results.csv.partial but no results.csv -- the
-        # scheduler must NOT treat that as done, else it skips the chunk on resume
-        # and merges it as complete, silently dropping the rest of its designs.
-        repro = str(tmp_path)
-        chunks = sch.plan_chunks([_fold("a", 20)], chunk_traj=10)
-        c0 = next(c for c in chunks if c.tag == "a__c0")
-        os.makedirs(c0.out_dir(repro))
-        open(os.path.join(c0.out_dir(repro), "results.csv.partial"), "w").close()
-
-        assert not sch.chunk_done(c0, repro)                        # partial != done
-        assert "a__c0" in {c.tag for c in sch.filter_todo(chunks, repro)}  # re-run
-
-        # promoting it to results.csv (the atomic finalize) marks the chunk done
-        open(os.path.join(c0.out_dir(repro), "results.csv"), "w").close()
-        assert sch.chunk_done(c0, repro)
-        assert "a__c0" not in {c.tag for c in sch.filter_todo(chunks, repro)}
-
-
-# --- repair_fold_template (P2: keep merged folds scoreable) ----------------
-class TestRepairFoldTemplate:
-    def test_repairs_missing_template(self, tmp_path):
-        repro = str(tmp_path)
-        _merged(repro, "b", with_template=False)
-        src = os.path.join(repro, "src_template.pdb")
-        with open(src, "w") as fh:
-            fh.write("TEMPLATE")
-        assert sch.repair_fold_template(os.path.join(repro, "b"), src) is True
-        copied = os.path.join(repro, "b", "template.pdb")
-        assert os.path.exists(copied) and open(copied).read() == "TEMPLATE"
-
-    def test_noop_when_template_present(self, tmp_path):
-        repro = str(tmp_path)
-        _merged(repro, "b", with_template=True)
-        src = os.path.join(repro, "src.pdb"); open(src, "w").close()
-        assert sch.repair_fold_template(os.path.join(repro, "b"), src) is False
-
-    def test_noop_when_not_merged(self, tmp_path):
-        # no results.csv -> nothing to repair (the fold isn't merged yet)
-        repro = str(tmp_path)
-        os.makedirs(os.path.join(repro, "b"))
-        src = os.path.join(repro, "src.pdb"); open(src, "w").close()
-        assert sch.repair_fold_template(os.path.join(repro, "b"), src) is False
-
-    def test_raises_when_source_template_missing(self, tmp_path):
-        repro = str(tmp_path)
-        _merged(repro, "b", with_template=False)
-        with pytest.raises(FileNotFoundError):
-            sch.repair_fold_template(os.path.join(repro, "b"),
-                                     os.path.join(repro, "nope.pdb"))
-
-
-# --- repair ordering (P2: repair before filter_todo, not after scheduling) -
-class TestRepairBeforeFilter:
-    def test_repair_marks_fold_done_so_chunks_are_not_requeued(self, tmp_path):
-        # Reproduces the bug: a fold merged by an older scheduler (results.csv,
-        # NO template.pdb) with its chunk dirs gone. Without an up-front repair,
-        # filter_todo would re-queue (and the run would re-run) its chunks.
-        repro = str(tmp_path / "repro"); os.makedirs(repro)
-        src = str(tmp_path / "tmpl.pdb"); open(src, "w").write("X")
-        folds = [_fold("top7", 20)]
-        folds[0]["template"] = src
-        _merged(repro, "top7", with_template=False)  # results.csv only
-        chunks = sch.plan_chunks(folds, chunk_traj=10)
-
-        # before repair: both chunks are wrongly considered outstanding work
-        assert {c.tag for c in sch.filter_todo(chunks, repro)} == {"top7__c0", "top7__c1"}
-
-        # repairing first restores the template -> fold is done -> chunks skipped
-        assert sch.repair_merged_folds(folds, repro) == ["top7"]
-        assert os.path.exists(os.path.join(repro, "top7", "template.pdb"))
-        assert sch.filter_todo(chunks, repro) == []
-
-    def test_no_repair_when_template_already_present(self, tmp_path):
-        repro = str(tmp_path / "repro"); os.makedirs(repro)
-        src = str(tmp_path / "tmpl.pdb"); open(src, "w").close()
-        folds = [_fold("top7", 20)]; folds[0]["template"] = src
-        _merged(repro, "top7", with_template=True)
-        assert sch.repair_merged_folds(folds, repro) == []
-
-
-# --- is_repairable / dry-run prediction (P3: dry-run mirrors run) -----------
-class TestIsRepairable:
-    def test_true_when_template_missing_and_source_exists(self, tmp_path):
-        repro = str(tmp_path); _merged(repro, "b", with_template=False)
-        src = str(tmp_path / "src.pdb"); open(src, "w").close()
-        assert sch.is_repairable(os.path.join(repro, "b"), src) is True
-
-    def test_false_when_template_present(self, tmp_path):
-        repro = str(tmp_path); _merged(repro, "b", with_template=True)
-        src = str(tmp_path / "src.pdb"); open(src, "w").close()
-        assert sch.is_repairable(os.path.join(repro, "b"), src) is False
-
-    def test_false_when_not_merged(self, tmp_path):
-        repro = str(tmp_path); os.makedirs(os.path.join(repro, "b"))
-        src = str(tmp_path / "src.pdb"); open(src, "w").close()
-        assert sch.is_repairable(os.path.join(repro, "b"), src) is False
-
-    def test_false_when_source_missing(self, tmp_path):
-        # read-only predictor: unlike repair_fold_template it does NOT raise; a
-        # fold it can't actually repair is simply "not repairable" for planning.
-        repro = str(tmp_path); _merged(repro, "b", with_template=False)
-        assert sch.is_repairable(os.path.join(repro, "b"),
-                                 os.path.join(repro, "nope.pdb")) is False
-
-
-class TestFilterTodoExtraDone:
-    def test_extra_done_excludes_folds_chunks(self, tmp_path):
-        repro = str(tmp_path)  # nothing on disk -> all chunks normally todo
-        chunks = sch.plan_chunks([_fold("a", 20), _fold("b", 20)], chunk_traj=10)
-        todo = sch.filter_todo(chunks, repro, extra_done=["a"])
-        assert {c.fold for c in todo} == {"b"}  # a's chunks dropped
-
-
-class TestDryRunPredictsRepair:
-    def test_dry_run_excludes_repairable_fold_and_reports_it(
-            self, tmp_path, monkeypatch, capsys):
-        # The reviewer's case: a fold merged with results.csv but no template.pdb.
-        # run() repairs it before scheduling; dry-run must predict that (without
-        # writing the template) instead of over-reporting its chunks as todo.
-        repo = tmp_path / "repo"; (repo / "baseline").mkdir(parents=True)
-        (repo / "t.pdb").write_text("X")            # source template (exists)
-        (repo / "baseline" / "c.tsv").write_text(
-            "fold\ttemplate\ttarget\ttarget_hotspots\tbinder_hotspots\ttotal_traj\tmem_gb\n"
-            "top7\tt.pdb\tg.pdb\t1\t1\t20\t11\n")
-        merged = repo / "baseline" / "repro" / "top7"; merged.mkdir(parents=True)
-        (merged / "results.csv").write_text("")     # merged, NO template.pdb
-
-        monkeypatch.chdir(tmp_path)
-        sch.main(["baseline/c.tsv", "--repo", str(repo),
-                  "--chunk-traj", "10", "--dry-run"])
-        out = capsys.readouterr().out
-        assert "todo=0" in out                       # 2 chunks predicted-done
-        assert "top7__c0" not in out and "top7__c1" not in out
-        assert "would repair template.pdb for: top7" in out
-        # dry-run must NOT have written the template (stays read-only)
-        assert not os.path.exists(merged / "template.pdb")
+    def test_dry_run_preserves_archive(self, tmp_path, capsys):
+        (tmp_path / 'c.tsv').write_text(
+            'fold\ttemplate\ttarget\ttarget_hotspots\tbinder_hotspots\ttotal_traj\tmem_gb\n'
+            'a\ta.pdb\tt.pdb\t1\t1\t20\t11\n')
+        _merged(str(tmp_path), 'a', with_template=False)
+        before = sorted(p.relative_to(tmp_path) for p in tmp_path.rglob('*'))
+        sch.main(['c.tsv', '--repo', str(tmp_path), '--repro', str(tmp_path), '--dry-run'])
+        assert 'todo=2' in capsys.readouterr().out
+        assert before == sorted(p.relative_to(tmp_path) for p in tmp_path.rglob('*'))
 
 
 # --- resolve_config_path (P3: CONFIG resolves against --repo) ---------------
@@ -362,7 +245,8 @@ class TestMergeChunks:
             os.path.join(cdir, "results.csv"), index=False)
         for n in names:
             for ext in (".pdb", ".pickle"):
-                open(os.path.join(cdir, "designs", f"{n}{ext}"), "w").close()
+                with open(os.path.join(cdir, "designs", f"{n}{ext}"), "w") as f:
+                    f.write("artifact")
         return cdir
 
     def _template(self, root):
