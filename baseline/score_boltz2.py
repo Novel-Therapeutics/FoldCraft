@@ -28,11 +28,13 @@ import os
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
+import hashlib
 
 try:
-    from .score_cache import ScoreSession
+    from .score_cache import ScoreSession, digest
 except ImportError:
-    from score_cache import ScoreSession
+    from score_cache import ScoreSession, digest
 
 import pandas as pd
 try:
@@ -57,7 +59,7 @@ def chain_sequences(pdb, chains=("A", "B")):
 
 
 def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=1,
-               flash_attn=True):
+               flash_attn=True, checkpoint=None, cache=None, seed=0, no_kernels=False):
     """Predict the A(target)+B(binder) complex; return (iptm, pair_iptm, plddt, ipae).
 
     Writes a minimal Boltz YAML and shells out to `boltz predict`, then reads the
@@ -85,8 +87,15 @@ def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=
     # instead of crashing, so --no_kernels is no longer required, and --flash_attn
     # (SDPA/FlashAttention-2) accelerates attention -- the speedup that matters
     # since the triangle kernels are unavailable on this CUDA build.
-    cmd = ["boltz", "predict", yml, "--out_dir", workdir, "--override",
+    cmd = [sys.executable, "-m", "boltz.main", "predict", yml, "--out_dir", workdir, "--override",
            "--diffusion_samples", str(diffusion_samples)]
+    cmd += ['--model', 'boltz2', '--seed', str(seed)]
+    if checkpoint is not None:
+        cmd += ['--checkpoint', str(checkpoint)]
+    if cache is not None:
+        cmd += ['--cache', str(cache)]
+    if no_kernels:
+        cmd.append('--no_kernels')
     if flash_attn:
         cmd.append("--flash_attn")
     if use_msa:
@@ -96,18 +105,24 @@ def run_boltz2(target_seq, binder_seq, workdir, use_msa=True, diffusion_samples=
         raise RuntimeError(f"boltz predict failed:\n{r.stderr[-2000:]}")
 
     confs = glob.glob(os.path.join(workdir, "**", "confidence_*.json"), recursive=True)
-    if not confs:
-        raise RuntimeError(f"no confidence_*.json produced under {workdir}")
+    if len(confs) != diffusion_samples:
+        raise RuntimeError(f'Expected {diffusion_samples} confidence files, found {len(confs)} under {workdir}')
     # highest confidence_score sample
     predictions = []
     for path in sorted(confs):
         with open(path) as stream:
             predictions.append((path, json.load(stream)))
     best_path, best = max(predictions, key=lambda item: item[1].get('confidence_score', item[1].get('iptm', 0.0)))
+    stem = Path(best_path).stem.removeprefix('confidence_')
+    structures = [Path(best_path).with_name(stem+suffix) for suffix in ('.cif','.pdb')]
+    structures = [p for p in structures if p.is_file()]
+    if len(structures) != 1:
+        raise RuntimeError('Selected Boltz confidence must have exactly one matching structure')
     with open(os.path.join(workdir, 'selection.json'), 'w') as stream:
-        json.dump(dict(confidence_file=os.path.relpath(best_path, workdir),
+        json.dump(dict(confidence_file=os.path.relpath(best_path, workdir), confidence_sha256=digest(best_path),
+                       structure_file=os.path.relpath(structures[0],workdir), structure_sha256=digest(structures[0]),
                        target_sequence=target_seq, binder_sequence=binder_seq,
-                       diffusion_samples=diffusion_samples, use_msa=use_msa), stream, indent=2)
+                       diffusion_samples=diffusion_samples, use_msa=use_msa, checkpoint=str(checkpoint), cache=str(cache), seed=seed), stream, indent=2)
     # pair_chains_iptm is keyed by integer chain index as strings ("0"=target A,
     # "1"=binder B); the A<->B interface value is [0][1] (== overall iptm for a
     # 2-chain complex, but kept explicit).
@@ -134,15 +149,27 @@ def main():
                     help="single-sequence (no MSA server); keeps data local")
     ap.add_argument("--diffusion-samples", type=int, default=1)
     ap.add_argument("--workdir", default=None)
+    ap.add_argument('--cache',default=os.environ.get('BOLTZ_CACHE',str(Path.home()/'.boltz')))
+    ap.add_argument('--checkpoint',help='Explicit Boltz-2 confidence checkpoint; defaults to <cache>/boltz2_conf.ckpt')
+    ap.add_argument('--seed',type=int,default=0)
+    ap.add_argument('--no-kernels',action='store_true',help='Use portable torch kernels')
+    ap.add_argument('--flash-attn',action='store_true',help='Enable fork-specific --flash_attn when supported')
     args = ap.parse_args()
+    if args.diffusion_samples < 1 or not 0 <= args.seed < 2**32:
+        ap.error('Diffusion samples must be positive and seed must be a 32-bit nonnegative integer')
     if args.sample < 0:
         ap.error('--sample must be nonnegative')
 
     csvf = os.path.join(args.design_dir, "results.csv")
     if not os.path.exists(csvf):
         sys.exit(f"no results.csv in {args.design_dir}")
+    cache_dir = Path(args.cache).expanduser().resolve()
+    checkpoint = Path(args.checkpoint).expanduser().resolve() if args.checkpoint else cache_dir/'boltz2_conf.ckpt'
+    from boltz.data.const import canonical_tokens
+    model_inputs = {'checkpoint':checkpoint, **{f'molecule:{name}':cache_dir/'mols'/f'{name}.pkl' for name in canonical_tokens}}
     with ScoreSession(csvf, __file__, ['boltz2_iptm', 'boltz2_pair_iptm', 'boltz2_plddt', 'boltz2_ipae'],
-                      dict(use_msa=not args.no_msa, diffusion_samples=args.diffusion_samples, flash_attn=True), extra_inputs=(), structure=True) as session:
+                      dict(use_msa=not args.no_msa, diffusion_samples=args.diffusion_samples, flash_attn=args.flash_attn, no_kernels=args.no_kernels, seed=args.seed), extra_inputs=(), structure=True,
+                      model_inputs=model_inputs) as session:
         df = pd.read_csv(csvf)
         df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
         for col in ("boltz2_iptm", "boltz2_pair_iptm", "boltz2_plddt", "boltz2_ipae"):
@@ -169,9 +196,16 @@ def main():
             tgt, binder = chain_sequences(pdb)
             wd = os.path.join(work_root, str(row["name"]))
             os.makedirs(wd, exist_ok=True)
-            iptm, pair, plddt, ipae = run_boltz2(
-                tgt, binder, wd, use_msa=not args.no_msa,
-                diffusion_samples=args.diffusion_samples)
+            try:
+                iptm, pair, plddt, ipae = run_boltz2(
+                    tgt, binder, wd, use_msa=not args.no_msa,
+                    diffusion_samples=args.diffusion_samples, flash_attn=args.flash_attn,
+                    checkpoint=checkpoint, cache=cache_dir, no_kernels=args.no_kernels,
+                    seed=int.from_bytes(hashlib.sha256(f'{args.seed}:{row["name"]}'.encode()).digest()[:4],'big'))
+            except (RuntimeError, ValueError) as exc:
+                session.annotate(row['name'], status='failed', error=str(exc))
+                session.publish(df)
+                raise
             df.loc[idx, ["boltz2_iptm", "boltz2_pair_iptm", "boltz2_plddt",
                          "boltz2_ipae"]] = [iptm, pair, plddt, ipae]
             if i % 10 == 0 or i == len(todo):

@@ -1,0 +1,3 @@
+../scoring-qc/boltz-cli: 1 to score (0 already done / skipped)
+  [1/1] traj_1_0: iptm=0.4203319549560547 ipae=None
+wrote boltz2_* columns -> ../scoring-qc/boltz-cli/results.csv

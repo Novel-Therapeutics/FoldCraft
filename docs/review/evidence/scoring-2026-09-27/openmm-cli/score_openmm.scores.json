@@ -1,0 +1,76 @@
+{
+  "protocol": {
+    "settings": {
+      "min_iters": 500,
+      "tolerance": 10.0,
+      "seed": 0,
+      "platform": "CUDA",
+      "platform_properties": {
+        "DeviceIndex": "",
+        "DeviceName": "",
+        "UseBlockingSync": "false",
+        "Precision": "mixed",
+        "UseCpuPme": "false",
+        "CudaCompiler": "",
+        "TempDirectory": "/tmp",
+        "CudaHostCompiler": "",
+        "DisablePmeStream": "false",
+        "DeterministicForces": "true"
+      },
+      "constraints": "none",
+      "forcefield": "amber14/protein.ff14SB+implicit/gbn2"
+    },
+    "source": "2f8683b2ea63f52281ddff0878ab1a169af4b9e668b6980afa3b6fcdf8dc5b54",
+    "cache_code": "a647be1681689428d20fac71d2be5c6e375052c83018d4062473a450d163c535",
+    "helper_code": "a939cf70b9a0d77716bf23166f4e7d3e91e7b123471302bb14bbf1d047ed379d",
+    "python": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]",
+    "packages": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "biopython": "1.88",
+      "openmm": "8.3.1",
+      "pdbfixer": "1.12.0"
+    },
+    "extra_inputs": {},
+    "model_inputs": {
+      "protein_ff": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/openmm-venv/lib/python3.12/site-packages/openmm/app/data/amber14/protein.ff14SB.xml",
+        "files": {
+          "protein.ff14SB.xml": "d9f9779c09d67cd5f8bc657692f174ffab14c469dfd06d560ac1899fa7e976b8"
+        }
+      },
+      "solvent_ff": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/openmm-venv/lib/python3.12/site-packages/openmm/app/data/implicit/gbn2.xml",
+        "files": {
+          "gbn2.xml": "d12c14820a413146eb008758c405b8690898811b4e08827b00a75a163395bde3"
+        }
+      }
+    }
+  },
+  "records": {
+    "traj_1_0": {
+      "signature": "f2ace76dc54ad25da38d428c4e34ebc690fd4ad4d6350c52d048fe425033ea08",
+      "values": {
+        "openmm_dE": -43.65,
+        "openmm_e_complex": -9537.6
+      },
+      "status": "complete",
+      "diagnostics": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.6122772950348745,
+        "max_force_kj_mol_nm": 48.223110499413295,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 13741.022980010564,
+        "final_energy_kcal_mol": -9537.616285327154,
+        "max_iterations": 500,
+        "iterations": 284,
+        "seed": 0,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4276.870320226815,
+        "binder_energy_kcal_mol": -5217.09580386455
+      }
+    }
+  }
+}

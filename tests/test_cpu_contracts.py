@@ -173,6 +173,7 @@ def test_boltz_cannot_select_stale_confidence(tmp_path, monkeypatch):
     stale = tmp_path/'confidence_old.json'; stale.write_text(json.dumps({'confidence_score':1.,'iptm':.99}))
     def predict(cmd, **kwargs):
         output = Path(cmd[cmd.index('--out_dir')+1])
+        (output/'new.cif').write_text('new structure')
         (output/'confidence_new.json').write_text(json.dumps({'confidence_score':.2,'iptm':.2}))
         return SimpleNamespace(returncode=0)
     monkeypatch.setattr(boltz.subprocess, 'run', predict)

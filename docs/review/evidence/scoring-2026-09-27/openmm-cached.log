@@ -1,0 +1,3 @@
+OpenMM platform: CUDA
+../scoring-qc/openmm-cli: 0 to score (1 already done / skipped)
+wrote openmm_dE -> ../scoring-qc/openmm-cli/results.csv

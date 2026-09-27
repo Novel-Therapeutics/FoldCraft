@@ -21,6 +21,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from input_validation import read_chain
+from run_state import stage_seed
+from baseline.checkpoint_files import af2_checkpoint
 
 try:
     from .score_cache import ScoreSession
@@ -34,7 +36,7 @@ DEFAULT_TARGET = str(ROOT / "examples/targets/pd-l1-1.pdb")
 _AF = {"model": None}
 
 
-def af2_score(target_pdb, binder_seq, target_chain="A", hotspot=None):
+def af2_score(target_pdb, binder_seq, target_chain="A", hotspot=None, data_dir=ROOT, seed=0):
     """(plddt, i_ptm, i_pae) for the target+binder complex via colabdesign AF2,
     matching FoldCraft.py's predict() exactly so the AF2 leg is comparable across
     methods: protocol='binder', use_templates=True (templates the TARGET, which is
@@ -44,7 +46,7 @@ def af2_score(target_pdb, binder_seq, target_chain="A", hotspot=None):
     clear_mem()                                   # avoids the RuntimeError FoldCraft guards
     target = read_chain(target_pdb, target_chain)
     mapped = target.selection(hotspot) if hotspot else None
-    af = mk_afdesign_model(data_dir=str(ROOT), protocol="binder", use_templates=True)
+    af = mk_afdesign_model(data_dir=str(data_dir), protocol="binder", use_templates=True, model_names=["model_1_ptm"])
     with TemporaryDirectory(prefix='foldcraft-af2-target-') as folder:
         canonical = Path(folder) / 'target.pdb'
         canonical.write_text(target.pdb)
@@ -52,7 +54,7 @@ def af2_score(target_pdb, binder_seq, target_chain="A", hotspot=None):
                        binder_len=len(binder_seq), hotspot=mapped)
     af.set_seq(binder_seq)
     af.predict(num_recycles=3, verbose=False,
-               models=["model_1_ptm"], num_models=1)
+               models=["model_1_ptm"], num_models=1, sample_models=False, seed=seed)
     log = af.aux["log"]
     return round(log["plddt"], 3), round(log["i_ptm"], 3), round(log["i_pae"], 3)
 
@@ -64,7 +66,11 @@ def main():
     ap.add_argument("--hotspot", default="30-34,50-54,69-76",
                     help="target epitope residues (PD-L1 default, matching FoldCraft)")
     ap.add_argument("--sample", type=int, default=0, help="score only N random rows")
+    ap.add_argument('--data-dir',default=str(ROOT))
+    ap.add_argument('--seed',type=int,default=0)
     args = ap.parse_args()
+    if not 0 <= args.seed < 2**32:
+        ap.error('--seed must be a 32-bit nonnegative integer')
     if args.sample < 0:
         ap.error('--sample must be nonnegative')
 
@@ -73,8 +79,9 @@ def main():
     csvf = os.path.join(args.design_dir, "results.csv")
     if not os.path.exists(csvf):
         sys.exit(f"no results.csv in {args.design_dir}")
+    checkpoint = af2_checkpoint(args.data_dir)
     with ScoreSession(csvf, __file__, ['af2_plddt', 'af2_iptm', 'af2_ipae'],
-                      dict(target=str(args.target), hotspot=args.hotspot, model='model_1_ptm', recycles=3), extra_inputs=[args.target], structure=False) as session:
+                      dict(target=str(args.target), hotspot=args.hotspot, model='model_1_ptm', recycles=3, seed=args.seed), extra_inputs=[args.target], structure=False, model_inputs={'checkpoint':checkpoint}) as session:
         df = pd.read_csv(csvf)
         df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
         for col in ("af2_plddt", "af2_iptm", "af2_ipae"):
@@ -95,7 +102,12 @@ def main():
             # FoldCraft's 'sequence' is the full 'target/binder' complex; take the
             # binder (BoltzProt's is binder-only, so the split is a no-op there).
             binder_seq = str(row["sequence"]).split("/")[-1]
-            plddt, iptm, ipae = af2_score(args.target, binder_seq, hotspot=args.hotspot)
+            try:
+                plddt, iptm, ipae = af2_score(args.target, binder_seq, hotspot=args.hotspot, data_dir=args.data_dir, seed=stage_seed(args.seed, row["name"]))
+            except (RuntimeError, ValueError) as exc:
+                session.annotate(row['name'], status='failed', error=str(exc))
+                session.publish(df)
+                raise
             df.loc[idx, ["af2_plddt", "af2_iptm", "af2_ipae"]] = [plddt, iptm, ipae]
             if i % 10 == 0 or i == len(todo):
                 session.publish(df)       # checkpoint for resumability

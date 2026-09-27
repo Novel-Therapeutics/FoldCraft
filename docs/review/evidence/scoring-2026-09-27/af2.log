@@ -1,0 +1,3 @@
+../scoring-qc/af2-cli: 1 to score (0 already done / skipped)
+  [1/1] traj_1_0: plddt=0.764 iptm=0.406 ipae=0.529
+wrote af2_* columns -> ../scoring-qc/af2-cli/results.csv

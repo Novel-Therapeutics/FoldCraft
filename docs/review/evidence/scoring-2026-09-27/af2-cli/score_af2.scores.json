@@ -1,0 +1,50 @@
+{
+  "protocol": {
+    "settings": {
+      "target": "/home/bizon/projects/foldcraft-gpu-20260927/scoring-repo/examples/targets/pd-l1-1.pdb",
+      "hotspot": "30-34,50-54,69-76",
+      "model": "model_1_ptm",
+      "recycles": 3,
+      "seed": 0
+    },
+    "source": "bc719f6c7463ffecde14fe440307b8dddde2ed5c063ae4eb5f2a175ce6639294",
+    "cache_code": "627231ff9dc3d9f75a07f558208f4ec72e459e35e17d259bf1639252091cf36f",
+    "helper_code": {
+      "structure_checks.py": "a939cf70b9a0d77716bf23166f4e7d3e91e7b123471302bb14bbf1d047ed379d",
+      "checkpoint_files.py": "172d364f2c8045b4558c17baa226378fbab15162e01d2560e8959d23c1e7e9f8",
+      "gates.py": "f7da053aea152c53037bf786ef53bd20c86cc4dc33a1a731f0b81f5a40624c77"
+    },
+    "python": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]",
+    "packages": {
+      "numpy": "1.26.4",
+      "pandas": "3.0.6",
+      "biopython": "1.88",
+      "jax": "0.6.2",
+      "jaxlib": "0.6.2",
+      "colabdesign": "1.1.3"
+    },
+    "extra_inputs": {
+      "/home/bizon/projects/foldcraft-gpu-20260927/scoring-repo/examples/targets/pd-l1-1.pdb": "0974c630f7cdb2faa1c666143a469798e1b92f71dff1456bb6cf2a459a0b2cc1"
+    },
+    "model_inputs": {
+      "checkpoint": {
+        "path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_1_ptm.npz",
+        "files": {
+          "params_model_1_ptm.npz": "5e564f79af5bcd54ccef6e2a6bb0ff01015d01650ebc41d4575e35f0de9ecc84"
+        }
+      }
+    }
+  },
+  "records": {
+    "traj_1_0": {
+      "signature": "7b39c0f21c290479a66084bb22e85c4d980d64af168bca2d0f2cc3332373dfcf",
+      "values": {
+        "af2_plddt": 0.764,
+        "af2_iptm": 0.406,
+        "af2_ipae": 0.529
+      },
+      "status": "complete",
+      "diagnostics": {}
+    }
+  }
+}

@@ -1,0 +1,2 @@
+../scoring-qc/esm-cli: 0 to score (1 already done / skipped)
+wrote esmfold_* columns -> ../scoring-qc/esm-cli/results.csv

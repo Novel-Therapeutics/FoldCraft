@@ -24,8 +24,10 @@ import sys
 import numpy as np
 try:
     from .score_cache import ScoreSession
+    from .checkpoint_files import esm_snapshot
 except ImportError:
     from score_cache import ScoreSession
+    from checkpoint_files import esm_snapshot
 
 import pandas as pd
 try:
@@ -35,37 +37,37 @@ except ImportError:
 from Bio.PDB import PDBParser, Superimposer
 from Bio.SeqUtils import seq1
 try:
-    from .structure_checks import chain_ca, matching_ca
+    from .structure_checks import chain_ca, matching_ca, fractional_plddt_percent
 except ImportError:
-    from structure_checks import chain_ca, matching_ca
+    from structure_checks import chain_ca, matching_ca, fractional_plddt_percent
 
 _parser = PDBParser(QUIET=True)
 _MODEL = None
 _TOK = None
 
 
-def _load_model():
+def _load_model(model_dir):
     """Lazy-load ESMFold once (kept out of import so the module is light)."""
     global _MODEL, _TOK
     if _MODEL is None:
         import torch
         from transformers import AutoTokenizer, EsmForProteinFolding
-        _TOK = AutoTokenizer.from_pretrained("facebook/esmfold_v1")
-        _MODEL = EsmForProteinFolding.from_pretrained("facebook/esmfold_v1")
+        _TOK = AutoTokenizer.from_pretrained(str(model_dir), local_files_only=True)
+        _MODEL = EsmForProteinFolding.from_pretrained(str(model_dir), local_files_only=True)
         _MODEL = _MODEL.cuda().eval()
         _MODEL.esm = _MODEL.esm.half()           # fp16 ESM trunk -> fits 24 GB
         torch.backends.cuda.matmul.allow_tf32 = True
     return _MODEL, _TOK
 
 
-def esmfold_predict(seq):
+def esmfold_predict(seq, model_dir):
     """Return (mean_plddt 0-100, CA coords array Nx3) for the ESMFold monomer."""
     import torch
-    model, tok = _load_model()
+    model, tok = _load_model(model_dir)
     ids = tok([seq], return_tensors="pt", add_special_tokens=False)["input_ids"].cuda()
     with torch.no_grad():
         out = model(ids)
-    plddt = float(out["plddt"][0, :, 1].mean())          # CA-atom pLDDT, mean
+    plddt = fractional_plddt_percent(out["plddt"][0, :, 1].detach().cpu().numpy())          # CA-atom pLDDT, mean
     # CA coords: positions[-1] is the final recycle; atom index 1 = CA
     pos = out["positions"][-1, 0]                         # (L, atoms, 3)
     ca = pos[:, 1, :].detach().cpu().numpy()
@@ -105,6 +107,8 @@ def main():
     ap.add_argument("--sample", type=int, default=0, help="score only N random rows")
     ap.add_argument("--af2-pass-only", action="store_true",
                     help="score only designs that clear the AF2 gate (consensus candidates)")
+    ap.add_argument('--model-dir',help='Local immutable ESMFold snapshot (otherwise resolve/download from Hugging Face)')
+    ap.add_argument('--revision',default='main',help='Hugging Face revision resolved to a local snapshot before scoring')
     args = ap.parse_args()
     if args.sample < 0:
         ap.error('--sample must be nonnegative')
@@ -112,8 +116,11 @@ def main():
     csvf = os.path.join(args.design_dir, "results.csv")
     if not os.path.exists(csvf):
         sys.exit(f"no results.csv in {args.design_dir}")
+    global _MODEL, _TOK
+    _MODEL = _TOK = None
+    model_dir = esm_snapshot(args.model_dir, args.revision)
     with ScoreSession(csvf, __file__, ['esmfold_plddt', 'esmfold_rmsd'],
-                      dict(model='facebook/esmfold_v1', tf32=True, trunk='fp16'), extra_inputs=(), structure=True) as session:
+                      dict(model='facebook/esmfold_v1', tf32=True, trunk='fp16', confidence_units='percent'), extra_inputs=(), structure=True, model_inputs={'snapshot':model_dir}) as session:
         df = pd.read_csv(csvf)
         df = df.loc[:, ~df.columns.str.startswith("Unnamed")]
         for col in ("esmfold_plddt", "esmfold_rmsd"):
@@ -135,8 +142,13 @@ def main():
             if not os.path.exists(pdb):
                 sys.exit(f"design PDB missing: {pdb}")
             binder_seq, ca_design = binder_seq_and_ca(pdb)
-            plddt, ca_pred = esmfold_predict(binder_seq)
-            rmsd = ca_rmsd(ca_pred, ca_design)
+            try:
+                plddt, ca_pred = esmfold_predict(binder_seq, model_dir)
+                rmsd = ca_rmsd(ca_pred, ca_design)
+            except (RuntimeError, ValueError) as exc:
+                session.annotate(row['name'], status='failed', error=str(exc))
+                session.publish(df)
+                raise
             df.loc[idx, ["esmfold_plddt", "esmfold_rmsd"]] = [round(plddt, 1), rmsd]
             if i % 20 == 0 or i == len(todo):
                 session.publish(df)      # checkpoint for resumability

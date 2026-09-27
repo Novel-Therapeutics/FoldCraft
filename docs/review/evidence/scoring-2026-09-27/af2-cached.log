@@ -1,0 +1,2 @@
+../scoring-qc/af2-cli: 0 to score (1 already done / skipped)
+wrote af2_* columns -> ../scoring-qc/af2-cli/results.csv

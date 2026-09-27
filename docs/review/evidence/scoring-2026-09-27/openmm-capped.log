@@ -1,0 +1,5 @@
+OpenMM platform: CUDA
+../scoring-qc/openmm-cli: 1 to score (0 already done / skipped)
+  [1/1] traj_1_0: FAILED -- OpenMM minimization did not converge: RMS force 4.07e+03 > 10.0
+wrote openmm_dE -> ../scoring-qc/openmm-cli/results.csv
+1 OpenMM candidates failed QC; scores remain unknown, see scorer sidecar

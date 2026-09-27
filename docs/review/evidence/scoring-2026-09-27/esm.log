@@ -1,0 +1,16 @@
+../scoring-qc/esm-cli: 1 to score (0 already done / skipped)
+
+Loading weights:   0%|          | 0/4498 [00:00<?, ?it/s]
+Loading weights:   0%|          | 18/4498 [00:00<02:44, 27.25it/s]
+Loading weights:  32%|███▏      | 1447/4498 [00:00<00:01, 2563.55it/s]
+Loading weights: 100%|██████████| 4498/4498 [00:00<00:00, 5633.64it/s]
+[transformers] [1mEsmForProteinFolding LOAD REPORT[0m from: /home/bizon/.cache/huggingface/hub/models--facebook--esmfold_v1/snapshots/75a3841ee059df2bf4d56688166c8fb459ddd97a
+Key                                | Status  |
+-----------------------------------+---------+-
+esm.contact_head.regression.bias   | MISSING |
+esm.contact_head.regression.weight | MISSING |
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  [1/1] traj_1_0: plddt=0.8 rmsd=0.84
+wrote esmfold_* columns -> ../scoring-qc/esm-cli/results.csv

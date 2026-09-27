@@ -18,10 +18,10 @@ import pandas as pd
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def af2_mask(d):
-    p, i, e = (("plddt", "iptm", "ipae") if "iptm" in d.columns
-               else ("af2_plddt", "af2_iptm", "af2_ipae"))
-    return (d[p] > 0.8) & (d[i] > 0.5) & (d[e] < 0.35)
+try:
+    from .gates import af2_mask
+except ImportError:
+    from gates import af2_mask
 
 
 def self_iptm_column(d):

@@ -1,0 +1,4 @@
+OpenMM platform: CUDA
+../scoring-qc/openmm-cli: 1 to score (0 already done / skipped)
+  [1/1] traj_1_0: dE=-43.65 kcal/mol
+wrote openmm_dE -> ../scoring-qc/openmm-cli/results.csv

@@ -1,0 +1,68 @@
+{
+  "openmm": "8.3.1",
+  "records": [
+    {
+      "iterations": 0,
+      "score": 4310.27,
+      "energy": 14043.4,
+      "qc": {
+        "status": "raw",
+        "converged": null,
+        "rms_force_kj_mol_nm": 16259.130885097968,
+        "max_force_kj_mol_nm": 1143512.3099901094,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 14043.362640365882,
+        "final_energy_kcal_mol": 14043.362640365882,
+        "max_iterations": 0,
+        "iterations": 0,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": 6192.385546541912,
+        "binder_energy_kcal_mol": 3540.7057060748875
+      },
+      "seconds": 6.874743094667792
+    },
+    {
+      "iterations": 1,
+      "rejected": true,
+      "qc": {
+        "status": "unconverged",
+        "converged": false,
+        "rms_force_kj_mol_nm": 5559.376431524942,
+        "max_force_kj_mol_nm": 367711.3114173899,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 14042.920203690857,
+        "final_energy_kcal_mol": 10906.581850666811,
+        "max_iterations": 1,
+        "iterations": 1,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none"
+      },
+      "seconds": 1.3526842696592212
+    },
+    {
+      "iterations": 5000,
+      "score": -38.47,
+      "energy": -9519.8,
+      "qc": {
+        "status": "converged",
+        "converged": true,
+        "rms_force_kj_mol_nm": 5.749420898962848,
+        "max_force_kj_mol_nm": 84.30569877214755,
+        "tolerance_kj_mol_nm": 10.0,
+        "initial_energy_kcal_mol": 14043.021398221646,
+        "final_energy_kcal_mol": -9519.78874455617,
+        "max_iterations": 5000,
+        "iterations": 254,
+        "seed": 20260927,
+        "platform": "CUDA",
+        "constraints": "none",
+        "target_energy_kcal_mol": -4272.02772133782,
+        "binder_energy_kcal_mol": -5209.295666068931
+      },
+      "seconds": 1.8483556862920523
+    }
+  ]
+}

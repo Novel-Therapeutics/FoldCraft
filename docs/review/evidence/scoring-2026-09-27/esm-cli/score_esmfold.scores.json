@@ -1,0 +1,53 @@
+{
+  "protocol": {
+    "settings": {
+      "model": "facebook/esmfold_v1",
+      "tf32": true,
+      "trunk": "fp16",
+      "confidence_units": "percent"
+    },
+    "source": "6ec601b4eca2ab4ea4a10ee419eeda5c878e05b30c549f6e9d77eb61a5b57089",
+    "cache_code": "22ae0448a553a8de79fac7ac888c7ff4f638f012c71f46a40585f24aa12046f9",
+    "helper_code": {
+      "structure_checks.py": "53cb35279b381e93708cee97bd6d2772f34ac8d70fa3a1d412cba66e3fb1c7a5",
+      "checkpoint_files.py": "172d364f2c8045b4558c17baa226378fbab15162e01d2560e8959d23c1e7e9f8",
+      "gates.py": "f7da053aea152c53037bf786ef53bd20c86cc4dc33a1a731f0b81f5a40624c77"
+    },
+    "python": "3.12.0 | packaged by conda-forge | (main, Oct  3 2023, 08:43:22) [GCC 12.3.0]",
+    "packages": {
+      "numpy": "1.26.4",
+      "pandas": "2.3.3",
+      "biopython": "1.86",
+      "torch": "2.10.0",
+      "transformers": "5.9.0",
+      "rdkit": "2025.9.6",
+      "scipy": "1.17.1",
+      "huggingface-hub": "1.17.0",
+      "pytorch-lightning": "2.6.1"
+    },
+    "extra_inputs": {},
+    "model_inputs": {
+      "snapshot": {
+        "path": "/home/bizon/.cache/huggingface/hub/models--facebook--esmfold_v1/snapshots/75a3841ee059df2bf4d56688166c8fb459ddd97a",
+        "files": {
+          "config.json": "6b98125e2685fef2875499f6bd7c83968a077993ab53f99bf5581113665f7cc6",
+          "pytorch_model.bin": "2ee07356b125d1e3e57503c204111fd7323347fc4735d41d3caac57c2a78e116",
+          "special_tokens_map.json": "9000546299e3cd9007b851ba512167b6f62d274e22fa74485c4ab52aabae0f35",
+          "tokenizer_config.json": "bfd8a81f4215e59174634eec71eea99aa1841d8692bdf5c60e9ecaa12904fde8",
+          "vocab.txt": "4c20cc7640bf894d2cdefaa6964ec702fd9b2e7a416abf2a50172d8763f3fc14"
+        }
+      }
+    }
+  },
+  "records": {
+    "traj_1_0": {
+      "signature": "f10b375835e7a4e206766678756bd27eab7aee5650619885f3e4543659b4ed8a",
+      "values": {
+        "esmfold_plddt": 84.5,
+        "esmfold_rmsd": 0.84
+      },
+      "status": "complete",
+      "diagnostics": {}
+    }
+  }
+}
