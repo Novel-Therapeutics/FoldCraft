@@ -1,0 +1,908 @@
+{
+  "protocol": {
+    "settings": {
+      "model": "facebook/esmfold_v1",
+      "tf32": true,
+      "trunk": "fp16",
+      "confidence_units": "percent"
+    },
+    "source": "6ec601b4eca2ab4ea4a10ee419eeda5c878e05b30c549f6e9d77eb61a5b57089",
+    "cache_code": "22ae0448a553a8de79fac7ac888c7ff4f638f012c71f46a40585f24aa12046f9",
+    "helper_code": {
+      "structure_checks.py": "53cb35279b381e93708cee97bd6d2772f34ac8d70fa3a1d412cba66e3fb1c7a5",
+      "checkpoint_files.py": "172d364f2c8045b4558c17baa226378fbab15162e01d2560e8959d23c1e7e9f8",
+      "gates.py": "f7da053aea152c53037bf786ef53bd20c86cc4dc33a1a731f0b81f5a40624c77"
+    },
+    "python": "3.12.0 | packaged by conda-forge | (main, Oct  3 2023, 08:43:22) [GCC 12.3.0]",
+    "packages": {
+      "numpy": "1.26.4",
+      "pandas": "2.3.3",
+      "biopython": "1.86",
+      "torch": "2.10.0",
+      "transformers": "5.9.0",
+      "rdkit": "2025.9.6",
+      "scipy": "1.17.1",
+      "huggingface-hub": "1.17.0",
+      "pytorch-lightning": "2.6.1"
+    },
+    "extra_inputs": {},
+    "model_inputs": {
+      "snapshot": {
+        "path": "/home/bizon/.cache/huggingface/hub/models--facebook--esmfold_v1/snapshots/75a3841ee059df2bf4d56688166c8fb459ddd97a",
+        "files": {
+          "config.json": "6b98125e2685fef2875499f6bd7c83968a077993ab53f99bf5581113665f7cc6",
+          "pytorch_model.bin": "2ee07356b125d1e3e57503c204111fd7323347fc4735d41d3caac57c2a78e116",
+          "special_tokens_map.json": "9000546299e3cd9007b851ba512167b6f62d274e22fa74485c4ab52aabae0f35",
+          "tokenizer_config.json": "bfd8a81f4215e59174634eec71eea99aa1841d8692bdf5c60e9ecaa12904fde8",
+          "vocab.txt": "4c20cc7640bf894d2cdefaa6964ec702fd9b2e7a416abf2a50172d8763f3fc14"
+        }
+      }
+    }
+  },
+  "records": {
+    "pdl1_top7_20261001_baseline_traj_1_0": {
+      "signature": "c3ab6225126d3ee4d271bc42dca7df20695a713205840b410802863ceaa38325",
+      "values": {
+        "esmfold_plddt": 86.3,
+        "esmfold_rmsd": 0.84
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20261001_baseline_traj_1_1": {
+      "signature": "97f53bb41e302c946fd41b30dad746c03c6a0efbcb9d8ceea2497751492cb244",
+      "values": {
+        "esmfold_plddt": 89.9,
+        "esmfold_rmsd": 1.62
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "7106d9914965c8faa51c9bb9c2e5c9dcd0dfb914b4a1ce9a3783b74ef57edf76",
+      "values": {
+        "esmfold_plddt": 87.1,
+        "esmfold_rmsd": 1.05
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "d7a773fc461fa03c00eec07921a917a39fbfd7d82d607d1c85e9a7ccca6ed407",
+      "values": {
+        "esmfold_plddt": 89.1,
+        "esmfold_rmsd": 1.07
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "f2b332f6685e3b3d765b400859ea05490bada6db35759668503176111324d910",
+      "values": {
+        "esmfold_plddt": 87.8,
+        "esmfold_rmsd": 0.66
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "73d143321ed47dec69a2666f46819fea466c00909cec0fbced38f6ecd5b0858a",
+      "values": {
+        "esmfold_plddt": 87.6,
+        "esmfold_rmsd": 0.36
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20261002_baseline_traj_1_0": {
+      "signature": "18645c9a48d927892f22d26bb8a35b3f12f5b0bd3c75b366770c3e74b3b038df",
+      "values": {
+        "esmfold_plddt": 87.5,
+        "esmfold_rmsd": 0.58
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_top7_20261002_baseline_traj_1_1": {
+      "signature": "503151b4809729369d3ce9080738a0a466312a2a683ee2638ebc9bfd626ebacb",
+      "values": {
+        "esmfold_plddt": 86.3,
+        "esmfold_rmsd": 0.45
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_barrel_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "243f55dcce4ca3e658a4f5b9ea16a7f5546292c897fe2278ee3ff7c2ba1916d9",
+      "values": {
+        "esmfold_plddt": 79.2,
+        "esmfold_rmsd": 0.74
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_barrel_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "e626022e363f13cc1f7e8c06b5ff35a2d6980b3d665e4bb1fecf40a79d7b1a9f",
+      "values": {
+        "esmfold_plddt": 79.8,
+        "esmfold_rmsd": 0.98
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_barrel_20261001_baseline_traj_1_0": {
+      "signature": "4926deef1d8caa0b11134dd53d2f4a32120bd498b911d52386bc745bb6331ede",
+      "values": {
+        "esmfold_plddt": 81.7,
+        "esmfold_rmsd": 0.75
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_barrel_20261001_baseline_traj_1_1": {
+      "signature": "7ac4c1e9d4c3adc95e051abe13955f6593bcf5dfac1cf17315b3a75e4429649c",
+      "values": {
+        "esmfold_plddt": 80.6,
+        "esmfold_rmsd": 1.13
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_barrel_20261002_baseline_traj_1_0": {
+      "signature": "1e41d8c0dce6bab2e7f6bf27541011ff551640cdf8fc257b3d3df6e445a82ff6",
+      "values": {
+        "esmfold_plddt": 88.0,
+        "esmfold_rmsd": 0.91
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_barrel_20261002_baseline_traj_1_1": {
+      "signature": "47de65f9f156cb37a12a698a7a47366d4e230a702e6a88b6c6f7b710e85e3c7b",
+      "values": {
+        "esmfold_plddt": 82.3,
+        "esmfold_rmsd": 1.1
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_barrel_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "b7e6562b81b82bc9c33b0c4bdcca3a99ecd4d3d07e6579aab1bbceb5a79b1e38",
+      "values": {
+        "esmfold_plddt": 84.6,
+        "esmfold_rmsd": 0.66
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_barrel_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "e20f79c8fcd07c938f0ff99eed1ebe4f2f7a96fb03612f8c5563f1749edac2e4",
+      "values": {
+        "esmfold_plddt": 87.9,
+        "esmfold_rmsd": 0.59
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_ankyrin_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "c8f26881b078b75af31ccfca7f613573177082cc05f955ee212a2f1fff499469",
+      "values": {
+        "esmfold_plddt": 80.6,
+        "esmfold_rmsd": 6.93
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_ankyrin_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "c5e53e8594aab70b918cfe3d66bf25cbb4be2c918008fd51fe22103503209079",
+      "values": {
+        "esmfold_plddt": 84.6,
+        "esmfold_rmsd": 1.5
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_ankyrin_20261001_baseline_traj_1_0": {
+      "signature": "0faf8194b69e2bca58ca4d5feb27e498ce2758a655186098d1b1c50ba5998583",
+      "values": {
+        "esmfold_plddt": 85.5,
+        "esmfold_rmsd": 0.48
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_ankyrin_20261001_baseline_traj_1_1": {
+      "signature": "e2b94750c92191cf06fd1c94aaab1723cb1534790a28188601ff268735c43436",
+      "values": {
+        "esmfold_plddt": 85.7,
+        "esmfold_rmsd": 3.61
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_ankyrin_20261002_baseline_traj_1_0": {
+      "signature": "bca9f2d3f99b3f8ccb019e444d82b495a654c2620557987a9ac261b905180008",
+      "values": {
+        "esmfold_plddt": 83.8,
+        "esmfold_rmsd": 1.47
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_ankyrin_20261002_baseline_traj_1_1": {
+      "signature": "4d9d601bf29c8092d57fd1b4a9c52cf9b995c993bb5c38b1bd6195c46bd630dc",
+      "values": {
+        "esmfold_plddt": 74.6,
+        "esmfold_rmsd": 0.9
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_ankyrin_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "40127d15dc5253b2b6c4ea72763ce6c0bbe8e04672ccf269e2126746d1c0c37d",
+      "values": {
+        "esmfold_plddt": 80.7,
+        "esmfold_rmsd": 5.15
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pdl1_ankyrin_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "ae497ce77d4cdb89c0b68305358d3a4be0e4305aae4a57b81f9a50b346d6dce3",
+      "values": {
+        "esmfold_plddt": 76.7,
+        "esmfold_rmsd": 0.7
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_top7_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "87a8bf3e7e19eba173070da1bcae9ec08c3ec4bd831bdbbee412f402d9253af9",
+      "values": {
+        "esmfold_plddt": 87.9,
+        "esmfold_rmsd": 0.81
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_top7_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "b2709cab8c2a178fe73cb369ef87fe5508d4789969e5b82582b74483fae012a0",
+      "values": {
+        "esmfold_plddt": 87.9,
+        "esmfold_rmsd": 0.45
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_top7_20261001_baseline_traj_1_0": {
+      "signature": "dbb879db22b93e676aae81cfb3460a85439f78400b2614925783c6c58731b11a",
+      "values": {
+        "esmfold_plddt": 88.2,
+        "esmfold_rmsd": 0.42
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_top7_20261001_baseline_traj_1_1": {
+      "signature": "7dfd80be1b00630f42fe48607a3f6a2ef2ab57605c879750674f0fc8ba050164",
+      "values": {
+        "esmfold_plddt": 91.4,
+        "esmfold_rmsd": 0.47
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_top7_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "4cc8d705b0936fb0ad47eda596bf9e7fd4a45092b869ef456b547b8dca09c4ec",
+      "values": {
+        "esmfold_plddt": 76.9,
+        "esmfold_rmsd": 1.58
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_top7_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "ff2a89477690904cb952e72b6f0f2c776268f5950791b1f2ef7b2683b647ce07",
+      "values": {
+        "esmfold_plddt": 66.1,
+        "esmfold_rmsd": 5.74
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_top7_20261002_baseline_traj_1_0": {
+      "signature": "2521e30ab435bfdad31236609b865467dddeb6f8633ccfefbc5f8e70634a2a33",
+      "values": {
+        "esmfold_plddt": 72.9,
+        "esmfold_rmsd": 5.27
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_top7_20261002_baseline_traj_1_1": {
+      "signature": "55e7b68d5c3c2e18ade42e700760f4f9ab2c35914bd730cac0ed410587aa41a7",
+      "values": {
+        "esmfold_plddt": 75.8,
+        "esmfold_rmsd": 1.41
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_barrel_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "4269da6840546b28ae0a101cf7743144bda39516a4fb2ba1a0523bef3ef6b107",
+      "values": {
+        "esmfold_plddt": 86.3,
+        "esmfold_rmsd": 1.11
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_barrel_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "8d5923aa9f0cf1331d405f32d402579bb72af04c1956a0c0d729bbc1752200e2",
+      "values": {
+        "esmfold_plddt": 80.6,
+        "esmfold_rmsd": 0.48
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_barrel_20261001_baseline_traj_1_0": {
+      "signature": "7652587a9df2e77c4807832016e31da1c3c73c9fedb764eaf9ea14561795a5c9",
+      "values": {
+        "esmfold_plddt": 85.0,
+        "esmfold_rmsd": 1.08
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_barrel_20261001_baseline_traj_1_1": {
+      "signature": "820a0cd7731a52104ae9a164cf61390e1b8709d77156e38e6997d08d621c6696",
+      "values": {
+        "esmfold_plddt": 81.0,
+        "esmfold_rmsd": 1.21
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_barrel_20261002_baseline_traj_1_0": {
+      "signature": "95a88edd22008135e1dc9734d6d0e844b66542fe9abf82552e4f187d7d0b9363",
+      "values": {
+        "esmfold_plddt": 87.8,
+        "esmfold_rmsd": 0.7
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_barrel_20261002_baseline_traj_1_1": {
+      "signature": "3f1e0781fb984b24b0976188652ac974c4253dec8abd8d7e8758c76873ef90ee",
+      "values": {
+        "esmfold_plddt": 89.2,
+        "esmfold_rmsd": 0.75
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_barrel_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "0711ed7f2f4db3442b31d8930a9419a0561ea5894fe3dc12bc3f43e19582766c",
+      "values": {
+        "esmfold_plddt": 87.8,
+        "esmfold_rmsd": 0.64
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_barrel_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "9e9fcaf7cca96b2ce2445ad335de28e45bc6b758934f4a893af59542ee61ee6e",
+      "values": {
+        "esmfold_plddt": 89.3,
+        "esmfold_rmsd": 0.59
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_ankyrin_20261001_baseline_traj_1_0": {
+      "signature": "ad68660512f2431322448b0b1320114721b2f126f701be546c839002abd2d5a4",
+      "values": {
+        "esmfold_plddt": 82.0,
+        "esmfold_rmsd": 5.49
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_ankyrin_20261001_baseline_traj_1_1": {
+      "signature": "853abce72649a35d1dd2696b0313e48fa3eb29d110ac7f26dc7635b71c1905f2",
+      "values": {
+        "esmfold_plddt": 74.4,
+        "esmfold_rmsd": 6.86
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_ankyrin_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "98fe49be3eccae5972ccc673a89b1b74dae8fd92e933f8c43fb8beb752f677db",
+      "values": {
+        "esmfold_plddt": 86.7,
+        "esmfold_rmsd": 5.85
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_ankyrin_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "452125580b3f86223f70f0090296db71f23951bae6bde28a37e9cd4bcb9b9e0f",
+      "values": {
+        "esmfold_plddt": 73.7,
+        "esmfold_rmsd": 7.09
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_ankyrin_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "364b4f9930afcef525f2573e1234b82305afd4d26bab7616d403f309779c23d1",
+      "values": {
+        "esmfold_plddt": 58.3,
+        "esmfold_rmsd": 15.07
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_ankyrin_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "a947ad240815e674fb440065114dcef64b837b085d5742b8096e40168ce00f89",
+      "values": {
+        "esmfold_plddt": 53.3,
+        "esmfold_rmsd": 15.91
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_ankyrin_20261002_baseline_traj_1_0": {
+      "signature": "9355328aafacdcd4a6198e66a8247bc2425dcae8e7017b95f0f15b9f7f412715",
+      "values": {
+        "esmfold_plddt": 67.4,
+        "esmfold_rmsd": 14.41
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "pd1_ankyrin_20261002_baseline_traj_1_1": {
+      "signature": "f628eac02c3f4380693b70cf9ea309309735f1aa48bf141f8dace333b4c7ca32",
+      "values": {
+        "esmfold_plddt": 63.6,
+        "esmfold_rmsd": 5.15
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20261001_baseline_traj_1_0": {
+      "signature": "08b23f143fa772a74f25b19ac67e3c754a7312eec4860eb18d40965152007e44",
+      "values": {
+        "esmfold_plddt": 89.3,
+        "esmfold_rmsd": 0.33
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20261001_baseline_traj_1_1": {
+      "signature": "040a3c5ba1dec752dda41058500fb45492860d5b7d507c839af7599c11599481",
+      "values": {
+        "esmfold_plddt": 84.0,
+        "esmfold_rmsd": 0.63
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "6a3c58d5aa912b3c8a2ee5fb1337fdb62b0ed6a43209a87758bc2301c01cfa88",
+      "values": {
+        "esmfold_plddt": 88.3,
+        "esmfold_rmsd": 0.3
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "3c1b97bac326a699f6c02337d2201d4de05e3e7bd1be8d10902474a5991397a6",
+      "values": {
+        "esmfold_plddt": 83.8,
+        "esmfold_rmsd": 0.44
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "7718ba263eb440ccdef04a0310a9f53e36cc9b75485be02a324c3241227dc961",
+      "values": {
+        "esmfold_plddt": 66.9,
+        "esmfold_rmsd": 1.53
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "6bb03d5492d343b1dc0d6a4e0ccc420dad60258bfd0ddb34a6103527a5512d07",
+      "values": {
+        "esmfold_plddt": 71.8,
+        "esmfold_rmsd": 1.8
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20261002_baseline_traj_1_0": {
+      "signature": "158e6d7dc76aa147d0f89753e8db53d051ec42965eddd42e98b6b3172cb3ea7a",
+      "values": {
+        "esmfold_plddt": 61.5,
+        "esmfold_rmsd": 2.17
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_top7_20261002_baseline_traj_1_1": {
+      "signature": "aa261dd0c6209f22c2d8c0b2f4849f06834cc3750d32718be5b5085ba951872c",
+      "values": {
+        "esmfold_plddt": 68.4,
+        "esmfold_rmsd": 2.26
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_barrel_20261001_baseline_traj_1_0": {
+      "signature": "742c4542fafe03b2d520d4c5e87e3a5f2ee6c0d843d2ebaf2a5b5fc18c688e60",
+      "values": {
+        "esmfold_plddt": 82.3,
+        "esmfold_rmsd": 2.02
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_barrel_20261001_baseline_traj_1_1": {
+      "signature": "8ddedcc11476e510d948bb47f5d658abe3e09dc81924cea359ae1507da5cbf38",
+      "values": {
+        "esmfold_plddt": 82.6,
+        "esmfold_rmsd": 7.62
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_barrel_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "9d1fb0cddb6195a41597aa767dbc6f61bdec9a3ffa320db1081ea3d6ff7a6355",
+      "values": {
+        "esmfold_plddt": 76.5,
+        "esmfold_rmsd": 1.38
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_barrel_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "b90e19228784332dd189909f08d5b5cc0899d8f6b0bc7451ddf06151afd5f418",
+      "values": {
+        "esmfold_plddt": 83.1,
+        "esmfold_rmsd": 7.6
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_barrel_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "e646488961c6ccbd5d30948350dc9395f186e333f8f0b8174d0a08f2f3c8bd42",
+      "values": {
+        "esmfold_plddt": 89.0,
+        "esmfold_rmsd": 0.64
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_barrel_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "1bed941f0b5ee991e723058eeb8fa5f0ce93491cca0d678891034236afbd8234",
+      "values": {
+        "esmfold_plddt": 87.5,
+        "esmfold_rmsd": 0.56
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_barrel_20261002_baseline_traj_1_0": {
+      "signature": "947e07f7aed79f6b9631d3173e15c4fddc05175394ba7379f10cd84b65cd59e6",
+      "values": {
+        "esmfold_plddt": 88.0,
+        "esmfold_rmsd": 0.62
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_barrel_20261002_baseline_traj_1_1": {
+      "signature": "5f24d258b0511aff1fa045ed5b1433e3cc6995514cc5601e6766ac5d07ee2d0a",
+      "values": {
+        "esmfold_plddt": 89.2,
+        "esmfold_rmsd": 0.61
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_ankyrin_20261001_baseline_traj_1_0": {
+      "signature": "24c435ad152deb5e8f52c33d1e42448db72f072271cfe64ff6b54ea9a8e3f38d",
+      "values": {
+        "esmfold_plddt": 83.4,
+        "esmfold_rmsd": 7.39
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_ankyrin_20261001_baseline_traj_1_1": {
+      "signature": "ca85e3c6f251b40fc712ad57e8282fd87413a264344db01b51556bc097e2e135",
+      "values": {
+        "esmfold_plddt": 82.2,
+        "esmfold_rmsd": 6.96
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_ankyrin_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "5917295b4468b9934457e754a395c5a4280a88dab921eb210f158b062f2128e6",
+      "values": {
+        "esmfold_plddt": 86.7,
+        "esmfold_rmsd": 2.75
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_ankyrin_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "2f5987043e8a74f536598710a13f6e239df11b920d0264321bf3828416e1628d",
+      "values": {
+        "esmfold_plddt": 80.2,
+        "esmfold_rmsd": 2.32
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_ankyrin_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "8a53896a4257123048b1125cfc79e5808cb7aaf1ff053f2e78b0fffdfc7d8205",
+      "values": {
+        "esmfold_plddt": 73.9,
+        "esmfold_rmsd": 2.36
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_ankyrin_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "ba00a7b1b228856c077d43bb2d3d6b73a76300f7f03145d332ad489de6701be1",
+      "values": {
+        "esmfold_plddt": 71.4,
+        "esmfold_rmsd": 0.91
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_ankyrin_20261002_baseline_traj_1_0": {
+      "signature": "70a2b80cdcdd62d35ba38e131a0679df5afe16f497c300f4d341882af1efd8fb",
+      "values": {
+        "esmfold_plddt": 75.8,
+        "esmfold_rmsd": 0.85
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "egfr_ankyrin_20261002_baseline_traj_1_1": {
+      "signature": "f8b09d9570dd36915e14fd4ea7cb6ad1bffa13b7c92afc35301e7d078b7b2627",
+      "values": {
+        "esmfold_plddt": 73.3,
+        "esmfold_rmsd": 1.22
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_top7_20261001_baseline_traj_1_0": {
+      "signature": "382a35a096d43b5a0d6c694287c018e73f4424918f6b1aec29925b80b6bdb702",
+      "values": {
+        "esmfold_plddt": 83.2,
+        "esmfold_rmsd": 0.76
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_top7_20261001_baseline_traj_1_1": {
+      "signature": "f683f0659c62ca5e5d43f977218cdd159a82589ba62824276e491b6098d18aa5",
+      "values": {
+        "esmfold_plddt": 88.4,
+        "esmfold_rmsd": 0.32
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_top7_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "4fa73f3737b4139ee4e2917f909119fc5ffdb7b4829387765609ebab7a1b67e8",
+      "values": {
+        "esmfold_plddt": 86.4,
+        "esmfold_rmsd": 0.39
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_top7_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "5857f166bdc9b128bccf1620b8b3f188763c23a7442b063e10b14ccc08e5add9",
+      "values": {
+        "esmfold_plddt": 89.4,
+        "esmfold_rmsd": 0.35
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_top7_20261002_baseline_traj_1_0": {
+      "signature": "6473c84a346e7d6de5cf6693c019571108f4e66fbdfe58e59e0e6fb7e4b0c3ef",
+      "values": {
+        "esmfold_plddt": 88.9,
+        "esmfold_rmsd": 0.34
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_top7_20261002_baseline_traj_1_1": {
+      "signature": "7b80ef5ff8d1c31dd0ad112b5bf49308dfff5e00a5cea1265513213bcab5deae",
+      "values": {
+        "esmfold_plddt": 86.5,
+        "esmfold_rmsd": 0.53
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_top7_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "7cf7be2c9cdec750c53f100750e68f82fdea84b762f090b96d9605867cb34f08",
+      "values": {
+        "esmfold_plddt": 87.2,
+        "esmfold_rmsd": 0.53
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_top7_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "8681fc11aa6e70446205eb8ab6f93c93feb82d22f46f76220926e9918ddae1b3",
+      "values": {
+        "esmfold_plddt": 88.2,
+        "esmfold_rmsd": 0.38
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_barrel_20261001_baseline_traj_1_0": {
+      "signature": "3709e244d516d23e4ad097b46f1aafcfb6b3c191d656a17705154091291d66c7",
+      "values": {
+        "esmfold_plddt": 89.3,
+        "esmfold_rmsd": 0.43
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_barrel_20261001_baseline_traj_1_1": {
+      "signature": "b0a13afc979210c4e4da7a2f6851f6f72bd361605bc499c98c0ef1b59877ca02",
+      "values": {
+        "esmfold_plddt": 90.7,
+        "esmfold_rmsd": 0.89
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_barrel_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "969ee337437d54e7ad2e16a2a12dfab82183245898f7f90f11c9127463cf270d",
+      "values": {
+        "esmfold_plddt": 89.4,
+        "esmfold_rmsd": 0.42
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_barrel_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "b74f8de2f0fc61d27657ff04e2664b9c17c46b1c3af5a855d96329d34fa9da11",
+      "values": {
+        "esmfold_plddt": 89.0,
+        "esmfold_rmsd": 0.77
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_barrel_20261002_baseline_traj_1_0": {
+      "signature": "aaf01ce6bea4ebf0b42eeb677645b934e7f67fe18129f9995ed774c8bbc183d0",
+      "values": {
+        "esmfold_plddt": 89.2,
+        "esmfold_rmsd": 0.62
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_barrel_20261002_baseline_traj_1_1": {
+      "signature": "b77faa2420b22b3bd642d44960e38e0ac26e008f1bf81c69a7c8939b897562b7",
+      "values": {
+        "esmfold_plddt": 86.3,
+        "esmfold_rmsd": 0.29
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_barrel_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "69872a08715f2677276e453ddb91f1de7ff89d295812dad7028f5e9adbb04a7f",
+      "values": {
+        "esmfold_plddt": 87.8,
+        "esmfold_rmsd": 0.6
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_barrel_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "26889404d346266093d90453c46cac6b0d109d131bc34e7173ab62c41beca14c",
+      "values": {
+        "esmfold_plddt": 89.2,
+        "esmfold_rmsd": 1.04
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_ankyrin_20261001_mpnn_temp_02_traj_1_0": {
+      "signature": "95f2efe62ba651139d2715a155747b9702a2a9d37dc1483df51e4b0439bb71ed",
+      "values": {
+        "esmfold_plddt": 57.5,
+        "esmfold_rmsd": 5.51
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_ankyrin_20261001_mpnn_temp_02_traj_1_1": {
+      "signature": "f0537de74ff142d0786edba6128aa068b37e2e6cddbbde0e0f9cc9f891f42fea",
+      "values": {
+        "esmfold_plddt": 46.7,
+        "esmfold_rmsd": 14.43
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_ankyrin_20261001_baseline_traj_1_0": {
+      "signature": "c10e4a02caafa5d214603254ec6b73bb406979972de63efa9304207fcd776db8",
+      "values": {
+        "esmfold_plddt": 51.2,
+        "esmfold_rmsd": 13.34
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_ankyrin_20261001_baseline_traj_1_1": {
+      "signature": "c83ce3f2825844eb3019e3baedbb162c96e6bd144fa48ae598f33e58ff369c5c",
+      "values": {
+        "esmfold_plddt": 53.3,
+        "esmfold_rmsd": 10.9
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_ankyrin_20261002_baseline_traj_1_0": {
+      "signature": "bf692603f4350423a61960ef114a41c85295268efcd3b770884731d813557a06",
+      "values": {
+        "esmfold_plddt": 81.5,
+        "esmfold_rmsd": 2.02
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_ankyrin_20261002_baseline_traj_1_1": {
+      "signature": "6cc26b1c8fc818d5bf6c2093c973c2765623a033b1d5c520d021e7af98ba3279",
+      "values": {
+        "esmfold_plddt": 78.3,
+        "esmfold_rmsd": 1.17
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_ankyrin_20261002_mpnn_temp_02_traj_1_0": {
+      "signature": "12b2c8cb213fab486a9661369ff7c1804a0f2ada3e3c716532dea559b3b69a18",
+      "values": {
+        "esmfold_plddt": 81.7,
+        "esmfold_rmsd": 1.62
+      },
+      "status": "complete",
+      "diagnostics": {}
+    },
+    "ifnar_ankyrin_20261002_mpnn_temp_02_traj_1_1": {
+      "signature": "73c6cb561f49096df37fd64cd68e88b77c54ce3d63832dcfd5790e6298e47f96",
+      "values": {
+        "esmfold_plddt": 79.5,
+        "esmfold_rmsd": 1.99
+      },
+      "status": "complete",
+      "diagnostics": {}
+    }
+  }
+}

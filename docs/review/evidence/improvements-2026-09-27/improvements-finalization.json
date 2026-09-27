@@ -1,0 +1,90 @@
+{
+  "status": "passed",
+  "stages": [
+    {
+      "stage": "runtime-check",
+      "command": [
+        "/home/bizon/projects/foldcraft-gpu-20260927/oracle-venv/bin/python",
+        "/home/bizon/projects/foldcraft-gpu-20260927/final-check-repo/scripts/evaluator_runtime.py",
+        "/home/bizon/projects/foldcraft-gpu-20260927/evaluator-runtime-after.json",
+        "--compare",
+        "/home/bizon/projects/foldcraft-gpu-20260927/evaluator-runtime-before.json"
+      ],
+      "returncode": 0,
+      "seconds": 0.314740133471787
+    },
+    {
+      "stage": "default-storage",
+      "command": [
+        "/home/bizon/projects/foldcraft-gpu-20260927/final-check-repo/../runtime-clean-01/bin/python",
+        "/home/bizon/projects/foldcraft-gpu-20260927/final-check-repo/FoldCraft.py",
+        "--output_folder",
+        "/home/bizon/projects/foldcraft-gpu-20260927/default-storage-01",
+        "--data_dir",
+        "../weights",
+        "--target_template",
+        "/home/bizon/projects/foldcraft-gpu-20260927/final-check-repo/examples/targets/ifnar.pdb",
+        "--target_hotspots",
+        "44-46,73-76,87-91",
+        "--binder_template",
+        "/home/bizon/projects/foldcraft-gpu-20260927/final-check-repo/examples/templates/1qys1.pdb",
+        "--binder_hotspots",
+        "26-40,58-71",
+        "--design_stages",
+        "1,1,1",
+        "--num_designs",
+        "1",
+        "--mpnn_samples",
+        "2",
+        "--seed",
+        "20261001",
+        "--validation_models",
+        "model_1_ptm,model_2_ptm"
+      ],
+      "returncode": 0,
+      "seconds": 30.241008078679442
+    },
+    {
+      "stage": "reports",
+      "command": [
+        "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/bin/python",
+        "/home/bizon/projects/foldcraft-gpu-20260927/final-check-repo/scripts/write_benchmark_reports.py",
+        "--performance",
+        "/home/bizon/projects/foldcraft-gpu-20260927/performance-02",
+        "--expanded",
+        "/home/bizon/projects/foldcraft-gpu-20260927/expanded-01",
+        "--pipeline",
+        "/home/bizon/projects/foldcraft-gpu-20260927/improvements-pipeline.json",
+        "--destination",
+        "/home/bizon/projects/foldcraft-gpu-20260927/final-check-repo"
+      ],
+      "returncode": 0,
+      "seconds": 0.03211162053048611
+    }
+  ],
+  "prediction_audit": {
+    "status": "passed",
+    "runs": 48,
+    "candidates": 96,
+    "predictions": 192,
+    "protected_interface_residues_checked": 892,
+    "max_pdb_rounding_delta": 0.0005002021789550781,
+    "complete_histories": 48,
+    "notes": "All predicted arrays finite, chain/sequence/model/seed identity exact; PDB coordinates differ only by 0.001 A text rounding."
+  },
+  "evaluator_audit": {
+    "status": "passed",
+    "candidates": 96,
+    "esmfold_records": 96,
+    "boltz_repeats": 192,
+    "paired_seed_records": 96,
+    "notes": "Pairing metadata, ranking inputs, CSV scores, scorer signatures, frozen sequences/structures and raw Boltz selections agree."
+  },
+  "default_storage_replay": {
+    "status": "passed",
+    "absolute_tolerance": 0,
+    "max_pae_delta": 0.0,
+    "max_coordinate_delta": 0.0
+  },
+  "evidence": "/home/bizon/projects/foldcraft-gpu-20260927/improvements-evidence-01"
+}

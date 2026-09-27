@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/bizon/projects/foldcraft-gpu-20260927/improvements-repo/scripts/performance_benchmark.py", line 75, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/bizon/projects/foldcraft-gpu-20260927/improvements-repo/scripts/performance_benchmark.py", line 60, in main
+    record=dict(name=name,case=case,phase=phase,mode=mode,command=cmd,**measured(cmd,env,root/f'{name}.log'))
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bizon/projects/foldcraft-gpu-20260927/improvements-repo/scripts/performance_benchmark.py", line 17, in measured
+    import psutil
+ModuleNotFoundError: No module named 'psutil'

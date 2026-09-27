@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-27T16:12:29.328175+00:00",
+  "stage": "generation",
+  "completed_jobs": 4,
+  "reason": "Implement fold and clash noninferiority gates for ranking, already required by the frozen plan; no threshold or selection-rule change. Independent oracle scoring has not started.",
+  "old_sha256": "51174dcb23d554271e210328895a3c2b25504bf253bcbc6f8f736515aabec0cc",
+  "new_sha256": "3a30b2a8340bc71bab2c5aaf2cbc69eb04f7506206560131d5f92097106edbe5"
+}

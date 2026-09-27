@@ -39,7 +39,7 @@ or are excluded from the supported workflow. “Partial” identifies remaining 
 | E5 | Fixed | Zero iterations bypass minimization; raw and minimized protocols distinguished and GPU-tested. |
 | E6 | Fixed numerical QC | Valid PAE dimensions/finiteness, finite energy/coordinates/forces and verified convergence. Energies remain geometry diagnostics; physical acceptance is not calibrated. |
 | E7 | Fixed A/B configuration selection | A/B fold hotspots use the selected reproduction configuration; protocol is recorded. Historical data is not relabeled. |
-| E8 | Partial scientific validation | New experiments pair applicable streams and aggregate siblings by trajectory. Generic candidate reports no longer print misleading independent-binomial intervals. The pilot reports separate fold/contact metrics. Complete main-path optimization histories now retain every iteration, actual model dispatch and stage seed, with hashed merged artifacts. Family-level uncertainty and a held-out assay panel remain open; no binding-accuracy claim is supported. Independent Boltz random streams in the pilot were not coupled across arms. |
+| E8 | Partial scientific validation | New experiments pair applicable streams and aggregate siblings by trajectory. Generic candidate reports no longer print misleading independent-binomial intervals. The pilot reports separate fold/contact metrics. Complete main-path optimization histories now retain every iteration, actual model dispatch and stage seed, with hashed merged artifacts. Family-level uncertainty and a held-out assay panel remain open; no binding-accuracy claim is supported. Independent Boltz random streams in the original pilot were not coupled across arms; the expanded 48-trajectory study couples both repeats across temperature arms, scores every candidate and reports conditional paired intervals. Its single untouched family does not close broad generalization or assay validation; see [expanded results](../../EXPANDED_BENCHMARK_RESULTS.md). |
 
 ## Other reviewed surfaces
 
@@ -55,8 +55,11 @@ or are excluded from the supported workflow. “Partial” identifies remaining 
 - **Installation:** fresh Linux x86_64/Python 3.12 environment recreated from the
   tested pinned stack. GPU kernels and supervised inference were exercised.
   Other GPU platforms and the independent scorer environments are separate profiles.
-- **Performance:** artifact compaction, model reuse, host-memory profiling and
-  deduplication remain measured optimization work, not closed bug fixes.
+- **Performance:** cold/warm runtime, host/device memory and storage were measured
+  on three complex sizes. Exact replay passed and compact storage became the main
+  CLI default, reducing candidate pickles by 98.7–98.9%. See
+  [performance results](../../PERFORMANCE_RESULTS.md). Additional model reuse and
+  deduplication remain future optimization hypotheses; no speedup is claimed.
 - **Runtime limits:** the main CLI, its scheduler chunks and the experimental
   binder are supervised. Standalone scorers and historical A/B scripts are not
   automatically covered. The benchmark runners retain their own external limits.
@@ -76,7 +79,9 @@ were also corrected in this pass.
 
 R6 provenance and C4 VHH convention migration are implemented and GPU-tested.
 Complete experimental PyRosetta validation when its licensed runtime is available.
-For accuracy work, freeze the expanded held-out protocol and use paired analysis.
+The expanded paired temperature/ranking protocol has been executed and its
+promotion gates applied; neither scientific default was promoted. Broader
+untouched families and assay-defined labels are the next scientific evidence gate.
 Do not reopen historical data as if it had the new provenance or paired design.
 
 Validation and commands: [RELIABILITY_FIXES.md](../../RELIABILITY_FIXES.md) and

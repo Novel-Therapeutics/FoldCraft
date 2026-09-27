@@ -1,0 +1,20 @@
+/home/bizon/projects/foldcraft-gpu-20260927/expanded-01/pool: 96 to score (0 already done / skipped)
+
+Loading weights:   0%|          | 0/4498 [00:00<?, ?it/s]
+Loading weights:   0%|          | 18/4498 [00:00<01:37, 45.99it/s]
+Loading weights:  37%|███▋      | 1673/4498 [00:00<00:00, 4459.14it/s]
+Loading weights: 100%|██████████| 4498/4498 [00:00<00:00, 8553.90it/s]
+[transformers] [1mEsmForProteinFolding LOAD REPORT[0m from: /home/bizon/.cache/huggingface/hub/models--facebook--esmfold_v1/snapshots/75a3841ee059df2bf4d56688166c8fb459ddd97a
+Key                                | Status  |
+-----------------------------------+---------+-
+esm.contact_head.regression.bias   | MISSING |
+esm.contact_head.regression.weight | MISSING |
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  [20/96] pdl1_ankyrin_20261001_baseline_traj_1_1: plddt=85.7 rmsd=3.61
+  [40/96] pd1_barrel_20261002_mpnn_temp_02_traj_1_1: plddt=89.3 rmsd=0.59
+  [60/96] egfr_barrel_20261001_mpnn_temp_02_traj_1_1: plddt=83.1 rmsd=7.6
+  [80/96] ifnar_top7_20261002_mpnn_temp_02_traj_1_1: plddt=88.2 rmsd=0.38
+  [96/96] ifnar_ankyrin_20261002_mpnn_temp_02_traj_1_1: plddt=79.5 rmsd=1.99
+wrote esmfold_* columns -> /home/bizon/projects/foldcraft-gpu-20260927/expanded-01/pool/results.csv

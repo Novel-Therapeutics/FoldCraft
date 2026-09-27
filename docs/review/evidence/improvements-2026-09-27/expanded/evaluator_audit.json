@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "candidates": 96,
+  "esmfold_records": 96,
+  "boltz_repeats": 192,
+  "paired_seed_records": 96,
+  "notes": "Pairing metadata, ranking inputs, CSV scores, scorer signatures, frozen sequences/structures and raw Boltz selections agree."
+}

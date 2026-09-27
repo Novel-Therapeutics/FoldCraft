@@ -1,0 +1,1327 @@
+{
+  "inference_bundle": {
+    "identity": {
+      "schema": 1,
+      "request": {
+        "data_dir": "/home/bizon/projects/foldcraft-gpu-20260927/weights",
+        "mpnn_weight": "soluble",
+        "vhh": false,
+        "validation_models": [
+          "model_1_ptm",
+          "model_2_ptm"
+        ],
+        "repo_root": "/home/bizon/projects/foldcraft-gpu-20260927/improvements-repo"
+      },
+      "package_root": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign",
+      "files": {
+        "af2:model_1_ptm": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_1_ptm.npz",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_1_ptm.npz",
+          "sha256": "5e564f79af5bcd54ccef6e2a6bb0ff01015d01650ebc41d4575e35f0de9ecc84",
+          "size": 373103340
+        },
+        "af2:model_2_ptm": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_2_ptm.npz",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/weights/params/params_model_2_ptm.npz",
+          "sha256": "23645d9a82c4af2ed54cd48a7b3c1c2575dc6aa9fe931adb4d7203ca5f0dc398",
+          "size": 373103340
+        },
+        "loader:__init__.py": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/__init__.py",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/__init__.py",
+          "sha256": "d9b0d50d0bfbc516c5cc3a203c86738f6ef317e355c7acc44032c64fcdc15779",
+          "size": 541
+        },
+        "loader:af/alphafold/model/data.py": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/alphafold/model/data.py",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/alphafold/model/data.py",
+          "sha256": "e532dab64bff98280611f1dc152ee72c556a992abebc778db1c881560cc70936",
+          "size": 1631
+        },
+        "loader:af/model.py": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/model.py",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/af/model.py",
+          "sha256": "d0e7aa65e491f6744e4e8ef26f01a88bc731855f773e68bc3a0ca46cc29e1758",
+          "size": 10294
+        },
+        "loader:mpnn/model.py": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/model.py",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/model.py",
+          "sha256": "301fb7186c3f5c5a2914a0cd57ef4aea64d5d47b9d2e8be6a9a82e8c5842a8dd",
+          "size": 11289
+        },
+        "loader:mpnn/weights_soluble/__init__.py": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/__init__.py",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/__init__.py",
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "size": 1
+        },
+        "mpnn:v_48_010": {
+          "path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/v_48_010.pkl",
+          "resolved_path": "/home/bizon/projects/foldcraft-gpu-20260927/runtime-clean-01/lib/python3.12/site-packages/colabdesign/mpnn/weights_soluble/v_48_010.pkl",
+          "sha256": "b54d7ddbfac98eedd4ee37c93515c91691abb681b59fa2717c178d31cd7dd18a",
+          "size": 6650310
+        }
+      },
+      "packages": {
+        "colabdesign": "1.1.3",
+        "jax": "0.6.2",
+        "jaxlib": "0.6.2",
+        "numpy": "1.26.4",
+        "dm-haiku": "0.0.14",
+        "optax": "0.2.5",
+        "chex": "0.1.89"
+      }
+    },
+    "observed": {
+      "af2:model_1_ptm": [
+        66307,
+        20597281,
+        373103340,
+        1790484198967711962,
+        1790484198968711959
+      ],
+      "af2:model_2_ptm": [
+        66307,
+        20611863,
+        373103340,
+        1790484280148452465,
+        1790484280149452462
+      ],
+      "loader:__init__.py": [
+        66307,
+        21631760,
+        541,
+        1790513135725745235,
+        1790513135725745235
+      ],
+      "loader:af/alphafold/model/data.py": [
+        66307,
+        21631792,
+        1631,
+        1790513135728745224,
+        1790513135728745224
+      ],
+      "loader:af/model.py": [
+        66307,
+        21631766,
+        10294,
+        1790513135726745231,
+        1790513135726745231
+      ],
+      "loader:mpnn/model.py": [
+        66307,
+        21631833,
+        11289,
+        1790513135732745210,
+        1790513135732745210
+      ],
+      "loader:mpnn/weights_soluble/__init__.py": [
+        66307,
+        21631845,
+        1,
+        1790513135902744606,
+        1790513135902744606
+      ],
+      "mpnn:v_48_010": [
+        66307,
+        21631847,
+        6650310,
+        1790513135989744297,
+        1790513135989744297
+      ]
+    }
+  },
+  "packages": {
+    "colabdesign": "1.1.3",
+    "jax": "0.6.2",
+    "jaxlib": "0.6.2",
+    "numpy": "1.26.4",
+    "biopython": "1.88"
+  },
+  "seed_protocol": "sha256-stage-v1",
+  "created_at": "2026-09-27T17:00:15.684377+00:00",
+  "code": {
+    "FoldCraft.py": "2b818e73eab9529bd09e2557f33cdbb27b9bc29426416dc63b8ce81aabf97564",
+    "input_validation.py": "8dd5bfd36a7c9134b57872ef602d6cb55c6244a4dfd284021c268cb85bb95938",
+    "sequence_design.py": "7f2c890144b32e4a5ee488a0c1966c4a77b9bc159580566c7b8820d8a3a9db5f",
+    "cmap_utils.py": "29e990f8e8b303ef6075f669ab8f88ffea9f96969e4712976ccf30cfe2264ad1",
+    "biopython_utils.py": "3665ab5b2184f9f7337724a93855f85be7e9b00c3b388cd52d7cdb5b36a0f526",
+    "run_state.py": "a26977be014dd252c671508a268c7ba17e8471f3b6c925cc4a9b007941da533c",
+    "model_validation.py": "68315b3c652ab0dce3cb959ded37fd33ca4f2370b535b23a52be9763f5318677",
+    "design_objective.py": "83e60cc53b84b4047e07693c08d6b2477d6412d8cde4d651a6e633db58b35938",
+    "run_watchdog.py": "5fb36ade6512688958ba2883a9586f01c4ed601e52f6836a98265250c72f1337",
+    "inference_bundle.py": "dc5dc44ae80accd3050cc1597f8561b221da18ffacb41470a4a2493a80cb0023",
+    "baseline/checkpoint_files.py": "172d364f2c8045b4558c17baa226378fbab15162e01d2560e8959d23c1e7e9f8",
+    "optimization_history.py": "62512a7fa3ab119697a3d60b8b5f9e4a51d40a6d4a43e7aefffd341a9666367a",
+    "prediction_artifacts.py": "533756ab34349a78c9ad13e209b18de56011d5b3ebc0c153325d0cf4ef3e4a06"
+  },
+  "vhh_convention": null,
+  "schema": 1,
+  "status": "complete",
+  "config": {
+    "output_folder": "/home/bizon/projects/foldcraft-gpu-20260927/expanded-01/egfr_top7_20261001_mpnn_temp_02",
+    "sample": false,
+    "target_success": 100,
+    "num_designs": 1,
+    "vhh": false,
+    "vhh_convention": "foldcraft-127-current-v1",
+    "binder_template": "/home/bizon/projects/foldcraft-gpu-20260927/improvements-repo/examples/templates/1qys1.pdb",
+    "target_template": "/home/bizon/projects/foldcraft-gpu-20260927/improvements-repo/examples/targets/egfr.pdb",
+    "target_hotspots": "106-107,128-131,138-153",
+    "binder_hotspots": "26-40,58-71",
+    "binder_mask": "",
+    "binder_chain": "A",
+    "target_chain": "A",
+    "design_stages": "100,100,20",
+    "mpnn_weight": "soluble",
+    "redesign_method": "non-interface",
+    "mpnn_samples": 2,
+    "mpnn_backbone_noise": 0.0,
+    "mpnn_sampling_temp": 0.2,
+    "mpnn_save": false,
+    "artifact_mode": "compact",
+    "loss_mode": "legacy",
+    "validation_models": "model_1_ptm,model_2_ptm",
+    "validation_recycles": 3,
+    "seed": 20261001,
+    "data_dir": "/home/bizon/projects/foldcraft-gpu-20260927/weights",
+    "max_trajectories": 1000,
+    "timeout_minutes": 360.0,
+    "expected_bundle": null,
+    "preflight_only": false
+  },
+  "target": {
+    "source": "/home/bizon/projects/foldcraft-gpu-20260927/improvements-repo/examples/targets/egfr.pdb",
+    "source_sha256": "21882997abef4ef6536c96df909350f80c8a24702020781c8f9676be9b38a5d1",
+    "chain": "A",
+    "residues": [
+      {
+        "original": 1,
+        "model_position": 1
+      },
+      {
+        "original": 2,
+        "model_position": 2
+      },
+      {
+        "original": 3,
+        "model_position": 3
+      },
+      {
+        "original": 4,
+        "model_position": 4
+      },
+      {
+        "original": 5,
+        "model_position": 5
+      },
+      {
+        "original": 6,
+        "model_position": 6
+      },
+      {
+        "original": 7,
+        "model_position": 7
+      },
+      {
+        "original": 8,
+        "model_position": 8
+      },
+      {
+        "original": 9,
+        "model_position": 9
+      },
+      {
+        "original": 10,
+        "model_position": 10
+      },
+      {
+        "original": 11,
+        "model_position": 11
+      },
+      {
+        "original": 12,
+        "model_position": 12
+      },
+      {
+        "original": 13,
+        "model_position": 13
+      },
+      {
+        "original": 14,
+        "model_position": 14
+      },
+      {
+        "original": 15,
+        "model_position": 15
+      },
+      {
+        "original": 16,
+        "model_position": 16
+      },
+      {
+        "original": 17,
+        "model_position": 17
+      },
+      {
+        "original": 18,
+        "model_position": 18
+      },
+      {
+        "original": 19,
+        "model_position": 19
+      },
+      {
+        "original": 20,
+        "model_position": 20
+      },
+      {
+        "original": 21,
+        "model_position": 21
+      },
+      {
+        "original": 22,
+        "model_position": 22
+      },
+      {
+        "original": 23,
+        "model_position": 23
+      },
+      {
+        "original": 24,
+        "model_position": 24
+      },
+      {
+        "original": 25,
+        "model_position": 25
+      },
+      {
+        "original": 26,
+        "model_position": 26
+      },
+      {
+        "original": 27,
+        "model_position": 27
+      },
+      {
+        "original": 28,
+        "model_position": 28
+      },
+      {
+        "original": 29,
+        "model_position": 29
+      },
+      {
+        "original": 30,
+        "model_position": 30
+      },
+      {
+        "original": 31,
+        "model_position": 31
+      },
+      {
+        "original": 32,
+        "model_position": 32
+      },
+      {
+        "original": 33,
+        "model_position": 33
+      },
+      {
+        "original": 34,
+        "model_position": 34
+      },
+      {
+        "original": 35,
+        "model_position": 35
+      },
+      {
+        "original": 36,
+        "model_position": 36
+      },
+      {
+        "original": 37,
+        "model_position": 37
+      },
+      {
+        "original": 38,
+        "model_position": 38
+      },
+      {
+        "original": 39,
+        "model_position": 39
+      },
+      {
+        "original": 40,
+        "model_position": 40
+      },
+      {
+        "original": 41,
+        "model_position": 41
+      },
+      {
+        "original": 42,
+        "model_position": 42
+      },
+      {
+        "original": 43,
+        "model_position": 43
+      },
+      {
+        "original": 44,
+        "model_position": 44
+      },
+      {
+        "original": 45,
+        "model_position": 45
+      },
+      {
+        "original": 46,
+        "model_position": 46
+      },
+      {
+        "original": 47,
+        "model_position": 47
+      },
+      {
+        "original": 48,
+        "model_position": 48
+      },
+      {
+        "original": 49,
+        "model_position": 49
+      },
+      {
+        "original": 50,
+        "model_position": 50
+      },
+      {
+        "original": 51,
+        "model_position": 51
+      },
+      {
+        "original": 52,
+        "model_position": 52
+      },
+      {
+        "original": 53,
+        "model_position": 53
+      },
+      {
+        "original": 54,
+        "model_position": 54
+      },
+      {
+        "original": 55,
+        "model_position": 55
+      },
+      {
+        "original": 56,
+        "model_position": 56
+      },
+      {
+        "original": 57,
+        "model_position": 57
+      },
+      {
+        "original": 58,
+        "model_position": 58
+      },
+      {
+        "original": 59,
+        "model_position": 59
+      },
+      {
+        "original": 60,
+        "model_position": 60
+      },
+      {
+        "original": 61,
+        "model_position": 61
+      },
+      {
+        "original": 62,
+        "model_position": 62
+      },
+      {
+        "original": 63,
+        "model_position": 63
+      },
+      {
+        "original": 64,
+        "model_position": 64
+      },
+      {
+        "original": 65,
+        "model_position": 65
+      },
+      {
+        "original": 66,
+        "model_position": 66
+      },
+      {
+        "original": 67,
+        "model_position": 67
+      },
+      {
+        "original": 68,
+        "model_position": 68
+      },
+      {
+        "original": 69,
+        "model_position": 69
+      },
+      {
+        "original": 70,
+        "model_position": 70
+      },
+      {
+        "original": 71,
+        "model_position": 71
+      },
+      {
+        "original": 72,
+        "model_position": 72
+      },
+      {
+        "original": 73,
+        "model_position": 73
+      },
+      {
+        "original": 74,
+        "model_position": 74
+      },
+      {
+        "original": 75,
+        "model_position": 75
+      },
+      {
+        "original": 76,
+        "model_position": 76
+      },
+      {
+        "original": 77,
+        "model_position": 77
+      },
+      {
+        "original": 78,
+        "model_position": 78
+      },
+      {
+        "original": 79,
+        "model_position": 79
+      },
+      {
+        "original": 80,
+        "model_position": 80
+      },
+      {
+        "original": 81,
+        "model_position": 81
+      },
+      {
+        "original": 82,
+        "model_position": 82
+      },
+      {
+        "original": 83,
+        "model_position": 83
+      },
+      {
+        "original": 84,
+        "model_position": 84
+      },
+      {
+        "original": 85,
+        "model_position": 85
+      },
+      {
+        "original": 86,
+        "model_position": 86
+      },
+      {
+        "original": 87,
+        "model_position": 87
+      },
+      {
+        "original": 88,
+        "model_position": 88
+      },
+      {
+        "original": 89,
+        "model_position": 89
+      },
+      {
+        "original": 90,
+        "model_position": 90
+      },
+      {
+        "original": 91,
+        "model_position": 91
+      },
+      {
+        "original": 92,
+        "model_position": 92
+      },
+      {
+        "original": 93,
+        "model_position": 93
+      },
+      {
+        "original": 94,
+        "model_position": 94
+      },
+      {
+        "original": 95,
+        "model_position": 95
+      },
+      {
+        "original": 96,
+        "model_position": 96
+      },
+      {
+        "original": 97,
+        "model_position": 97
+      },
+      {
+        "original": 98,
+        "model_position": 98
+      },
+      {
+        "original": 99,
+        "model_position": 99
+      },
+      {
+        "original": 100,
+        "model_position": 100
+      },
+      {
+        "original": 101,
+        "model_position": 101
+      },
+      {
+        "original": 102,
+        "model_position": 102
+      },
+      {
+        "original": 103,
+        "model_position": 103
+      },
+      {
+        "original": 104,
+        "model_position": 104
+      },
+      {
+        "original": 105,
+        "model_position": 105
+      },
+      {
+        "original": 106,
+        "model_position": 106
+      },
+      {
+        "original": 107,
+        "model_position": 107
+      },
+      {
+        "original": 108,
+        "model_position": 108
+      },
+      {
+        "original": 109,
+        "model_position": 109
+      },
+      {
+        "original": 110,
+        "model_position": 110
+      },
+      {
+        "original": 111,
+        "model_position": 111
+      },
+      {
+        "original": 112,
+        "model_position": 112
+      },
+      {
+        "original": 113,
+        "model_position": 113
+      },
+      {
+        "original": 114,
+        "model_position": 114
+      },
+      {
+        "original": 115,
+        "model_position": 115
+      },
+      {
+        "original": 116,
+        "model_position": 116
+      },
+      {
+        "original": 117,
+        "model_position": 117
+      },
+      {
+        "original": 118,
+        "model_position": 118
+      },
+      {
+        "original": 119,
+        "model_position": 119
+      },
+      {
+        "original": 120,
+        "model_position": 120
+      },
+      {
+        "original": 121,
+        "model_position": 121
+      },
+      {
+        "original": 122,
+        "model_position": 122
+      },
+      {
+        "original": 123,
+        "model_position": 123
+      },
+      {
+        "original": 124,
+        "model_position": 124
+      },
+      {
+        "original": 125,
+        "model_position": 125
+      },
+      {
+        "original": 126,
+        "model_position": 126
+      },
+      {
+        "original": 127,
+        "model_position": 127
+      },
+      {
+        "original": 128,
+        "model_position": 128
+      },
+      {
+        "original": 129,
+        "model_position": 129
+      },
+      {
+        "original": 130,
+        "model_position": 130
+      },
+      {
+        "original": 131,
+        "model_position": 131
+      },
+      {
+        "original": 132,
+        "model_position": 132
+      },
+      {
+        "original": 133,
+        "model_position": 133
+      },
+      {
+        "original": 134,
+        "model_position": 134
+      },
+      {
+        "original": 135,
+        "model_position": 135
+      },
+      {
+        "original": 136,
+        "model_position": 136
+      },
+      {
+        "original": 137,
+        "model_position": 137
+      },
+      {
+        "original": 138,
+        "model_position": 138
+      },
+      {
+        "original": 139,
+        "model_position": 139
+      },
+      {
+        "original": 140,
+        "model_position": 140
+      },
+      {
+        "original": 141,
+        "model_position": 141
+      },
+      {
+        "original": 142,
+        "model_position": 142
+      },
+      {
+        "original": 143,
+        "model_position": 143
+      },
+      {
+        "original": 144,
+        "model_position": 144
+      },
+      {
+        "original": 145,
+        "model_position": 145
+      },
+      {
+        "original": 146,
+        "model_position": 146
+      },
+      {
+        "original": 147,
+        "model_position": 147
+      },
+      {
+        "original": 148,
+        "model_position": 148
+      },
+      {
+        "original": 149,
+        "model_position": 149
+      },
+      {
+        "original": 150,
+        "model_position": 150
+      },
+      {
+        "original": 151,
+        "model_position": 151
+      },
+      {
+        "original": 152,
+        "model_position": 152
+      },
+      {
+        "original": 153,
+        "model_position": 153
+      },
+      {
+        "original": 154,
+        "model_position": 154
+      },
+      {
+        "original": 155,
+        "model_position": 155
+      },
+      {
+        "original": 156,
+        "model_position": 156
+      },
+      {
+        "original": 157,
+        "model_position": 157
+      },
+      {
+        "original": 158,
+        "model_position": 158
+      },
+      {
+        "original": 159,
+        "model_position": 159
+      },
+      {
+        "original": 160,
+        "model_position": 160
+      },
+      {
+        "original": 161,
+        "model_position": 161
+      },
+      {
+        "original": 162,
+        "model_position": 162
+      },
+      {
+        "original": 163,
+        "model_position": 163
+      },
+      {
+        "original": 164,
+        "model_position": 164
+      },
+      {
+        "original": 165,
+        "model_position": 165
+      },
+      {
+        "original": 166,
+        "model_position": 166
+      },
+      {
+        "original": 167,
+        "model_position": 167
+      },
+      {
+        "original": 168,
+        "model_position": 168
+      },
+      {
+        "original": 169,
+        "model_position": 169
+      },
+      {
+        "original": 170,
+        "model_position": 170
+      },
+      {
+        "original": 171,
+        "model_position": 171
+      },
+      {
+        "original": 172,
+        "model_position": 172
+      },
+      {
+        "original": 173,
+        "model_position": 173
+      },
+      {
+        "original": 174,
+        "model_position": 174
+      }
+    ],
+    "alternate_location_policy": "first atom record, matching reviewed ColabDesign"
+  },
+  "binder": {
+    "source": "/home/bizon/projects/foldcraft-gpu-20260927/improvements-repo/examples/templates/1qys1.pdb",
+    "source_sha256": "b1a4d72d9cb44230343ce1f38b50567c069b67bd40c667b44f97cfe46aa3953d",
+    "chain": "A",
+    "residues": [
+      {
+        "original": 1,
+        "model_position": 1
+      },
+      {
+        "original": 2,
+        "model_position": 2
+      },
+      {
+        "original": 3,
+        "model_position": 3
+      },
+      {
+        "original": 4,
+        "model_position": 4
+      },
+      {
+        "original": 5,
+        "model_position": 5
+      },
+      {
+        "original": 6,
+        "model_position": 6
+      },
+      {
+        "original": 7,
+        "model_position": 7
+      },
+      {
+        "original": 8,
+        "model_position": 8
+      },
+      {
+        "original": 9,
+        "model_position": 9
+      },
+      {
+        "original": 10,
+        "model_position": 10
+      },
+      {
+        "original": 11,
+        "model_position": 11
+      },
+      {
+        "original": 12,
+        "model_position": 12
+      },
+      {
+        "original": 13,
+        "model_position": 13
+      },
+      {
+        "original": 14,
+        "model_position": 14
+      },
+      {
+        "original": 15,
+        "model_position": 15
+      },
+      {
+        "original": 16,
+        "model_position": 16
+      },
+      {
+        "original": 17,
+        "model_position": 17
+      },
+      {
+        "original": 18,
+        "model_position": 18
+      },
+      {
+        "original": 19,
+        "model_position": 19
+      },
+      {
+        "original": 20,
+        "model_position": 20
+      },
+      {
+        "original": 21,
+        "model_position": 21
+      },
+      {
+        "original": 22,
+        "model_position": 22
+      },
+      {
+        "original": 23,
+        "model_position": 23
+      },
+      {
+        "original": 24,
+        "model_position": 24
+      },
+      {
+        "original": 25,
+        "model_position": 25
+      },
+      {
+        "original": 26,
+        "model_position": 26
+      },
+      {
+        "original": 27,
+        "model_position": 27
+      },
+      {
+        "original": 28,
+        "model_position": 28
+      },
+      {
+        "original": 29,
+        "model_position": 29
+      },
+      {
+        "original": 30,
+        "model_position": 30
+      },
+      {
+        "original": 31,
+        "model_position": 31
+      },
+      {
+        "original": 32,
+        "model_position": 32
+      },
+      {
+        "original": 33,
+        "model_position": 33
+      },
+      {
+        "original": 34,
+        "model_position": 34
+      },
+      {
+        "original": 35,
+        "model_position": 35
+      },
+      {
+        "original": 36,
+        "model_position": 36
+      },
+      {
+        "original": 37,
+        "model_position": 37
+      },
+      {
+        "original": 38,
+        "model_position": 38
+      },
+      {
+        "original": 39,
+        "model_position": 39
+      },
+      {
+        "original": 40,
+        "model_position": 40
+      },
+      {
+        "original": 41,
+        "model_position": 41
+      },
+      {
+        "original": 42,
+        "model_position": 42
+      },
+      {
+        "original": 43,
+        "model_position": 43
+      },
+      {
+        "original": 44,
+        "model_position": 44
+      },
+      {
+        "original": 45,
+        "model_position": 45
+      },
+      {
+        "original": 46,
+        "model_position": 46
+      },
+      {
+        "original": 47,
+        "model_position": 47
+      },
+      {
+        "original": 48,
+        "model_position": 48
+      },
+      {
+        "original": 49,
+        "model_position": 49
+      },
+      {
+        "original": 50,
+        "model_position": 50
+      },
+      {
+        "original": 51,
+        "model_position": 51
+      },
+      {
+        "original": 52,
+        "model_position": 52
+      },
+      {
+        "original": 53,
+        "model_position": 53
+      },
+      {
+        "original": 54,
+        "model_position": 54
+      },
+      {
+        "original": 55,
+        "model_position": 55
+      },
+      {
+        "original": 56,
+        "model_position": 56
+      },
+      {
+        "original": 57,
+        "model_position": 57
+      },
+      {
+        "original": 58,
+        "model_position": 58
+      },
+      {
+        "original": 59,
+        "model_position": 59
+      },
+      {
+        "original": 60,
+        "model_position": 60
+      },
+      {
+        "original": 61,
+        "model_position": 61
+      },
+      {
+        "original": 62,
+        "model_position": 62
+      },
+      {
+        "original": 63,
+        "model_position": 63
+      },
+      {
+        "original": 64,
+        "model_position": 64
+      },
+      {
+        "original": 65,
+        "model_position": 65
+      },
+      {
+        "original": 66,
+        "model_position": 66
+      },
+      {
+        "original": 67,
+        "model_position": 67
+      },
+      {
+        "original": 68,
+        "model_position": 68
+      },
+      {
+        "original": 69,
+        "model_position": 69
+      },
+      {
+        "original": 70,
+        "model_position": 70
+      },
+      {
+        "original": 71,
+        "model_position": 71
+      },
+      {
+        "original": 72,
+        "model_position": 72
+      },
+      {
+        "original": 73,
+        "model_position": 73
+      },
+      {
+        "original": 74,
+        "model_position": 74
+      },
+      {
+        "original": 75,
+        "model_position": 75
+      },
+      {
+        "original": 76,
+        "model_position": 76
+      },
+      {
+        "original": 77,
+        "model_position": 77
+      },
+      {
+        "original": 78,
+        "model_position": 78
+      },
+      {
+        "original": 79,
+        "model_position": 79
+      },
+      {
+        "original": 80,
+        "model_position": 80
+      },
+      {
+        "original": 81,
+        "model_position": 81
+      },
+      {
+        "original": 82,
+        "model_position": 82
+      },
+      {
+        "original": 83,
+        "model_position": 83
+      },
+      {
+        "original": 84,
+        "model_position": 84
+      },
+      {
+        "original": 85,
+        "model_position": 85
+      },
+      {
+        "original": 86,
+        "model_position": 86
+      },
+      {
+        "original": 87,
+        "model_position": 87
+      },
+      {
+        "original": 88,
+        "model_position": 88
+      },
+      {
+        "original": 89,
+        "model_position": 89
+      },
+      {
+        "original": 90,
+        "model_position": 90
+      },
+      {
+        "original": 91,
+        "model_position": 91
+      },
+      {
+        "original": 92,
+        "model_position": 92
+      }
+    ],
+    "alternate_location_policy": "first atom record, matching reviewed ColabDesign"
+  },
+  "mapped_hotspots": {
+    "target": "106,107,128,129,130,131,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153",
+    "binder": "26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,58,59,60,61,62,63,64,65,66,67,68,69,70,71",
+    "binder_mask": ""
+  },
+  "optimization_history": "three-stage-log-v1",
+  "validation_artifacts": "per-model-v1",
+  "validation_policy": "all_models_pass",
+  "validation_models": [
+    "model_1_ptm",
+    "model_2_ptm"
+  ],
+  "validation_recycles": 3,
+  "updated_at": "2026-09-27T17:06:40.483299+00:00",
+  "candidate_names": [
+    "traj_1_0",
+    "traj_1_1"
+  ],
+  "candidate_records": [
+    {
+      "name": "traj_1_0",
+      "sequence": "RKVCNGIGIGEFKDSLSINATNIKHFKNCTSISGDLHILPVAFRGDSFTHTPPLDPQELDILKTVKEITGFLLIQAWPENRTDLHAFENLEIIRGRTKQHGQFSLAVVSLNITSLGLRSLKEISDGDVIISGNKNLCYANTINWKKLFGTSGQKTKIISNRGENSCKATGQVCH/MIKLTIKYKSNGVEKEYVFEVETKEEVENKIAEALILMPPYSIESVTITIEAPDEETAKELKELAVEALGGLGDKEIKVELKDGKVTVTLEV"
+    },
+    {
+      "name": "traj_1_1",
+      "sequence": "RKVCNGIGIGEFKDSLSINATNIKHFKNCTSISGDLHILPVAFRGDSFTHTPPLDPQELDILKTVKEITGFLLIQAWPENRTDLHAFENLEIIRGRTKQHGQFSLAVVSLNITSLGLRSLKEISDGDVIISGNKNLCYANTINWKKLFGTSGQKTKIISNRGENSCKATGQVCH/MITLTITTVSNGVTTKRVFKVETKEEVENKLAESLILMPPYAADSVTVEIEAPNEELGEELEKMAVAALGGLGEKKITVKKENGKVTVTLEV"
+    }
+  ],
+  "artifacts": {
+    "designs/traj_1_0.validation.json": "e60581de4c3f0ad780f794453c0b26a1c743de39fcafeea3d9db4c07469cdcd7",
+    "designs/traj_1_0.pdb": "9aa1b94b0495025faec353552394ee57e61c0de31d69fc596bee39a43bf10324",
+    "designs/traj_1_0.pickle": "9d48691b795c0353ad0a9f74ffb2c066f57782c09e2e943bd381ccc2e61c8531",
+    "designs/traj_1_0.model_2_ptm.pdb": "b2318af55a4a9c25f6a4bfe57c6aa5411eed013f82e46f7a7c4d740458c3dfe2",
+    "designs/traj_1_0.model_2_ptm.pickle": "406fee58bce2a4f41338f9d9731d353f2eb49fd2316b321ffe9860ba3c7fdd90",
+    "designs/traj_1_1.validation.json": "f5c2b9a768c7b4c5b467a94142e657e580dc6b2a7661b0bc03f4ad870a9c6bf0",
+    "designs/traj_1_1.pdb": "da949d6213cd430782a4d931786bc6375d681b991789ddd2d7190be3ac6470db",
+    "designs/traj_1_1.pickle": "bdc8a4f1b13ecfcdfd4deb29d77e112b395bdb9e4cd49be68f87eb3a5a49c937",
+    "designs/traj_1_1.model_2_ptm.pdb": "698e2bd56e5d7d4c259138727f075fb747405f283e891cd38f9a14034afe6735",
+    "designs/traj_1_1.model_2_ptm.pickle": "9d7067ff8f27e9d0154ff5f54d18b3feba706ae4bf74eac99d7d145fa114d2cd",
+    "template.pdb": "fd9817095f49c535711d3608a2bda52bf5ffab2311f1708996076492f41a1973",
+    "attempts.json": "ff7ee30aa7ec6f0b0293dcf5476246bdc4cd5b3c37bdacebfae0e08493fcd975",
+    "optimization/traj_1.json": "754ba67498971bc94a03322d92e4597d94988faa843295d45dde63b5a0895d4b",
+    "fold_cond_cmap.npy": "348ff175d2a28cd140855f06b08c647175a04aa0a97995858952698c83c5ea37",
+    "fold_cond_cmap_mask.npy": "3bed71f500a0e84a7ed6518f3a5b03539d29027189e9c9b25049190de677bf86",
+    "inputs/binder.pdb": "fd9817095f49c535711d3608a2bda52bf5ffab2311f1708996076492f41a1973",
+    "inputs/target.pdb": "06dd26c7fef82d1a4b19eda4786c775d919db4721524a25641ea361ca13e6a26"
+  },
+  "supervision": {
+    "timeout_minutes": 360.0,
+    "elapsed_seconds": 384.7872112290934,
+    "returncode": 0,
+    "reason": "exited"
+  }
+}

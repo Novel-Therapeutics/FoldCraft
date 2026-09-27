@@ -1,0 +1,7 @@
+{
+  "status": "failed",
+  "runs": [],
+  "parity": {},
+  "scope": "3 design iterations, 2 candidates, 2 validation models, 3 recycles; performance screen",
+  "error": "No module named 'psutil'"
+}

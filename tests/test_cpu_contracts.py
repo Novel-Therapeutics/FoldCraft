@@ -375,7 +375,7 @@ def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successfu
         def __init__(self, **kwargs):
             self._model_names=['model_1_ptm','model_2_ptm']
             self.opt={'weights':{}}; self._len=3; self._wt_aatype=np.zeros(3,dtype=int)
-            self.aux={'cmap':np.eye(3), 'log':{'plddt':.9 if successful else .1,'i_pae':.1,'i_ptm':.9,'cmap_loss_binder':.2},'all':{'pae':np.zeros((1,6,6))}}
+            self.aux={'cmap':np.eye(3), 'log':{'plddt':.9 if successful else .1,'i_pae':.1,'i_ptm':.9,'cmap_loss_binder':.2},'all':{'pae':np.zeros((1,6,6)), 'atom_positions':np.zeros((1,6,37,3))}}
         def prep_inputs(self, **kwargs): pass
         def set_seq(self, seq): pass
         def predict(self, **kwargs):
@@ -423,6 +423,12 @@ def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successfu
         assert len(validations)==len(results)*len(expected_models)
         assert [c['models'][0] for c in validations]==expected_models*len(results)
         assert all(c['num_models']==1 for c in validations)
+    for artifact in (out/'designs').glob('*.pickle'):
+        import pickle
+        with artifact.open('rb') as stream:
+            saved=pickle.load(stream)
+        assert saved['_artifact_schema']=='foldcraft-prediction-compact-v1'
+        np.testing.assert_array_equal(saved['atom_positions'],np.zeros((1,6,37,3)))
     attempts = json.loads((out/"attempts.json").read_text())
     assert all(row["accepted"] is successful for row in attempts if row["candidate"] is not None)
     assert len(design_calls)==(1 if sample and successful else 2)

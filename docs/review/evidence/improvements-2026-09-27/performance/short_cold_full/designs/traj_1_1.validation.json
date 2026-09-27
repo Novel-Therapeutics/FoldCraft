@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sequence": "TDESCTFKISLRNFRSILSWELKNHSIVPTHYTLLYTIMSKPEDLKVVKNCANTTRSFCDLTDEWRSTHEAYVTVLEGFSGNTTLFSCSHNFWLAIDMSFEPP/SASGGSGSSLPGSPSPSSSSSSNSSPEEEEKEKEKELEEKEKAKKEKEEEDEEEEEEPPPPPEAPPPPPPPPPGSEESLESEESEEEPEEEE",
+  "primary_model": "model_1_ptm",
+  "model_order": [
+    "model_1_ptm",
+    "model_2_ptm"
+  ],
+  "policy": "all_models_pass",
+  "artifact_mode": "full",
+  "models": {
+    "model_1_ptm": {
+      "metrics": {
+        "plddt": 0.6541145443916321,
+        "i_pae": 0.8367505669593811,
+        "i_ptm": 0.11936409771442413,
+        "cmap_loss_binder": 3.7501871585845947
+      },
+      "seed": 3310865754,
+      "prediction_seconds": 0.4715214092284441,
+      "requested_recycles": 3,
+      "actual_recycles": 3,
+      "executed_models": [
+        "model_1_ptm"
+      ],
+      "passed": false,
+      "pdb_sha256": "bdf5f2994122a8beebb2d4146c20a520a28c673a4e768afe0c64b8b7ee8d975a",
+      "pickle_sha256": "f4efd5206342c6056eb8adb1d04e902f4d564939f282a4c47ff9298dee76eccb"
+    },
+    "model_2_ptm": {
+      "metrics": {
+        "plddt": 0.6275583207607269,
+        "i_pae": 0.9093815088272095,
+        "i_ptm": 0.07262416183948517,
+        "cmap_loss_binder": 3.7454214096069336
+      },
+      "seed": 272957063,
+      "prediction_seconds": 0.4545578407123685,
+      "requested_recycles": 3,
+      "actual_recycles": 3,
+      "executed_models": [
+        "model_2_ptm"
+      ],
+      "passed": false,
+      "pdb_sha256": "624663eac8ceb91a5c9553cbe6a71962da7552b78082fb8c50cca27a7844cb07",
+      "pickle_sha256": "b1e3a0243d71b45e02336196b9dccf156cc1ca08c15c14b88d45d11085cb62cb"
+    }
+  },
+  "all_models_pass": false,
+  "model_disagreement": false
+}

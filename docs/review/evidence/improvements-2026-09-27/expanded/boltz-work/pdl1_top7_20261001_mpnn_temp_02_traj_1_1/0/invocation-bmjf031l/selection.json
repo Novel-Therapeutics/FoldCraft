@@ -1,0 +1,13 @@
+{
+  "confidence_file": "boltz_results_complex/predictions/complex/confidence_complex_model_0.json",
+  "confidence_sha256": "cefeb6648468727038b73b1695acfb93f1d5d9feb1c8e09806f644a1cafcf061",
+  "structure_file": "boltz_results_complex/predictions/complex/complex_model_0.cif",
+  "structure_sha256": "db0621462a082f7af27d2748c892dfe0274a7c30c857f84d3f1388928c87ec01",
+  "target_sequence": "TVTVPKDLYVVEYGSNMTIECKFPVEKQLDLAALIVYWEMEDKNIIQFVHGEEDLKVQHSSYRQRARLLKDQLSLGNAALQITDVKLQDAGVYRCMISYGGADYKRITVKVN",
+  "binder_sequence": "EGVASATYESDGTVVEETFTVKSFSEGIRVGTEVARTVEEKNAKRVTVTVSGLSPELLELVAPLLRAGLERVGIENLTETVKDGSVTFTGEK",
+  "diffusion_samples": 1,
+  "use_msa": false,
+  "checkpoint": "/home/bizon/.boltz/boltz2_conf.ckpt",
+  "cache": "/home/bizon/.boltz",
+  "seed": 1089763283
+}

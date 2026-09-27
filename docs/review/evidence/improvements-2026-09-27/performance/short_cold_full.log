@@ -1,0 +1,10 @@
+CMAP of binder (monomer plddt: 0.908)
+Stage 1: running (logits → soft)
+1 models [0] recycles 0 hard 0 soft 1 temp 1 loss 3.69 plddt 0.63 ptm 0.47 i_ptm 0.08 cmap_loss_binder 3.69
+Stage 2: running (soft → hard)
+2 models [1] recycles 0 hard 0 soft 1 temp 0.01 loss 3.76 plddt 0.60 ptm 0.48 i_ptm 0.06 cmap_loss_binder 3.76
+Stage 3: running (hard)
+3 models [0, 1] recycles 0 hard 1 soft 1 temp 0.01 loss 3.75 plddt 0.58 ptm 0.48 i_ptm 0.08 cmap_loss_binder 3.75
+Predicting sequences with AF2_ptm...
+predict: traj_1_0 plddt: 0.674, i_pae: 0.840, i_ptm: 0.110, cmap_loss: 3.749
+predict: traj_1_1 plddt: 0.654, i_pae: 0.837, i_ptm: 0.119, cmap_loss: 3.750

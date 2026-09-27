@@ -56,3 +56,19 @@ def test_ranking_never_uses_independent_oracle_outcomes():
     b=ranking_choices(frame)
     assert a.name.tolist()==b.name.tolist()
     assert not a[a.policy=='fold_contact_rank'].name.eq(frame.iloc[0]['name']).any()
+
+
+def test_ranking_gate_detects_fold_regression_despite_higher_proxy_yield():
+    frame,plan=fixture()
+    # Quota ranking exchanges a clashing, low-proxy but closer-fold candidate
+    # for a clean, high-proxy candidate with unacceptable template drift.
+    frame['rmsd']=1.;frame['iptm']=.8;frame['interchain_clashes']=10
+    frame['esmfold_plddt']=60.
+    alternate=frame.name.str.endswith('_1')
+    frame.loc[alternate,['rmsd','iptm','interchain_clashes','esmfold_plddt']]=[3.,.7,0,80.]
+    frame['family']=frame['case']  # two holdout families in this synthetic fixture
+    report,_,_=analyze(frame,plan)
+    gates=report['ranking_promotion']['gates']
+    assert gates['enough_unseen_families'] and gates['primary_gain'] and gates['interval_positive']
+    assert not gates['fold_noninferiority'] and gates['clash_noninferiority']
+    assert not report['ranking_promotion']['promote']

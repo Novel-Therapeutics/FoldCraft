@@ -35,7 +35,7 @@ def parse_args(argv=None):
     parser.add_argument('--mpnn_sampling_temp', type=float, default=0.1, help="Sampling temperature for amino acids 0.0-1.0 (default: 0.1)")
     parser.add_argument('--mpnn_save', action='store_true', help='Whether to save MPNN sampled sequences')
       
-    parser.add_argument('--artifact_mode', choices=['full','compact'], default='full', help='Prediction storage; compact retains exact arrays needed by scoring/replay')
+    parser.add_argument('--artifact_mode', choices=['full','compact'], default='compact', help='Prediction storage; compact retains exact arrays needed by scoring/replay')
     parser.add_argument('--loss_mode',choices=['legacy','normalized_pairs'],default='legacy',help='Experimental design objective; legacy is the unchanged default')
     parser.add_argument('--validation_models', default='model_1_ptm', help='Comma-separated validation models; two-model acceptance remains experimental pending accuracy benchmarks')
     parser.add_argument('--validation_recycles', type=int, default=3)

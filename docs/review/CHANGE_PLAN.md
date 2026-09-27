@@ -10,8 +10,14 @@ close every original review item: see [the closure status](CLOSURE_STATUS.md). S
 [CPU fixes](../../CPU_FIXES.md), [GPU checks](../../GPU_FIXES.md),
 [scorer fixes](../../SCORING_FIXES.md), [inference provenance](../../INFERENCE_PROVENANCE.md)
 [closure validation](../../CLOSURE_VALIDATION.md) and [pilot results](../../PILOT_RESULTS.md).
-The plan below is the original ordering; its historical “Immediate next PR”
-section is superseded by the next experiments in the pilot report.
+The four-item follow-up is complete: freeze the validated baseline, profile and
+promote a lossless storage improvement, execute an expanded paired structural
+benchmark, and apply prespecified promotion criteria. See
+[performance results](../../PERFORMANCE_RESULTS.md) and
+[expanded results](../../EXPANDED_BENCHMARK_RESULTS.md). This completes that
+bounded study, not every future hypothesis in I1–I5 or assay validation.
+The plan below preserves the original ordering; its historical “Immediate next PR”
+section is superseded by the current closure status and benchmark reports.
 
 The objective is reliable fold-conditioned binder design and defensible candidate
 ranking. FoldCraft uses pretrained predictors; there is no foundation-model

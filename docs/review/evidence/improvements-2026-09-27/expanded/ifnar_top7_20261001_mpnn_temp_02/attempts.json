@@ -1,0 +1,35 @@
+[
+  {
+    "trajectory": "traj_1",
+    "candidate": null,
+    "accepted": null,
+    "metrics": {
+      "plddt": 0.8102118670940399,
+      "i_pae": 0.24685807526111603,
+      "i_ptm": 0.6013911962509155,
+      "cmap_loss_binder": 0.8348326683044434
+    }
+  },
+  {
+    "trajectory": "traj_1",
+    "candidate": "traj_1_0",
+    "accepted": false,
+    "metrics": {
+      "plddt": 0.8790947645902634,
+      "i_pae": 0.5528075098991394,
+      "i_ptm": 0.27500009536743164,
+      "cmap_loss_binder": 1.6412748098373413
+    }
+  },
+  {
+    "trajectory": "traj_1",
+    "candidate": "traj_1_1",
+    "accepted": true,
+    "metrics": {
+      "plddt": 0.8802976682782173,
+      "i_pae": 0.26970744132995605,
+      "i_ptm": 0.5582804679870605,
+      "cmap_loss_binder": 1.027616024017334
+    }
+  }
+]

@@ -67,13 +67,14 @@ def analyze(frame,protocol):
         a=part[part.arm=='baseline'].set_index(['case','seed']);b=part[part.arm=='mpnn_temp_02'].set_index(['case','seed']).reindex(a.index)
         comparisons[split]={m:bootstrap_mean((b[m]-a[m]).to_numpy(),clusters=a.index.get_level_values("case")) for m in METRICS}
     selected=ranking_choices(frame)
-    rank=[];rank_delta={}
+    rank=[];rank_delta={};rank_metric_deltas={}
     for split in ('development','holdout'):
         part=selected[selected.split==split]
         for policy,rows in part.groupby('policy'):
             rank.append(dict(split=split,policy=policy,selected=len(rows),metrics={m:float(rows[m].mean()) for m in METRICS}))
         a=part[part.policy=='af2_rank'].set_index(['case','seed']);b=part[part.policy=='fold_contact_rank'].set_index(['case','seed']).reindex(a.index)
-        rank_delta[split]=bootstrap_mean((b.proxy_pass.astype(float)-a.proxy_pass.astype(float)).to_numpy(),clusters=a.index.get_level_values("case"))
+        rank_metric_deltas[split]={m:bootstrap_mean((b[m].astype(float)-a[m].astype(float)).to_numpy(),clusters=a.index.get_level_values("case")) for m in METRICS}
+        rank_delta[split]=rank_metric_deltas[split]['proxy_pass']
     # Confidence policy coverage on the identical frozen pool is descriptive.
     policies=[]
     for split in ('development','holdout'):
@@ -91,9 +92,11 @@ def analyze(frame,protocol):
                clash_noninferiority=temp['interchain_clashes']['mean']<=threshold['max_clash_regression'])
     ranking_gates=dict(enough_unseen_families=gates['enough_unseen_families'],
         primary_gain=rank_delta['holdout']['mean']>=threshold['primary_gain_pp']/100,
-        interval_positive=rank_delta['holdout']['conditional_95_interval'][0]>0)
+        interval_positive=rank_delta['holdout']['conditional_95_interval'][0]>0,
+        fold_noninferiority=rank_metric_deltas['holdout']['rmsd']['mean']<=threshold['max_template_rmsd_regression_A'],
+        clash_noninferiority=rank_metric_deltas['holdout']['interchain_clashes']['mean']<=threshold['max_clash_regression'])
     report=dict(status='complete',candidates=len(frame),paired_blocks=len(blocks)//2,
-        summaries=summaries,temperature_deltas=comparisons,ranking=rank,ranking_deltas=rank_delta,confidence_selection=policies,
+        summaries=summaries,temperature_deltas=comparisons,ranking=rank,ranking_deltas=rank_delta,ranking_metric_deltas=rank_metric_deltas,confidence_selection=policies,
         temperature_promotion=dict(promote=all(gates.values()),gates=gates),
         ranking_promotion=dict(promote=all(ranking_gates.values()),gates=ranking_gates),
         family_means=blocks.groupby(['split','family','arm'])[METRICS].mean().reset_index().to_dict('records'),

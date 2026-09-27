@@ -154,3 +154,25 @@ VHH runs can explicitly select `--vhh_convention`; the default remains
 for historical-map reproduction. Completed trajectories now retain all optimization
 iterations in `optimization/`, including actual model dispatch and stage seeds.
 See [the closure validation report](CLOSURE_VALIDATION.md) for remaining scope.
+
+### Validated improvements
+
+The engineering baseline is frozen at `validated-baseline-2026-09-27` (`c5e3f78`).
+The completed [performance benchmark](PERFORMANCE_RESULTS.md) reduced candidate
+pickle storage by 98.7–98.9% while preserving sequences, scores, acceptance,
+PAE and unrounded coordinates exactly across three complex sizes.
+
+The main CLI now defaults to `--artifact_mode compact`. It keeps exact arrays
+needed for structural scoring and replay, plus model-specific receipts and
+complete optimization histories. Use `--artifact_mode full` to retain additional
+diagnostic tensors. Compact artifacts carry the schema
+`foldcraft-prediction-compact-v1`; external consumers needing other auxiliary
+fields should request full output. Earlier run formats remain readable, and
+resume signatures distinguish the storage setting. This storage result does not
+establish a speedup or reduced GPU memory use.
+
+The [expanded structural study](EXPANDED_BENCHMARK_RESULTS.md) evaluates MPNN
+temperatures and fixed-quota ranking across four targets and three scaffolds.
+Scientific defaults remain unchanged under the prespecified promotion criteria.
+Independent model agreement is a structural proxy; binding accuracy requires
+assay-defined labels and broader untouched target-family validation.

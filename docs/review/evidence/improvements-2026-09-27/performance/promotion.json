@@ -1,0 +1,111 @@
+{
+  "status": "passed",
+  "comparisons": [
+    {
+      "case": "short",
+      "full_warm_seconds": 31.036841672845185,
+      "compact_warm_seconds": 30.029501852579415,
+      "full_candidate_bytes": 81587664,
+      "compact_candidate_bytes": 1081604,
+      "storage_reduction": 0.986743044879922,
+      "warm_runtime_ratio": 0.967543739440888,
+      "full_rss_bytes": 2523725824,
+      "compact_rss_bytes": 2692268032,
+      "full_gpu_bytes": 5505024000,
+      "compact_gpu_bytes": 5505024000
+    },
+    {
+      "case": "medium",
+      "full_warm_seconds": 34.199955637566745,
+      "compact_warm_seconds": 34.24335339758545,
+      "full_candidate_bytes": 121067428,
+      "compact_candidate_bytes": 1483396,
+      "storage_reduction": 0.9877473567869964,
+      "warm_runtime_ratio": 1.0012689419974288,
+      "full_rss_bytes": 3033276416,
+      "compact_rss_bytes": 2991960064,
+      "full_gpu_bytes": 7652507648,
+      "compact_gpu_bytes": 7652507648
+    },
+    {
+      "case": "long",
+      "full_warm_seconds": 43.53325339127332,
+      "compact_warm_seconds": 42.47150853648782,
+      "full_candidate_bytes": 272135008,
+      "compact_candidate_bytes": 2917664,
+      "storage_reduction": 0.9892786157082737,
+      "warm_runtime_ratio": 0.9756107165884749,
+      "full_rss_bytes": 3384299520,
+      "compact_rss_bytes": 3024269312,
+      "full_gpu_bytes": 11949572096,
+      "compact_gpu_bytes": 11949572096
+    }
+  ],
+  "parity": {
+    "short-cold-compact": {
+      "status": "passed",
+      "absolute_tolerance": 0,
+      "max_pae_delta": 0.0,
+      "max_coordinate_delta": 0.0
+    },
+    "short-warm-full": {
+      "status": "passed",
+      "absolute_tolerance": 0,
+      "max_pae_delta": 0.0,
+      "max_coordinate_delta": 0.0
+    },
+    "short-warm-compact": {
+      "status": "passed",
+      "absolute_tolerance": 0,
+      "max_pae_delta": 0.0,
+      "max_coordinate_delta": 0.0
+    },
+    "medium-cold-compact": {
+      "status": "passed",
+      "absolute_tolerance": 0,
+      "max_pae_delta": 0.0,
+      "max_coordinate_delta": 0.0
+    },
+    "medium-warm-full": {
+      "status": "passed",
+      "absolute_tolerance": 0,
+      "max_pae_delta": 0.0,
+      "max_coordinate_delta": 0.0
+    },
+    "medium-warm-compact": {
+      "status": "passed",
+      "absolute_tolerance": 0,
+      "max_pae_delta": 0.0,
+      "max_coordinate_delta": 0.0
+    },
+    "long-cold-compact": {
+      "status": "passed",
+      "absolute_tolerance": 0,
+      "max_pae_delta": 0.0,
+      "max_coordinate_delta": 0.0
+    },
+    "long-warm-full": {
+      "status": "passed",
+      "absolute_tolerance": 0,
+      "max_pae_delta": 0.0,
+      "max_coordinate_delta": 0.0
+    },
+    "long-warm-compact": {
+      "status": "passed",
+      "absolute_tolerance": 0,
+      "max_pae_delta": 0.0,
+      "max_coordinate_delta": 0.0
+    }
+  },
+  "gates": {
+    "exact_replay": true,
+    "storage_reduction": true,
+    "warm_runtime": true
+  },
+  "promote_compact": true,
+  "limitations": [
+    "One observation per case/mode/phase; no speedup significance claim.",
+    "RSS sums process memory and may double-count shared pages; GPU used includes device baseline; sampled every second.",
+    "Three-iteration trajectories measure setup/storage, not full-search throughput."
+  ]
+}

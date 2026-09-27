@@ -1,0 +1,543 @@
+{
+  "status": "complete",
+  "candidates": 96,
+  "paired_blocks": 24,
+  "summaries": [
+    {
+      "split": "development",
+      "arm": "baseline",
+      "paired_blocks": 18,
+      "families": 2,
+      "metrics": {
+        "proxy_pass": 0.2222222222222222,
+        "rmsd": 3.480277777777778,
+        "esmfold_rmsd": 2.4927777777777775,
+        "esmfold_plddt": 81.41388888888888,
+        "boltz2_iptm": 0.4717185358620352,
+        "epitope_coverage": 0.0662589951805638,
+        "interchain_clashes": 2.138888888888889
+      }
+    },
+    {
+      "split": "development",
+      "arm": "mpnn_temp_02",
+      "paired_blocks": 18,
+      "families": 2,
+      "metrics": {
+        "proxy_pass": 0.19444444444444445,
+        "rmsd": 3.450277777777778,
+        "esmfold_rmsd": 2.730555555555556,
+        "esmfold_plddt": 80.54444444444444,
+        "boltz2_iptm": 0.4607942454102967,
+        "epitope_coverage": 0.07154056908958867,
+        "interchain_clashes": 1.9722222222222223
+      }
+    },
+    {
+      "split": "holdout",
+      "arm": "baseline",
+      "paired_blocks": 6,
+      "families": 1,
+      "metrics": {
+        "proxy_pass": 0.25,
+        "rmsd": 3.6441666666666666,
+        "esmfold_rmsd": 2.6341666666666668,
+        "esmfold_plddt": 80.56666666666666,
+        "boltz2_iptm": 0.38675397758682567,
+        "epitope_coverage": 0.24305555555555558,
+        "interchain_clashes": 1.75
+      }
+    },
+    {
+      "split": "holdout",
+      "arm": "mpnn_temp_02",
+      "paired_blocks": 6,
+      "families": 1,
+      "metrics": {
+        "proxy_pass": 0.25,
+        "rmsd": 3.345833333333333,
+        "esmfold_rmsd": 2.335833333333333,
+        "esmfold_plddt": 80.99999999999999,
+        "boltz2_iptm": 0.3848416917026043,
+        "epitope_coverage": 0.2152777777777778,
+        "interchain_clashes": 1.0833333333333333
+      }
+    }
+  ],
+  "temperature_deltas": {
+    "development": {
+      "proxy_pass": {
+        "mean": -0.027777777777777776,
+        "conditional_95_interval": [
+          -0.1111111111111111,
+          0.05555555555555555
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "rmsd": {
+        "mean": -0.030000000000000002,
+        "conditional_95_interval": [
+          -0.5677777777777779,
+          0.4727777777777777
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "esmfold_rmsd": {
+        "mean": 0.23777777777777778,
+        "conditional_95_interval": [
+          -0.5949999999999999,
+          1.1766666666666665
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "esmfold_plddt": {
+        "mean": -0.8694444444444464,
+        "conditional_95_interval": [
+          -1.941666666666666,
+          0.1777777777777748
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "boltz2_iptm": {
+        "mean": -0.010924290451738573,
+        "conditional_95_interval": [
+          -0.06368744497497877,
+          0.03547987769254379
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "epitope_coverage": {
+        "mean": 0.005281573909024883,
+        "conditional_95_interval": [
+          -0.005941770647653008,
+          0.019640852974186288
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "interchain_clashes": {
+        "mean": -0.16666666666666666,
+        "conditional_95_interval": [
+          -1.2222222222222223,
+          0.8055555555555556
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      }
+    },
+    "holdout": {
+      "proxy_pass": {
+        "mean": 0.0,
+        "conditional_95_interval": [
+          0.0,
+          0.0
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "rmsd": {
+        "mean": -0.2983333333333331,
+        "conditional_95_interval": [
+          -0.9224999999999994,
+          0.07500000000000007
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "esmfold_rmsd": {
+        "mean": -0.2983333333333337,
+        "conditional_95_interval": [
+          -0.970000000000001,
+          0.15000000000000002
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "esmfold_plddt": {
+        "mean": 0.4333333333333312,
+        "conditional_95_interval": [
+          -0.02499999999999858,
+          1.0499999999999972
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "boltz2_iptm": {
+        "mean": -0.0019122858842214041,
+        "conditional_95_interval": [
+          -0.051242263987660436,
+          0.027687614783644676
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "epitope_coverage": {
+        "mean": -0.027777777777777773,
+        "conditional_95_interval": [
+          -0.14583333333333334,
+          0.06250000000000003
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "interchain_clashes": {
+        "mean": -0.6666666666666666,
+        "conditional_95_interval": [
+          -1.75,
+          0.75
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      }
+    }
+  },
+  "ranking": [
+    {
+      "split": "development",
+      "policy": "af2_rank",
+      "selected": 18,
+      "metrics": {
+        "proxy_pass": 0.2777777777777778,
+        "rmsd": 3.117222222222222,
+        "esmfold_rmsd": 1.8577777777777778,
+        "esmfold_plddt": 81.59444444444445,
+        "boltz2_iptm": 0.46933563157088226,
+        "epitope_coverage": 0.06578860500429126,
+        "interchain_clashes": 2.2222222222222223
+      }
+    },
+    {
+      "split": "development",
+      "policy": "fold_contact_rank",
+      "selected": 18,
+      "metrics": {
+        "proxy_pass": 0.2777777777777778,
+        "rmsd": 3.082777777777777,
+        "esmfold_rmsd": 1.8549999999999995,
+        "esmfold_plddt": 81.62777777777778,
+        "boltz2_iptm": 0.4796686381515529,
+        "epitope_coverage": 0.08065953654188947,
+        "interchain_clashes": 1.6666666666666667
+      }
+    },
+    {
+      "split": "holdout",
+      "policy": "af2_rank",
+      "selected": 6,
+      "metrics": {
+        "proxy_pass": 0.16666666666666666,
+        "rmsd": 3.5700000000000003,
+        "esmfold_rmsd": 2.5399999999999996,
+        "esmfold_plddt": 79.75,
+        "boltz2_iptm": 0.345736272012194,
+        "epitope_coverage": 0.3055555555555555,
+        "interchain_clashes": 2.5
+      }
+    },
+    {
+      "split": "holdout",
+      "policy": "fold_contact_rank",
+      "selected": 6,
+      "metrics": {
+        "proxy_pass": 0.16666666666666666,
+        "rmsd": 3.348333333333333,
+        "esmfold_rmsd": 3.1283333333333334,
+        "esmfold_plddt": 78.64999999999999,
+        "boltz2_iptm": 0.3311171978712082,
+        "epitope_coverage": 0.3055555555555555,
+        "interchain_clashes": 1.3333333333333333
+      }
+    }
+  ],
+  "ranking_deltas": {
+    "development": {
+      "mean": 0.0,
+      "conditional_95_interval": [
+        0.0,
+        0.0
+      ],
+      "n_paired_trajectories": 18,
+      "n_case_clusters": 9
+    },
+    "holdout": {
+      "mean": 0.0,
+      "conditional_95_interval": [
+        0.0,
+        0.0
+      ],
+      "n_paired_trajectories": 6,
+      "n_case_clusters": 3
+    }
+  },
+  "ranking_metric_deltas": {
+    "development": {
+      "proxy_pass": {
+        "mean": 0.0,
+        "conditional_95_interval": [
+          0.0,
+          0.0
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "rmsd": {
+        "mean": -0.03444444444444442,
+        "conditional_95_interval": [
+          -0.09999999999999996,
+          0.0
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "esmfold_rmsd": {
+        "mean": -0.0027777777777777835,
+        "conditional_95_interval": [
+          -0.060000000000000005,
+          0.05166666666666666
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "esmfold_plddt": {
+        "mean": 0.03333333333333223,
+        "conditional_95_interval": [
+          -0.21666666666666856,
+          0.31666666666666526
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "boltz2_iptm": {
+        "mean": 0.010333006580670677,
+        "conditional_95_interval": [
+          -0.00461446742216746,
+          0.035613487164179496
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "epitope_coverage": {
+        "mean": 0.014870931537598208,
+        "conditional_95_interval": [
+          0.0,
+          0.03956228956228956
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      },
+      "interchain_clashes": {
+        "mean": -0.5555555555555556,
+        "conditional_95_interval": [
+          -1.6666666666666667,
+          0.0
+        ],
+        "n_paired_trajectories": 18,
+        "n_case_clusters": 9
+      }
+    },
+    "holdout": {
+      "proxy_pass": {
+        "mean": 0.0,
+        "conditional_95_interval": [
+          0.0,
+          0.0
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "rmsd": {
+        "mean": -0.22166666666666668,
+        "conditional_95_interval": [
+          -0.665,
+          0.0
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "esmfold_rmsd": {
+        "mean": 0.5883333333333333,
+        "conditional_95_interval": [
+          0.0,
+          1.7649999999999997
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "esmfold_plddt": {
+        "mean": -1.099999999999999,
+        "conditional_95_interval": [
+          -3.299999999999997,
+          0.0
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "boltz2_iptm": {
+        "mean": -0.014619074140985816,
+        "conditional_95_interval": [
+          -0.04385722242295745,
+          0.0
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "epitope_coverage": {
+        "mean": 0.0,
+        "conditional_95_interval": [
+          0.0,
+          0.0
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      },
+      "interchain_clashes": {
+        "mean": -1.1666666666666667,
+        "conditional_95_interval": [
+          -3.5,
+          0.0
+        ],
+        "n_paired_trajectories": 6,
+        "n_case_clusters": 3
+      }
+    }
+  },
+  "confidence_selection": [
+    {
+      "split": "development",
+      "policy": "single_model_pass",
+      "selected": 11,
+      "total": 72,
+      "proxy_pass_fraction": 0.6363636363636364
+    },
+    {
+      "split": "development",
+      "policy": "two_model_pass",
+      "selected": 10,
+      "total": 72,
+      "proxy_pass_fraction": 0.7
+    },
+    {
+      "split": "holdout",
+      "policy": "single_model_pass",
+      "selected": 8,
+      "total": 24,
+      "proxy_pass_fraction": 0.5
+    },
+    {
+      "split": "holdout",
+      "policy": "two_model_pass",
+      "selected": 1,
+      "total": 24,
+      "proxy_pass_fraction": 0.0
+    }
+  ],
+  "temperature_promotion": {
+    "promote": false,
+    "gates": {
+      "enough_unseen_families": false,
+      "primary_gain": false,
+      "interval_positive": false,
+      "fold_noninferiority": true,
+      "clash_noninferiority": true
+    }
+  },
+  "ranking_promotion": {
+    "promote": false,
+    "gates": {
+      "enough_unseen_families": false,
+      "primary_gain": false,
+      "interval_positive": false,
+      "fold_noninferiority": true,
+      "clash_noninferiority": true
+    }
+  },
+  "family_means": [
+    {
+      "split": "development",
+      "family": "EGFR",
+      "arm": "baseline",
+      "proxy_pass": 0.16666666666666666,
+      "rmsd": 3.7075,
+      "esmfold_rmsd": 2.723333333333333,
+      "esmfold_plddt": 80.0,
+      "boltz2_iptm": 0.4384630285203457,
+      "epitope_coverage": 0.045454545454545435,
+      "interchain_clashes": 2.0
+    },
+    {
+      "split": "development",
+      "family": "EGFR",
+      "arm": "mpnn_temp_02",
+      "proxy_pass": 0.08333333333333333,
+      "rmsd": 3.0425,
+      "esmfold_rmsd": 1.8825,
+      "esmfold_plddt": 79.925,
+      "boltz2_iptm": 0.4467509550352891,
+      "epitope_coverage": 0.03787878787878785,
+      "interchain_clashes": 2.25
+    },
+    {
+      "split": "development",
+      "family": "immune_checkpoint",
+      "arm": "baseline",
+      "proxy_pass": 0.25,
+      "rmsd": 3.3666666666666667,
+      "esmfold_rmsd": 2.3775,
+      "esmfold_plddt": 82.12083333333334,
+      "boltz2_iptm": 0.48834628953288,
+      "epitope_coverage": 0.07666122004357298,
+      "interchain_clashes": 2.2083333333333335
+    },
+    {
+      "split": "development",
+      "family": "immune_checkpoint",
+      "arm": "mpnn_temp_02",
+      "proxy_pass": 0.25,
+      "rmsd": 3.654166666666667,
+      "esmfold_rmsd": 3.154583333333333,
+      "esmfold_plddt": 80.85416666666667,
+      "boltz2_iptm": 0.46781589059780043,
+      "epitope_coverage": 0.0883714596949891,
+      "interchain_clashes": 1.8333333333333333
+    },
+    {
+      "split": "holdout",
+      "family": "IFNAR",
+      "arm": "baseline",
+      "proxy_pass": 0.25,
+      "rmsd": 3.6441666666666666,
+      "esmfold_rmsd": 2.6341666666666668,
+      "esmfold_plddt": 80.56666666666668,
+      "boltz2_iptm": 0.38675397758682567,
+      "epitope_coverage": 0.24305555555555555,
+      "interchain_clashes": 1.75
+    },
+    {
+      "split": "holdout",
+      "family": "IFNAR",
+      "arm": "mpnn_temp_02",
+      "proxy_pass": 0.25,
+      "rmsd": 3.345833333333333,
+      "esmfold_rmsd": 2.335833333333333,
+      "esmfold_plddt": 81.0,
+      "boltz2_iptm": 0.3848416917026043,
+      "epitope_coverage": 0.2152777777777778,
+      "interchain_clashes": 1.0833333333333333
+    }
+  ],
+  "diversity": {
+    "baseline": 48,
+    "mpnn_temp_02": 48
+  },
+  "limitations": [
+    "Proxy outcomes are not binding labels.",
+    "Only one unseen family; confidence intervals condition on these observed targets/scaffolds.",
+    "Sibling draws are aggregated; closely related case outcomes may remain correlated. No population-level family-generalization claim.",
+    "Fixed draw comparison, not equal-GPU-time search yield."
+  ]
+}
