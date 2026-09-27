@@ -39,7 +39,7 @@ def start_run(folder, args, prepared, *, inference_bundle=None):
     from input_validation import VHH_CONVENTION
     root = Path(__file__).resolve().parent
     code = {name:sha256(root / name) for name in ('FoldCraft.py','input_validation.py',
-        'sequence_design.py','cmap_utils.py','biopython_utils.py','run_state.py','model_validation.py','design_objective.py','run_watchdog.py','inference_bundle.py','baseline/checkpoint_files.py','optimization_history.py')}
+        'sequence_design.py','cmap_utils.py','biopython_utils.py','run_state.py','model_validation.py','design_objective.py','run_watchdog.py','inference_bundle.py','baseline/checkpoint_files.py','optimization_history.py','prediction_artifacts.py')}
     packages = {}
     for package in ('colabdesign','jax','jaxlib','numpy','biopython'):
         try:

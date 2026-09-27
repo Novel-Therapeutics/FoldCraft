@@ -46,7 +46,7 @@ def candidate_files(folder, candidate, *, require_receipt=False):
     return paths
 
 
-def validate_candidate(predictor, sequence, binder_len, folder, candidate, models, recycles, seed):
+def validate_candidate(predictor, sequence, binder_len, folder, candidate, models, recycles, seed, *, artifact_mode='full'):
     """Predict each model separately and publish its own structure/PAE/metrics.
 
     Primary columns/files describe the first model exactly. The separate
@@ -55,6 +55,7 @@ def validate_candidate(predictor, sequence, binder_len, folder, candidate, model
     A receipt is published only after every requested model has completed.
     """
     from run_state import sha256, stage_seed
+    from prediction_artifacts import prediction_artifact
     names = model_names(models)
     if recycles < 0:
         raise ValueError('Validation recycles must be nonnegative')
@@ -68,7 +69,7 @@ def validate_candidate(predictor, sequence, binder_len, folder, candidate, model
     if receipt_path.exists() or any(p.exists() for p in paths):
         raise FileExistsError(f'Refusing to overwrite validation artifacts for {candidate}')
     report = dict(schema=1, sequence=sequence, primary_model=names[0], model_order=names,
-                  policy='all_models_pass', models={})
+                  policy='all_models_pass', artifact_mode=artifact_mode, models={})
     for index, name in enumerate(names):
         # Preserve the historical first-model seed. Additional models get stable
         # separate streams, independent of execution order or RNG consumption.
@@ -94,7 +95,7 @@ def validate_candidate(predictor, sequence, binder_len, folder, candidate, model
         atomic_write(pdb_path, lambda path: predictor.save_pdb(path, get_best=False))
         def dump(path):
             with open(path, 'wb') as stream:
-                pickle.dump(predictor.aux['all'], stream, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(prediction_artifact(predictor.aux['all'], artifact_mode), stream, protocol=pickle.HIGHEST_PROTOCOL)
         atomic_write(pickle_path, dump)
         report['models'][name] = dict(metrics=metrics, seed=model_seed, prediction_seconds=prediction_seconds,
             requested_recycles=recycles, actual_recycles=int(log['recycles']),

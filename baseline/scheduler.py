@@ -88,7 +88,7 @@ def chunk_signature(chunk):
     root = Path(chunk.runtime_bundle['identity']['request']['repo_root']) if chunk.runtime_bundle else Path(__file__).resolve().parents[1]
     code = {name: sha256(root / name) for name in (
         'FoldCraft.py', 'input_validation.py', 'cmap_utils.py', 'biopython_utils.py',
-        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py', 'model_validation.py', 'design_objective.py', 'run_watchdog.py', 'inference_bundle.py', 'baseline/checkpoint_files.py', 'optimization_history.py')}
+        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py', 'model_validation.py', 'design_objective.py', 'run_watchdog.py', 'inference_bundle.py', 'baseline/checkpoint_files.py', 'optimization_history.py','prediction_artifacts.py')}
     return dict(schema=2, inference_bundle=chunk.runtime_bundle['identity'] if chunk.runtime_bundle else None, seed=stage_seed(0, chunk.fold, chunk.idx), fold=chunk.fold, index=chunk.idx, trajectories=chunk.chunk_traj,
                 spec=spec, code=code)
 

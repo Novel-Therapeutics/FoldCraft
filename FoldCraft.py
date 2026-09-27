@@ -35,6 +35,7 @@ def parse_args(argv=None):
     parser.add_argument('--mpnn_sampling_temp', type=float, default=0.1, help="Sampling temperature for amino acids 0.0-1.0 (default: 0.1)")
     parser.add_argument('--mpnn_save', action='store_true', help='Whether to save MPNN sampled sequences')
       
+    parser.add_argument('--artifact_mode', choices=['full','compact'], default='full', help='Prediction storage; compact retains exact arrays needed by scoring/replay')
     parser.add_argument('--loss_mode',choices=['legacy','normalized_pairs'],default='legacy',help='Experimental design objective; legacy is the unchanged default')
     parser.add_argument('--validation_models', default='model_1_ptm', help='Comma-separated validation models; two-model acceptance remains experimental pending accuracy benchmarks')
     parser.add_argument('--validation_recycles', type=int, default=3)
@@ -112,6 +113,7 @@ def execute(args, prepared, state):
     from model_validation import validate_candidate
     from design_objective import contact_objective
     from optimization_history import save_history
+    from prediction_artifacts import prediction_artifact
     from functools import partial
     from inference_bundle import guarded_load, AF2_TEMPLATE_MODELS, MPNN_MODEL_NAME
     bundle = state.get('inference_bundle')
@@ -372,7 +374,7 @@ def execute(args, prepared, state):
             af_model.save_pdb(f"{folder_name}/traj/{name}.pdb", get_best=False)
 
             with open(f'{folder_name}/traj/{name}.pickle', 'wb') as handle:
-                pickle.dump(af_model.aux['all'], handle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(prediction_artifact(af_model.aux['all'], args.artifact_mode), handle, protocol=pickle.HIGHEST_PROTOCOL)
             
             #Running ProteinMPNN on designed trajectory
             interface = list(hotspot_residues(f"{folder_name}/traj/{name}.pdb", 'B').keys())
@@ -401,7 +403,7 @@ def execute(args, prepared, state):
                                            )
             for num, seq in enumerate(samples['seq']):
                 report = validate_candidate(af_model, seq, binder_len, folder_name, f'{name}_{num}',
-                                            args.validation_models, args.validation_recycles, stage_seed(args.seed, 'validation', i, num))
+                                            args.validation_models, args.validation_recycles, stage_seed(args.seed, 'validation', i, num), artifact_mode=args.artifact_mode)
                 log = report['models'][report['primary_model']]['metrics']
                 print(f"predict: {name}_{num} plddt: {log['plddt']:.3f}, i_pae: {(log['i_pae']):.3f}, i_ptm: {log['i_ptm']:.3f}, cmap_loss: {log['cmap_loss_binder']:.3f}")
                 record_attempt(name, f'{name}_{num}', log, bool(report['all_models_pass']))
@@ -459,7 +461,7 @@ def execute(args, prepared, state):
             record_attempt(name, None, af_model.aux['log'], None)
             af_model.save_pdb(f"{folder_name}/traj/{name}.pdb", get_best=False)
             with open(f'{folder_name}/traj/{name}.pickle', 'wb') as handle:
-                pickle.dump(af_model.aux['all'], handle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(prediction_artifact(af_model.aux['all'], args.artifact_mode), handle, protocol=pickle.HIGHEST_PROTOCOL)
             if af_model.aux['log']['i_pae']<0.4 and af_model.aux['log']['plddt']>.7:
                 #Running ProteinMPNN on designed trajectory
                 interface = list(hotspot_residues(f"{folder_name}/traj/{name}.pdb", 'B').keys())
@@ -487,7 +489,7 @@ def execute(args, prepared, state):
                 # the live `passed`, which is incremented on each accepted design.
                 for num, seq in iter_until_target(samples['seq'], lambda: passed, success_target):
                     report = validate_candidate(af_model, seq, binder_len, folder_name, f'{name}_{num}',
-                                                args.validation_models, args.validation_recycles, stage_seed(args.seed, 'validation', i, num))
+                                                args.validation_models, args.validation_recycles, stage_seed(args.seed, 'validation', i, num), artifact_mode=args.artifact_mode)
                     log = report['models'][report['primary_model']]['metrics']
                     print(f"predict: {name}_{num} plddt: {log['plddt']:.3f}, i_pae: {(log['i_pae']):.3f}, i_ptm: {log['i_ptm']:.3f}, cmap_loss: {log['cmap_loss_binder']:.3f}")
                     accepted = report['all_models_pass']
