@@ -14,6 +14,7 @@ import uuid
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from run_watchdog import DEFAULT_TIMEOUT_MINUTES
 from run_state import completed_run, finish_run, sha256, stage_seed
 from baseline.result_io import atomic_write, write_json
 
@@ -83,7 +84,7 @@ def chunk_signature(chunk):
     root = Path(__file__).resolve().parents[1]
     code = {name: sha256(root / name) for name in (
         'FoldCraft.py', 'input_validation.py', 'cmap_utils.py', 'biopython_utils.py',
-        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py', 'model_validation.py')}
+        'sequence_design.py', 'run_state.py', 'baseline/result_io.py', 'baseline/scheduler.py', 'model_validation.py', 'design_objective.py', 'run_watchdog.py')}
     return dict(schema=1, seed=stage_seed(0, chunk.fold, chunk.idx), fold=chunk.fold, index=chunk.idx, trajectories=chunk.chunk_traj,
                 spec=spec, code=code)
 
@@ -239,7 +240,7 @@ def gpu_mem_gb(smi, gpu):
     return free_mib / 1024.0, total_mib / 1024.0
 
 
-def launch(chunk, repro, gpu, repo, python):
+def launch(chunk, repro, gpu, repo, python, timeout_minutes=DEFAULT_TIMEOUT_MINUTES):
     out = chunk.out_dir(repro)
     if os.path.exists(out):
         if completed_run(out):
@@ -258,7 +259,7 @@ def launch(chunk, repro, gpu, repo, python):
            "--target_template", chunk.spec["target"],
            "--target_hotspots", chunk.spec["target_hotspots"],
            "--binder_hotspots", chunk.spec["binder_hotspots"],
-           "--num_designs", str(chunk.chunk_traj)]
+           "--num_designs", str(chunk.chunk_traj), "--timeout_minutes", str(timeout_minutes)]
     try:
         return subprocess.Popen(cmd, cwd=repo, env=env, stdout=log,
                                 stderr=subprocess.STDOUT, start_new_session=True), log
@@ -268,7 +269,7 @@ def launch(chunk, repro, gpu, repo, python):
 
 
 def _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
-        poll_s=15, log=print):
+        poll_s=15, log=print, timeout_minutes=DEFAULT_TIMEOUT_MINUTES):
     """Schedule all folds' chunks across ``gpus`` with memory gating, then merge."""
     # absolute paths so makedirs/exists checks here and FoldCraft's cwd=repo child
     # resolve to the same directories regardless of the scheduler's own cwd.
@@ -311,7 +312,7 @@ def _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
                     free, _ = gpu_mem_gb(smi, g)
                     for j, c in enumerate(queue):
                         if can_launch(c, free, committed[g], caps[g], headroom_gb):
-                            proc, lf = launch(c, repro, g, repo, python)
+                            proc, lf = launch(c, repro, g, repo, python, timeout_minutes)
                             committed[g] += c.mem_gb
                             running[proc.pid] = (proc, lf, c, g)
                             queue.pop(j)
@@ -390,7 +391,9 @@ def _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python,
 
 
 
-def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s=15, log=print):
+def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s=15, log=print, timeout_minutes=DEFAULT_TIMEOUT_MINUTES):
+    if not math.isfinite(timeout_minutes) or timeout_minutes <= 0:
+        raise ValueError("Timeout must be finite and positive")
     folds, repo, repro = resolve_paths(folds, repo, repro)
     if not gpus or len(set(gpus)) != len(gpus) or not math.isfinite(headroom_gb) or not math.isfinite(poll_s) or headroom_gb < 0 or poll_s < 0:
         raise ValueError('GPUs, nonnegative headroom and polling interval are required')
@@ -418,7 +421,7 @@ def run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s=15, lo
         for f in folds:
             read_chain(f['target'], 'A').selection(f['target_hotspots'])
             read_chain(f['template'], 'A').selection(f['binder_hotspots'], allow_empty=True)
-        return _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s, log)
+        return _run(folds, repro, repo, gpus, chunk_traj, headroom_gb, python, poll_s, log, timeout_minutes)
 
 
 # ---------------------------------------------------------------------------
@@ -450,10 +453,14 @@ def main(argv=None):
     p.add_argument("--chunk-traj", type=int, default=10,
                    help="trajectories per chunk (smaller = finer load balance)")
     p.add_argument("--headroom-gb", type=float, default=2.0)
+    p.add_argument("--timeout-minutes", type=float, default=DEFAULT_TIMEOUT_MINUTES,
+                   help="Wall-time limit per chunk attempt, including model loading (default: 360)")
     p.add_argument("--dry-run", action="store_true",
                    help="print the schedule plan and exit (no GPU needed)")
     args = p.parse_args(argv)
 
+    if not math.isfinite(args.timeout_minutes) or args.timeout_minutes <= 0:
+        p.error("--timeout-minutes must be finite and positive")
     folds = load_config(resolve_config_path(args.config, args.repo))
     if args.dry_run:
         # resolve paths so the done/todo split reflects the real repro dir
@@ -469,7 +476,7 @@ def main(argv=None):
     smi = _nvidia_smi()
     gpus = discover_gpus(smi) if args.gpus == "auto" else args.gpus.split(",")
     run(folds, args.repro, args.repo, gpus, args.chunk_traj,
-        args.headroom_gb, args.python)
+        args.headroom_gb, args.python, timeout_minutes=args.timeout_minutes)
 
 
 if __name__ == "__main__":

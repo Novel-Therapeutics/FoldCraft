@@ -1,6 +1,7 @@
 # Paired structural pilot — 27 September 2026
 
-The correctness changes and corrected baseline are complete. This pilot does
+The priority pipeline fixes were tested and a corrected baseline was tagged.
+See [review status](docs/review/CLOSURE_STATUS.md) for remaining limitations. This pilot does
 **not** support promoting either experimental setting or changing the default
 acceptance policy. It tests structural consistency, not experimental binding
 accuracy.
@@ -127,3 +128,8 @@ remains on Bizon at `/home/bizon/projects/foldcraft-gpu-20260927/pilot-01`.
 
 The code suite passed 190 CPU tests before GPU execution. The generation and
 evaluation outcome records provide the real-GPU checks for this pilot.
+
+A later audit corrected fixed-count `attempts.json` records that marked every
+retained candidate accepted. This pilot's selections came from per-model
+validation receipts, which were correct; its results are unchanged. Historical
+artifacts remain intact. See `RELIABILITY_FIXES.md`.

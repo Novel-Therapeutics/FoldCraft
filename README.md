@@ -27,9 +27,22 @@ First you need to install FoldCraft repository on your local machine:
 
 `git clone https://github.com/Novel-Therapeutics/FoldCraft.git`
 
-Then run code below to download all requirements, ColabDesign and AlphaFold2 weights
+The supported installer reproduces the validated **Linux x86_64, Python 3.12,
+NVIDIA CUDA 12** runtime in a fresh virtual environment. Provide the existing
+official AlphaFold2 `model_1_ptm` and `model_2_ptm` checkpoints; the installer
+verifies their hashes and does not download weights or overwrite environments.
 
-`bash install_foldcraft.sh --cuda '12.4' --pkg_manager 'conda'`
+```bash
+bash install_foldcraft.sh --env .venv --python python3.12 --data-dir /path/to/weights
+source .venv/bin/activate
+```
+
+This replaces the old `--cuda`/`--pkg_manager` interface. The installer pins the
+core FoldCraft runtime, checks dependencies and GPU kernels, and records its
+results in the new environment. Independent scorers and experimental BindCraft
+have separate dependencies; see [SCORING_FIXES.md](SCORING_FIXES.md).
+Use `--data_dir /path/to/weights` when running the design CLI. Run a GPU smoke
+suite before a campaign; the installation probe alone does not test inference.
 
 NOTE: AlphaFold3, which has been used in the manuscript for VHH design benchmarking, should be installed separately as described in official <a href='https://github.com/google-deepmind/alphafold3'>repository</a>
 
@@ -44,7 +57,7 @@ To run FoldCraft locally you will need the following files:
 --target_hotspots     ->      Residue ranges for target hotspots, e.g., "14-30,80-81,90-102" (required)
 ```
 
-Then you should activate you conda/mamba ebvionment with `conda activate FoldCraft` and run FoldCraft with following comand:
+Activate the virtual environment with `source .venv/bin/activate`, then run FoldCraft:
 ```
 python FoldCraft.py \
       --output_folder design_1qys_pd_l1 \
@@ -120,3 +133,11 @@ baseline is tagged `corrected-baseline-2026-09-27`. See the
 [paired pilot results](PILOT_RESULTS.md) for completed tests of two-model
 selection, contact-loss normalization and MPNN temperature. No experimental
 setting was promoted to a default, and binding-accuracy gains remain unproven.
+
+Normal design runs now have an external wall-time supervisor. Use
+`--timeout_minutes N` on `FoldCraft.py`, or `--timeout-minutes N` on the scheduler
+(per chunk attempt); the default is 360 minutes. Timeout returns code 124, stops
+the owned worker group, and preserves partial artifacts with `timed_out` status.
+A retry starts fresh; mid-trajectory resume is not implemented. See
+[RELIABILITY_FIXES.md](RELIABILITY_FIXES.md) and the item-by-item
+[review status](docs/review/CLOSURE_STATUS.md) for remaining restrictions and work.

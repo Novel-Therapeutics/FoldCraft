@@ -5,7 +5,8 @@ Prepared 26 September 2026 for `codex/correctness-and-validation`, reviewed at
 record of completed fixes. See [the deep review](DEEP_REVIEW.md) for evidence.
 
 **Implementation update, 27 September:** the CPU and GPU correctness work,
-scorer validation and corrected-baseline tag are complete. See
+scorer validation and corrected-baseline tag have been tested. This does not
+close every original review item: see [the closure status](CLOSURE_STATUS.md). See
 [CPU fixes](../../CPU_FIXES.md), [GPU checks](../../GPU_FIXES.md),
 [scorer fixes](../../SCORING_FIXES.md) and [pilot results](../../PILOT_RESULTS.md).
 The plan below is the original ordering; its historical “Immediate next PR”

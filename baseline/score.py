@@ -8,11 +8,11 @@ directory.
 
 Usage:  python baseline/score.py [runs_dir]        (default: baseline/runs)
 """
-import math
 import os
 import sys
 
 import pandas as pd
+import numpy as np
 try:
     from .gates import af2_mask, validation_status
 except ImportError:
@@ -30,15 +30,6 @@ GATE = [
 ]
 # reported, NOT a success gate; shown between iPAE and RMSD when the column exists.
 IPSAE = ("ipSAE>.3", lambda r: r["ipsae"] > 0.3)
-
-
-def wilson(k, n):
-    z = 1.96
-    ph = k / n
-    d = 1 + z * z / n
-    c = (ph + z * z / (2 * n)) / d
-    h = z * math.sqrt(ph * (1 - ph) / n + z * z / (4 * n * n)) / d
-    return (round(100 * ph, 1), round(100 * max(0, c - h), 1), round(100 * min(1, c + h), 1))
 
 
 def main():
@@ -64,11 +55,19 @@ def main():
         missing = [fold for (fold, _, _), h in zip(folds, has) if not h]
         sys.exit(f"inconsistent: some results.csv have an 'ipsae' column and some don't "
                  f"({missing}) — run `python baseline/add_ipsae.py {RUNS}` on all folds.")
+    for fold, df, csvf in folds:
+        required = ['plddt','iptm','ipae','rmsd']
+        if df.empty or any(c not in df for c in required):
+            sys.exit(f'{csvf}: nonempty data and all acceptance metrics are required')
+        values = df[required].apply(pd.to_numeric, errors='coerce').to_numpy(dtype=float)
+        if not np.isfinite(values).all():
+            sys.exit(f'{csvf}: unknown/nonfinite acceptance metrics; cannot report an exact success rate')
+    print('Descriptive candidate counts only; siblings are correlated, so no binomial confidence interval is reported.')
     show_ipsae = all(has)
 
     disp = GATE[:3] + ([IPSAE] if show_ipsae else []) + GATE[3:]  # report column order
     print(f"{'fold':9} {'n':>3} " + " ".join(f"{k:>8}" for k, _ in disp)
-          + f" {'ALL':>4} {'success% [95%CI]':>20}")
+          + f" {'ALL':>4} {'success%':>10}")
     for fold, df, csvf in folds:
         if show_ipsae and df["ipsae"].isna().any():
             sys.exit(f"{csvf}: rows are missing an ipsae value.")
@@ -78,9 +77,9 @@ def main():
         if validation_status(df).isna().any():
             sys.exit(f'{csvf}: unknown ensemble decisions; cannot report an exact success rate')
         npass = int((af2_mask(df) & (df['rmsd'] < 3.5)).sum())
-        sr, lo, hi = wilson(npass, n)
+        sr = round(100*npass/n, 1)
         print(f"{fold:9} {n:>3} " + " ".join(f"{c:>8}" for c in counts)
-              + f" {npass:>4} {f'{sr}% [{lo}-{hi}]':>20}")
+              + f" {npass:>4} {str(sr)+'%':>10}")
 
 
 if __name__ == "__main__":

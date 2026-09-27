@@ -2,6 +2,7 @@ import argparse
 import os
 from input_validation import validate_controls, preflight
 from run_state import start_run, finish_run, stage_seed
+from run_watchdog import DEFAULT_TIMEOUT_MINUTES
 
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description="Run fold-conditioned binder design")
@@ -37,6 +38,8 @@ def parse_args(argv=None):
     parser.add_argument('--data_dir', default=os.path.dirname(os.path.abspath(__file__)), help='AlphaFold weight directory, or its parent containing params/')
     parser.add_argument('--max_trajectories', type=int, default=1000,
                         help='Maximum attempted trajectories in --sample mode (default: 1000)')
+    parser.add_argument('--timeout_minutes', type=float, default=DEFAULT_TIMEOUT_MINUTES,
+                        help='Wall-time limit for inference including model loading (default: 360 minutes)')
     parser.add_argument('--preflight_only', action='store_true', help='Validate inputs on CPU without loading model weights')
     args = parser.parse_args(argv)
     try:
@@ -44,7 +47,7 @@ def parse_args(argv=None):
     except ValueError as exc:
         parser.error(str(exc))
 
-def main():
+def main(*, supervised=True):
     args = parse_args()
     try:
         prepared = preflight(args)
@@ -57,7 +60,11 @@ def main():
         raise SystemExit('Output folder already exists; choose a new directory to prevent stale-run reuse.')
     state = start_run(args.output_folder, args, prepared)
     try:
-        execute(args, prepared, state)
+        if supervised:
+            from run_watchdog import supervise
+            supervise(args)
+        else:  # Internal CPU test adapter; CLI always uses supervision.
+            execute(args, prepared, state)
     except BaseException as exc:
         from pathlib import Path
         import json
@@ -372,7 +379,7 @@ def execute(args, prepared, state):
                                             args.validation_models, args.validation_recycles, stage_seed(args.seed, 'validation', i, num))
                 log = report['models'][report['primary_model']]['metrics']
                 print(f"predict: {name}_{num} plddt: {log['plddt']:.3f}, i_pae: {(log['i_pae']):.3f}, i_ptm: {log['i_ptm']:.3f}, cmap_loss: {log['cmap_loss_binder']:.3f}")
-                record_attempt(name, f'{name}_{num}', log, True)
+                record_attempt(name, f'{name}_{num}', log, bool(report['all_models_pass']))
                 names.append(f'{name}_{num}')
                 sequences.append(seq)
                 plddts.append(log['plddt'])

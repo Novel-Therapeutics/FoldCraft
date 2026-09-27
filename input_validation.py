@@ -131,6 +131,9 @@ def read_chain(filename, chain):
 
 
 def validate_controls(args):
+    timeout = getattr(args, "timeout_minutes", 360.)
+    if not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError("--timeout_minutes must be finite and positive")
     from model_validation import model_names
     model_names(args.validation_models)
     if args.validation_recycles < 0:

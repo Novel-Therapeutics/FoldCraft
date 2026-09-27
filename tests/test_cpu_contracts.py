@@ -235,12 +235,12 @@ def test_main_failure_publishes_failed_state(tmp_path,monkeypatch):
         raise RuntimeError('weights unavailable')
     monkeypatch.setattr(FoldCraft,'execute',fail)
     with pytest.raises(RuntimeError):
-        FoldCraft.main()
+        FoldCraft.main(supervised=False)
     state = json.loads((out/'run.json').read_text())
     assert state['status'] == 'failed'
     assert state['validation_models'] == ['model_1_ptm']
     with pytest.raises(SystemExit,match='already exists'):
-        FoldCraft.main()
+        FoldCraft.main(supervised=False)
 
 
 def test_scheduler_cleanup_on_launch_failure(tmp_path,monkeypatch):
@@ -334,7 +334,7 @@ def test_notebook_order_reaches_shared_inference_adapter(notebook,monkeypatch):
             old = sys.argv
             try:
                 sys.argv = cmd[1:]
-                FoldCraft.main()
+                FoldCraft.main(supervised=False)
             finally:
                 sys.argv = old
         return SimpleNamespace(returncode=0)
@@ -356,7 +356,7 @@ def test_vhh_probability_roundoff_preserves_historical_values():
         validate_cmap(np.array([[1.0001]],dtype=np.float32))
 
 
-@pytest.mark.parametrize('sample,successful', [(False,True),(True,False),(True,True)])
+@pytest.mark.parametrize('sample,successful', [(False,True),(False,False),(True,False),(True,True)])
 @pytest.mark.parametrize('validation_models', ['model_1_ptm','model_1_ptm,model_2_ptm'])
 def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successful,validation_models):
     """Exercise real loop control, artifact publication and quota termination."""
@@ -406,13 +406,13 @@ def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successfu
     monkeypatch.setattr(biopython_utils,'hotspot_residues',lambda *a:{1:'A'})
     if sample and not successful:
         with pytest.raises(SystemExit,match='budget exhausted'):
-            FoldCraft.main()
+            FoldCraft.main(supervised=False)
         state=json.loads((out/'run.json').read_text())
         assert state['status']=='exhausted' and state['attempted_trajectories']==2
         assert not completed_run(out)
         assert (out/'results.csv.partial').is_file()
     else:
-        FoldCraft.main()
+        FoldCraft.main(supervised=False)
         assert completed_run(out)
         results=pd.read_csv(out/'results.csv')
         assert len(results)==(1 if sample else 4)
@@ -421,6 +421,8 @@ def test_driver_with_cpu_inference_doubles(tmp_path,monkeypatch,sample,successfu
         assert len(validations)==len(results)*len(expected_models)
         assert [c['models'][0] for c in validations]==expected_models*len(results)
         assert all(c['num_models']==1 for c in validations)
+    attempts = json.loads((out/"attempts.json").read_text())
+    assert all(row["accepted"] is successful for row in attempts if row["candidate"] is not None)
     assert len(design_calls)==(1 if sample and successful else 2)
 
 

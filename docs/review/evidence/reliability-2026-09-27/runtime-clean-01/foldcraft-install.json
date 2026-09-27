@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "requirements_sha256": "b54f2f7580b39ad044487d6ffecd0dcb200796dc307d6f70f0b164fe2275e5fc",
+  "environment": "/home/bizon/projects/foldcraft-gpu-20260927/reliability-repo/../runtime-clean-01",
+  "checkpoints": {
+    "model_1_ptm": "5e564f79af5bcd54ccef6e2a6bb0ff01015d01650ebc41d4575e35f0de9ecc84",
+    "model_2_ptm": "23645d9a82c4af2ed54cd48a7b3c1c2575dc6aa9fe931adb4d7203ca5f0dc398"
+  }
+}

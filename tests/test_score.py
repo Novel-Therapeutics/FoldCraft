@@ -68,3 +68,18 @@ def test_inconsistent_ipsae_fails_loud(tmp_path):
     _write(runs, "b_noipsae", "name,plddt,ipae,iptm,rmsd\nd0,0.9,0.2,0.6,1.0\n")
     r = _run(runs)
     assert r.returncode != 0 and "ipsae" in (r.stderr + r.stdout).lower()
+
+
+def test_correlated_candidates_do_not_get_binomial_confidence_interval(tmp_path):
+    runs = tmp_path/'runs'
+    _write(runs,'siblings',HEADER+ROWS.replace('d','traj_1_'))
+    r = _run(runs)
+    assert r.returncode == 0
+    assert '95%CI' not in r.stdout and 'siblings are correlated' in r.stdout
+
+
+def test_unknown_gate_metric_is_not_counted_as_rejection(tmp_path):
+    runs = tmp_path/'runs'
+    _write(runs,'unknown',HEADER+'d0,,0.2,0.6,1.0,0.5\n')
+    r = _run(runs)
+    assert r.returncode != 0 and 'unknown' in r.stderr
